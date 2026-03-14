@@ -8,6 +8,7 @@
 @use 'typography';
 @use 'layout';
 @use 'components';
+@use 'shell';      // Header, Sidebar, Dropdown components
 
 // ---- Base Reset ----
 *, *::before, *::after {

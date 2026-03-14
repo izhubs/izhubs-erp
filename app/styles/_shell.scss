@@ -1,0 +1,145 @@
+// =============================================================
+// izhubs ERP — Shell Component Styles
+// Header, Sidebar logo, dropdown, theme swatch, user avatar.
+// All values use CSS tokens — never hardcoded.
+// =============================================================
+
+// ---- Sidebar logo block ----
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-5);
+  height: var(--header-height);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+
+  &__mark {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-md);
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-weight: 700;
+    font-size: 13px;
+    color: #fff;
+  }
+
+  &__name {
+    font-weight: 700;
+    font-size: var(--font-size-sm);
+    letter-spacing: -0.02em;
+  }
+}
+
+.sidebar.collapsed .sidebar-logo {
+  padding: 0 var(--space-3);
+}
+
+// ---- Header right-side controls ----
+.header-controls {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+// ---- Generic dropdown container ----
+.dropdown {
+  position: relative;
+}
+
+.dropdown-panel {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  min-width: 180px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-2);
+  z-index: var(--z-dropdown);
+
+  &--wide { min-width: 200px; }
+
+  &__label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    padding: var(--space-2) var(--space-3);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  &__divider {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: var(--space-2) 0;
+  }
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  text-align: left;
+  text-decoration: none;
+  transition: background var(--transition-fast);
+
+  &:hover { background: var(--color-bg-hover); }
+
+  &--danger { color: var(--color-danger); }
+
+  &--active { background: var(--color-bg-hover); }
+}
+
+// ---- Theme swatch button ----
+.theme-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+// ---- User avatar (initials circle) ----
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+// ---- User menu trigger button ----
+.user-menu-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+
+  &:hover { background: var(--color-bg-hover); }
+}

@@ -21,6 +21,7 @@ Stack: Next.js 14 + PostgreSQL + Redis + Docker
 5. **Custom fields go through `core/engine/custom-fields.ts`** — never add columns directly to core tables.
 6. **Contract tests must pass before every push** — run `npm run test:contracts`.
 7. **DIRECT DATABASE ACCESS IS BANNED** — Only `core/engine/` may talk directly to the database. All modules, extensions, the frontend, and any external tools (n8n, webhooks, MCP) MUST call the versioned REST API (`core/api/v1/`). No exceptions.
+8. **REUSE OVER REPEAT — MODULAR BY DEFAULT** — Any logic that appears in 2+ places MUST be extracted to `lib/utils/`, `lib/hooks/`, or `core/engine/`. No inline CSS (`style={{}}`). No hardcoded colors/spacing (use `var(--token)`). No component > 150 lines. Read `.agent/skills/clean-code-and-modularity.md` before writing any UI or logic.
 
 ---
 
@@ -68,9 +69,21 @@ If the user says **"hi"**, **"hello"**, **"good morning"**, or **"chào buổi s
 | `mcp-tool-design` | Add a new tool to the MCP server |
 | `event-bus-patterns` | Publish or subscribe to system events |
 
-### From antigravity-awesome-skills (use when needed)
-`@architecture`, `@api-design-principles`, `@brainstorming`, `@test-driven-development`,
-`@playwright-skill`, `@debugger`, `@security-auditor`, `@database-design`, `@create-pr`
+### From antigravity-awesome-skills (installed in .agent/skills/)
+
+| Skill | When to use |
+|-------|-------------|
+| `architecture` | Before designing any new module or major feature |
+| `api-design-principles` | Every time a new route is added to `core/api/v1/` |
+| `test-driven-development` | Write contract tests FIRST before implementation |
+| `database-design` | New tables, relations, or major schema changes |
+| `security-auditor` | Before releasing auth, API keys, or webhooks to production |
+| `api-security-best-practices` | When implementing Public API / API key system |
+| `docker-expert` | Docker Compose troubleshooting or Coolify setup |
+| `playwright-skill` | E2E testing for critical flows (login, CRUD, onboarding) |
+| `debugging-strategies` | Systematic troubleshooting when root cause is unclear |
+| `create-pr` | Packaging community contributions into clean pull requests |
+| `doc-coauthoring` | Writing architecture docs or contributor guides |
 
 ---
 
