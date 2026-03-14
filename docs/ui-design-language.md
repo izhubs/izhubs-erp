@@ -159,6 +159,113 @@ Icons:       16px, always present (label optional on collapse)
 
 ---
 
+## Dashboard Layout — The 1vh Rule (Critical)
+
+> **The dashboard is the most-viewed screen. Users must see everything at a glance. No scrolling to find key numbers.**
+
+### The Rule
+**The primary dashboard view MUST fit inside `100vh` on first load.**  
+Every important KPI, chart, and pipeline status must be visible without scrolling.
+
+```
+┌─────────────────────────────────────────────┐  ← 100vh boundary
+│  Header (48px)                              │
+│  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐       │  ← KPI row (80px)
+│  │Deals │ │Revenu│ │ Won  │ │Tasks │       │
+│  └──────┘ └──────┘ └──────┘ └──────┘       │
+│  ┌────────────────┐ ┌────────────────┐      │  ← Main content
+│  │ Pipeline chart │ │ Recent deals   │      │
+│  │                │ │ (max 5 rows)   │      │
+│  └────────────────┘ └────────────────┘      │
+│  ┌────────────────────────────────────┐     │
+│  │ Activity feed (3-5 items max)      │     │
+└─────────────────────────────────────────────┘  ← User must NOT scroll here
+```
+
+### After the fold
+If more data exists (full deal list, full report, full activity history) → separate **dedicated pages** accessible from the dashboard widgets.  
+Do NOT stack endless content below the fold on dashboard.
+
+### Widget height rule
+Each dashboard section/widget = fixed height. Never `height: auto` that grows indefinitely. 
+```scss
+.dashboard-widget {
+  height: calc(100vh - var(--header-height) - var(--kpi-row-height) - var(--spacing));
+  overflow-y: auto; // widget itself scrolls, not the page
+}
+```
+
+---
+
+## Tables — Anti-Patterns AI Gets Wrong
+
+Tables are the most common source of broken UI in vibe-coded apps. Follow these:
+
+### ✅ Required
+```tsx
+// Fixed header that sticks during scroll (sticky top)
+// Virtual scrolling for > 100 rows (never render 10,000 DOM rows)
+// Column min-width to prevent text wrapping in awkward places
+// Empty state: show a message, never just a blank table
+// Loading state: skeleton rows, not spinner
+// Row click → navigate, not open modal (unless quick edit)
+```
+
+### ❌ Banned
+```tsx
+// NO overflow-x: scroll on mobile without warning
+// NO text-overflow: ellipsis without a tooltip showing full value
+// NO nested tables
+// NO table without a fixed container height (infinite growing table)
+// NO sorting that re-fetches all data — sort client-side for current page
+// NO pagination that jumps to page 1 after every action
+```
+
+### Column widths that actually work
+```
+Checkbox     : 40px  (fixed)
+Avatar/Icon  : 40px  (fixed)
+Status badge : 100px (fixed)
+Short text   : 120px (min)
+Name/Title   : flex  (takes remaining space)
+Date         : 120px (fixed)
+Number/Amount: 100px (fixed, right-aligned)
+Actions      : 80px  (fixed, right)
+```
+
+---
+
+## Charts — Rules for Correct Implementation
+
+Charts are the #1 place AI produces visually broken, data-incorrect code.
+
+### Use Recharts (already in ecosystem via Next.js)
+```tsx
+import { AreaChart, BarChart, PieChart } from 'recharts';
+// Always: ResponsiveContainer wrapping, no fixed pixel widths
+```
+
+### Chart selection guide
+| Data type | Chart to use |
+|-----------|-------------|
+| Trend over time | `AreaChart` (filled) |
+| Compare categories | `BarChart` (horizontal for long names) |
+| Pipeline stage distribution | `FunnelChart` or horizontal `BarChart` |
+| Win/Loss ratio | `PieChart` (max 4 segments — never more) |
+| KPI single number | Big number + trend arrow → NOT a chart |
+
+### ❌ Common AI chart mistakes to avoid
+```
+- Pie chart with 8+ segments → unreadable, use BarChart instead
+- Y-axis starting at non-zero → misleading
+- No loading state → chart flickers on data fetch
+- No empty state → blank chart area looks broken
+- Tooltips cut off by container overflow → always use portal
+- Hardcoded height in px → use ResponsiveContainer with aspect ratio
+```
+
+---
+
 ## Rule for AI Agents
 
 Before writing any UI component:
