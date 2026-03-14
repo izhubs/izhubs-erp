@@ -1,14 +1,15 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  // SCSS support (sass is installed)
+import createNextIntlPlugin from 'next-intl/plugin';
+import type { NextConfig } from 'next';
+
+const withNextIntl = createNextIntlPlugin('./lib/i18n/index.ts');
+
+const nextConfig: NextConfig = {
+  output: 'standalone',
+
   sassOptions: {
     includePaths: ['./app/styles'],
   },
 
-  // Standalone output for Docker
-  output: 'standalone',
-
-  // Security + PWA headers
   async headers() {
     return [
       {
@@ -30,4 +31,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);
