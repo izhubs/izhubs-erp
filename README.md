@@ -103,7 +103,7 @@ If your AI tool supports slash commands or file mentions (like Antigravity or Cu
 
 ```bash
 # Morning: AI reads context, summarizes what's done, asks what's next
-"Read .agent/workflows/morning-start.md and follow it"
+"chào buổi sáng" (or "Read .agent/workflows/morning-start.md")
 
 # Build a feature
 "Read .agent/workflows/feature-cycle.md and build CSV import for contacts"

@@ -43,7 +43,10 @@ app/            ← Next.js frontend
 
 ## Start every AI session
 
-1. Read `memory.md` → understand current state and what's in-progress
+If the user says **"chào buổi sáng"** or "good morning":
+1. Immediately run the `.agent/workflows/morning-start.md` workflow.
+2. Read `memory.md` → understand current state and what's in-progress
+3. Summarize the state to the user and ask what they want to work on today.
 2. Read the relevant skill in `.agent/skills/` before implementing
 3. Check `core/schema/` for existing types before creating new ones
 4. Run `npm test` after every significant change
