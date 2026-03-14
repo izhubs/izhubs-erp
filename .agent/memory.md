@@ -1,54 +1,61 @@
-# izhubs ERP — Memory
-
-> Living document. Updated after every significant work session.
-> Last updated: 2026-03-14
-
----
+# izhubs ERP — Project Memory
 
 ## Current Status
 
-> **Phase: Project Scaffold** — Initial structure created. No features implemented yet.
+**Phase**: Scaffold complete (v0.0) → Starting v0.1 Foundation MVP
+**Last updated**: 2026-03-14
+**Health**: ✅ TypeScript clean, all commits passing
 
-## What's been done
-- [x] Project structure scaffolded at `D:\Project\izhubs-erp`
-- [x] Root config: package.json, tsconfig.json, docker-compose.yml, .env.example
-- [x] AI context layer: AGENTS.md, memory.md, skills (Phase 1), workflows
-- [x] Core schema: entities.ts, events.ts, relations.ts
-- [x] DB migration 001: initial schema (users, contacts, companies, deals, activities)
-- [x] Extension SDK skeleton: ExtensionBase.ts, types.ts
-- [x] App shell: layout, login page, dashboard shell
+## What's Done
 
-## In Progress
-- [ ] Nothing in progress
-
-## Next Up (Backlog)
-- [ ] Implement Core Engine: entity-engine.ts, event-bus.ts, custom-fields.ts
-- [ ] REST API v1: contacts, deals, companies, activities, users
-- [ ] Auth: JWT middleware, login API route
-- [ ] Dashboard UI: KPI cards, pipeline kanban
-- [ ] CRM module: pipeline stages, lead scoring
-
----
+- Full project scaffold at `D:\Project\izhubs-erp`
+- AI context layer: AGENTS.md, memory.md, 3 skills, 6 workflows (incl. feature-cycle)
+- Core schema: entities, events, event-bus (typed Zod)
+- DB migrations: 001 (init) → 005 (audit log)
+- Extension SDK: ExtensionBase.ts
+- Templates: agency, restaurant (+ 3 sub-templates), coworking, ecommerce + AI niche prompt
+- SCSS: 5 themes (indigo, emerald, rose, amber, light) + full component system
+- PWA: manifest.json + service worker
+- App shell: login, setup wizard, dashboard layout, 12 page stubs
+- Lib stubs: email, webhooks, messaging (Telegram/Slack/Zalo), GDPR, rate-limiter
+- i18n: next-intl with EN/VI + auto English fallback for missing keys
+- Antigravity workspace: junction at playground/izhubs-erp → D:\Project\izhubs-erp
+- MCP config: ready for when mcp-server is implemented
 
 ## Key Decisions
 
-| Decision | Reason | Date |
-|----------|--------|------|
-| PostgreSQL only, no ORM | Simplicity, full SQL control, no magic | 2026-03-14 |
-| EventBus over direct calls | Extensions isolated from core, can't break it | 2026-03-14 |
-| Zod for all validation | Runtime safety + TypeScript type inference | 2026-03-14 |
-| Next.js App Router | Server components for performance, standard stack | 2026-03-14 |
-| Custom fields via JSON column | Flexible without schema migrations per field | 2026-03-14 |
+| Decision | Why |
+|----------|-----|
+| Next.js 14 App Router | Full-stack, file-based routing, RSC ready |
+| PostgreSQL raw SQL | Control, performance, migration clarity |
+| Zod for all types | Runtime validation + TypeScript types from one source |
+| CSS Custom Properties for theming | Runtime theme switching without rebuild |
+| SCSS for component organization | Nesting, mixins, partials for large CSS |
+| next-intl for i18n | App Router native, auto fallback to EN |
+| Feature-cycle not sprint | AI builds fast — cycle = feature complete |
+| MIT license | Community first, no feature gating |
 
----
+## Active Backlog (v0.1)
 
-## Known Gotchas
-- Docker postgres volume: migrations in `database/migrations/` auto-run on first init only
-- Always run `npm run test:contracts` before push — contract tests are the hardest guardrail
+1. Auth: JWT login / register / refresh
+2. Core API: contacts + deals CRUD
+3. Pipeline Kanban view
+4. Custom Fields UI
+5. RBAC
+6. Sidebar with real nav links
+7. Header with user menu + theme switcher
 
----
+## Credentials (local dev)
 
-## Credentials (Dev)
-- App: http://localhost:3000
-- DB: postgres:5432 / user: postgres / db: izhubs_erp
-- Default admin: setup via /setup on first run
+```
+DB:    postgresql://postgres:postgres@localhost:5432/izhubs_erp
+Redis: redis://localhost:6379
+App:   http://localhost:3000
+```
+
+## Git
+
+```bash
+cd D:\Project\izhubs-erp
+git log --oneline -8
+```
