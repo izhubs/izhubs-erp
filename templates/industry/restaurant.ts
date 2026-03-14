@@ -1,0 +1,53 @@
+import type { IndustryTemplate } from '../engine/template.schema';
+
+const restaurantTemplate: IndustryTemplate = {
+  id: 'restaurant',
+  name: 'Nhà hàng / F&B',
+  description: 'Quản lý đặt bàn, khách hàng thân thiết và phản hồi cho nhà hàng, quán cafe, F&B.',
+  icon: '🍽️',
+  category: 'hospitality',
+  tags: ['restaurant', 'cafe', 'fnb', 'food', 'hospitality'],
+
+  pipelineStages: [
+    { key: 'inquiry', label: 'Hỏi thông tin', color: '#94a3b8' },
+    { key: 'reservation', label: 'Đã đặt bàn', color: '#60a5fa' },
+    { key: 'confirmed', label: 'Xác nhận', color: '#a78bfa' },
+    { key: 'seated', label: 'Đang ngồi', color: '#f59e0b' },
+    { key: 'completed', label: 'Hoàn thành', color: '#22c55e' },
+    { key: 'cancelled', label: 'Huỷ', color: '#ef4444' },
+  ],
+
+  customFields: [
+    { entity: 'deal', key: 'table_count', label: 'Số bàn', type: 'number' },
+    { entity: 'deal', key: 'guest_count', label: 'Số khách', type: 'number' },
+    { entity: 'deal', key: 'reservation_date', label: 'Ngày đặt bàn', type: 'date' },
+    { entity: 'deal', key: 'special_request', label: 'Yêu cầu đặc biệt', type: 'text' },
+    { entity: 'deal', key: 'occasion', label: 'Dịp', type: 'select', options: ['Sinh nhật', 'Kỷ niệm', 'Hội họp', 'Hẹn hò', 'Gia đình', 'Khác'] },
+    { entity: 'contact', key: 'visit_count', label: 'Số lần ghé thăm', type: 'number' },
+    { entity: 'contact', key: 'preferred_table', label: 'Bàn yêu thích', type: 'text' },
+    { entity: 'contact', key: 'dietary_notes', label: 'Ghi chú ăn uống', type: 'text' },
+  ],
+
+  automations: [
+    {
+      name: 'Nhắc xác nhận đặt bàn trước 1 ngày',
+      trigger: 'deal.created',
+      action: 'create_activity',
+      actionConfig: { type: 'task', subject: 'Gọi xác nhận đặt bàn', daysFromNow: -1 },
+    },
+    {
+      name: 'Gửi cảm ơn sau khi hoàn thành',
+      trigger: 'deal.stage_changed',
+      condition: "toStage == 'completed'",
+      action: 'create_activity',
+      actionConfig: { type: 'task', subject: 'Gửi lời cảm ơn + xin đánh giá', daysFromNow: 1 },
+    },
+  ],
+
+  suggestedModules: ['crm', 'reports'],
+  demoData: true,
+  version: '1.0.0',
+  author: 'izhubs',
+};
+
+export default restaurantTemplate;
