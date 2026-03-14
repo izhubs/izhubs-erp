@@ -20,6 +20,7 @@ Stack: Next.js 14 + PostgreSQL + Redis + Docker
 4. **All shared types live in `core/schema/`** — never define duplicate types in modules or extensions.
 5. **Custom fields go through `core/engine/custom-fields.ts`** — never add columns directly to core tables.
 6. **Contract tests must pass before every push** — run `npm run test:contracts`.
+7. **DIRECT DATABASE ACCESS IS BANNED** — Only `core/engine/` may talk directly to the database. All modules, extensions, the frontend, and any external tools (n8n, webhooks, MCP) MUST call the versioned REST API (`core/api/v1/`). No exceptions.
 
 ---
 

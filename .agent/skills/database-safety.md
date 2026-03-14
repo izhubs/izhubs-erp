@@ -9,6 +9,24 @@ Because DB logic errors are not visually apparent like UI errors, AI vibe coding
 
 ## The 3 Pillars of DB Safety
 
+> ⚠️ **GOLDEN RULE: No direct DB access.** Only `core/engine/` may query the database directly.
+> Everything else — modules, extensions, frontend pages, external tools (n8n, Zapier, LLM agents) —
+> **MUST** go through `core/api/v1/`. No exceptions.
+
+### Enforced Access Flow
+```
+┌─────────────────────────────────────┐
+│  Frontend / Modules / Extensions    │  ← NOT allowed to import from core/engine/db.ts
+│  n8n / Zapier / MCP / Webhooks     │
+└──────────────────┬──────────────────┘
+                   │ HTTP calls only
+           core/api/v1/ (REST)         ← The only gate
+                   │
+           core/engine/                ← The ONLY layer that talks to PostgreSQL
+                   │
+             PostgreSQL
+```
+
 ### 1. Zod Contract Enforcement (The Shield)
 The database structure CAN drift, but the application's understanding of it must never be compromised.
 **Rule:** Every single entity fetched from the database MUST be passed through its Zod schema before being returned to the application.

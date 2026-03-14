@@ -22,6 +22,7 @@
 - Antigravity workspace: junction at playground/izhubs-erp → D:\Project\izhubs-erp
 - MCP config: ready for when mcp-server is implemented
 - Auth: JWT login / register / refresh with `jose` (v0.1)
+- Core API: Contacts and Deals CRUD endpoints with Zod validation (v0.1)
 
 ## Key Decisions
 
@@ -38,12 +39,11 @@
 
 ## Active Backlog (v0.1)
 
-1. Core API: contacts + deals CRUD
-2. Pipeline Kanban view
-3. Custom Fields UI
-4. RBAC
-5. Sidebar with real nav links
-6. Header with user menu + theme switcher
+1. Pipeline Kanban view
+2. Custom Fields UI
+3. RBAC
+4. Sidebar with real nav links
+5. Header with user menu + theme switcher
 
 ## Credentials (local dev)
 
