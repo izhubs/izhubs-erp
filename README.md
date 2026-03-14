@@ -196,6 +196,10 @@ Read `.agent/AGENTS.md` first — the AI context layer explains the architecture
 ### 🐛 Bug Reports
 Open a GitHub Issue with steps to reproduce.
 
+### 🔀 Branching Strategy
+- Open all Pull Requests against the **`master`** branch.
+- The `production` branch is strictly reserved for automated Coolify deployments.
+
 ---
 
 ## Self-Hosting

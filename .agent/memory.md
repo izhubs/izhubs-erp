@@ -21,6 +21,7 @@
 - i18n: next-intl with EN/VI + auto English fallback for missing keys
 - Antigravity workspace: junction at playground/izhubs-erp → D:\Project\izhubs-erp
 - MCP config: ready for when mcp-server is implemented
+- Auth: JWT login / register / refresh with `jose` (v0.1)
 
 ## Key Decisions
 
@@ -37,13 +38,12 @@
 
 ## Active Backlog (v0.1)
 
-1. Auth: JWT login / register / refresh
-2. Core API: contacts + deals CRUD
-3. Pipeline Kanban view
-4. Custom Fields UI
-5. RBAC
-6. Sidebar with real nav links
-7. Header with user menu + theme switcher
+1. Core API: contacts + deals CRUD
+2. Pipeline Kanban view
+3. Custom Fields UI
+4. RBAC
+5. Sidebar with real nav links
+6. Header with user menu + theme switcher
 
 ## Credentials (local dev)
 
