@@ -43,7 +43,7 @@ app/            ← Next.js frontend
 
 ## Start every AI session
 
-If the user says **"chào buổi sáng"** or "good morning":
+If the user says **"hi"**, **"hello"**, **"good morning"**, or **"chào buổi sáng"**:
 1. Immediately run the `.agent/workflows/morning-start.md` workflow.
 2. Read `memory.md` → understand current state and what's in-progress
 3. Summarize the state to the user and ask what they want to work on today.
