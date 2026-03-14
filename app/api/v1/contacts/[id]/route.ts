@@ -1,85 +1,51 @@
-import { NextResponse } from 'next/server';
-import { db } from '@/core/engine/db';
 import { ContactSchema } from '@/core/schema/entities';
 import { withPermission } from '@/core/engine/rbac';
+import { ApiResponse } from '@/core/engine/response';
+import * as ContactsEngine from '@/core/engine/contacts';
 
 const isValidUUID = (id: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
 
-export const GET = withPermission('contacts:read', async (req, _claims, ctx) => {
+export const GET = withPermission('contacts:read', async (_req, _claims, ctx) => {
   try {
     const id = ctx?.params?.id;
-    if (!id || !isValidUUID(id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
+    if (!id || !isValidUUID(id)) return ApiResponse.error('Invalid ID format', 400);
 
-    // Soft-delete: exclude soft-deleted records
-    const result = await db.query(
-      'SELECT * FROM contacts WHERE id = $1 AND deleted_at IS NULL',
-      [id]
-    );
-    if (result.rowCount === 0) return NextResponse.json({ error: 'Contact not found' }, { status: 404 });
-
-    return NextResponse.json({ data: result.rows[0] });
-  } catch (e: any) {
-    console.error(e);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const contact = await ContactsEngine.getContact(id);
+    if (!contact) return ApiResponse.error('Contact not found', 404);
+    return ApiResponse.success(contact);
+  } catch (e) {
+    return ApiResponse.serverError(e, 'contacts.get');
   }
 });
 
 export const PUT = withPermission('contacts:write', async (req, _claims, ctx) => {
   try {
     const id = ctx?.params?.id;
-    if (!id || !isValidUUID(id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
+    if (!id || !isValidUUID(id)) return ApiResponse.error('Invalid ID format', 400);
 
     const body = await req.json();
-    const UpdateSchema = ContactSchema.partial().omit({ id: true, createdAt: true, updatedAt: true });
-    const result = UpdateSchema.safeParse(body);
+    const parsed = ContactSchema.partial().omit({ id: true, createdAt: true, updatedAt: true }).safeParse(body);
+    if (!parsed.success) return ApiResponse.validationError(parsed.error);
+    if (Object.keys(parsed.data).length === 0) return ApiResponse.error('No fields to update', 400);
 
-    if (!result.success) {
-      return NextResponse.json({ error: 'Validation failed', details: result.error.format() }, { status: 400 });
-    }
-
-    const updates = result.data;
-    if (Object.keys(updates).length === 0) return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
-
-    const setClauses: string[] = [];
-    const values: any[] = [];
-    let idx = 1;
-    for (const [key, value] of Object.entries(updates)) {
-      setClauses.push(`${key.replace(/[A-Z]/g, l => `_${l.toLowerCase()}`)} = $${idx++}`);
-      values.push(value);
-    }
-    setClauses.push(`updated_at = NOW()`);
-    values.push(id);
-
-    // Only update non-deleted records
-    const updateResult = await db.query(
-      `UPDATE contacts SET ${setClauses.join(', ')} WHERE id = $${idx} AND deleted_at IS NULL RETURNING *`,
-      values
-    );
-    if (updateResult.rowCount === 0) return NextResponse.json({ error: 'Contact not found' }, { status: 404 });
-    return NextResponse.json({ data: updateResult.rows[0] });
-  } catch (e: any) {
-    console.error(e);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const contact = await ContactsEngine.updateContact(id, parsed.data);
+    if (!contact) return ApiResponse.error('Contact not found', 404);
+    return ApiResponse.success(contact);
+  } catch (e) {
+    return ApiResponse.serverError(e, 'contacts.update');
   }
 });
 
-export const DELETE = withPermission('contacts:delete', async (req, _claims, ctx) => {
+export const DELETE = withPermission('contacts:delete', async (_req, _claims, ctx) => {
   try {
     const id = ctx?.params?.id;
-    if (!id || !isValidUUID(id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
+    if (!id || !isValidUUID(id)) return ApiResponse.error('Invalid ID format', 400);
 
-    // SOFT DELETE — never physically remove records
-    const result = await db.query(
-      `UPDATE contacts SET deleted_at = NOW(), updated_at = NOW() 
-       WHERE id = $1 AND deleted_at IS NULL RETURNING id`,
-      [id]
-    );
-    if (result.rowCount === 0) return NextResponse.json({ error: 'Contact not found' }, { status: 404 });
-
-    return NextResponse.json({ data: { success: true, id: result.rows[0].id } });
-  } catch (e: any) {
-    console.error(e);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const deletedId = await ContactsEngine.softDeleteContact(id);
+    if (!deletedId) return ApiResponse.error('Contact not found', 404);
+    return ApiResponse.success({ id: deletedId });
+  } catch (e) {
+    return ApiResponse.serverError(e, 'contacts.delete');
   }
 });
