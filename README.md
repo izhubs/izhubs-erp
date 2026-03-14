@@ -87,7 +87,7 @@ cp .env.example .env.local
 docker compose up -d
 
 # 4. Open
-open http://localhost:3000/setup
+open http://localhost:1303/setup
 ```
 
 ### Requirements

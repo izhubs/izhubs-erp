@@ -4,9 +4,9 @@
   "private": true,
   "description": "izhubs ERP — Open-source, AI-extensible business management. Adapts to your business, not the other way around.",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 1303",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 1303",
     "lint": "next lint",
     "test": "jest --passWithNoTests",
     "test:unit": "jest --testPathPattern=tests/unit",
@@ -41,6 +41,7 @@
     "jest-environment-node": "^29",
     "sass": "^1.98.0",
     "ts-jest": "^29",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

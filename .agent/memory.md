@@ -50,7 +50,7 @@
 ```
 DB:    postgresql://postgres:postgres@localhost:5432/izhubs_erp
 Redis: redis://localhost:6379
-App:   http://localhost:3000
+App:   http://localhost:1303
 ```
 
 ## Git
