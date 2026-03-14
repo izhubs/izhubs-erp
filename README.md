@@ -99,21 +99,22 @@ open http://localhost:3000/setup
 ## Daily AI Workflow
 
 Every feature is built through a structured cycle — no sprint planning, no standups.
+If your AI tool supports slash commands or file mentions (like Antigravity or Cursor), reference the workflow files directly:
 
 ```bash
 # Morning: AI reads context, summarizes what's done, asks what's next
-"Use @morning-start"
+"Read .agent/workflows/morning-start.md and follow it"
 
 # Build a feature
-"I want to add CSV import for contacts"
-→ AI reads @feature-cycle → implements → tests → commits
+"Read .agent/workflows/feature-cycle.md and build CSV import for contacts"
+→ AI reads workflow → implements → tests → commits
 
 # Ship
-"Use @commit-push"
+"Run .agent/workflows/commit-push.md"
 → contract tests → typecheck → commit → push
 
 # Rollback if needed
-"Use @rollback"
+"Run .agent/workflows/rollback.md"
 ```
 
 ---
