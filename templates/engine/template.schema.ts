@@ -24,36 +24,57 @@ export const TemplateAutomationSchema = z.object({
   actionConfig: z.record(z.unknown()),
 });
 
-export const IndustryTemplateSchema = z.object({
-  id: z.string(),                      // Unique slug: "restaurant", "agency"
-  name: z.string(),                    // Display name: "Restaurant"
+// Sub-template: niche variant of a parent template
+// Only defines what's DIFFERENT — merged with parent at apply-time
+export const SubTemplateSchema = z.object({
+  id: z.string(),              // e.g. "restaurant-fine-dining"
+  label: z.string(),           // e.g. "Fine Dining"
   description: z.string(),
-  icon: z.string(),                    // Emoji or icon name
+  icon: z.string().optional(),
+  overrides: z.object({
+    pipelineStages: z.array(z.object({
+      key: z.string(),
+      label: z.string(),
+      color: z.string().optional(),
+    })).optional(),
+    customFields: z.array(TemplateCustomFieldSchema).optional(),
+    automations: z.array(TemplateAutomationSchema).optional(),
+  }),
+});
+
+export const IndustryTemplateSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  icon: z.string(),
   category: z.enum(['hospitality', 'retail', 'services', 'technology', 'real_estate', 'other']),
   tags: z.array(z.string()),
 
-  // Pipeline configuration
   pipelineStages: z.array(z.object({
     key: z.string(),
     label: z.string(),
-    color: z.string().optional(),      // hex color for kanban
+    color: z.string().optional(),
   })),
 
-  // Pre-defined custom fields
   customFields: z.array(TemplateCustomFieldSchema),
-
-  // Pre-built automations
   automations: z.array(TemplateAutomationSchema).default([]),
-
-  // Suggested modules to enable
   suggestedModules: z.array(z.string()).default([]),
-
-  // Optional seed data for demo
   demoData: z.boolean().default(false),
+
+  // Niche sub-variants (human-written common ones)
+  // e.g. restaurant → fine-dining, street-food, cafe, buffet
+  subTemplates: z.array(SubTemplateSchema).optional(),
+
+  // AI generation prompt for hyper-niche customization
+  // User describes their business in natural language →
+  // AI reads this prompt + userDescription → generates a custom config
+  // Placeholders: {userDescription}, {industry}, {subCategory}, {location}
+  aiPrompt: z.string().optional(),
 
   version: z.string().default('1.0.0'),
   author: z.string().default('izhubs'),
 });
 
 export type IndustryTemplate = z.infer<typeof IndustryTemplateSchema>;
+export type SubTemplate = z.infer<typeof SubTemplateSchema>;
 export type TemplateCustomField = z.infer<typeof TemplateCustomFieldSchema>;
