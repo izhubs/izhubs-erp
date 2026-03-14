@@ -5,6 +5,7 @@
 **Phase**: v0.1 Foundation MVP in progress
 **Last updated**: 2026-03-14
 **Health**: ✅ TypeScript clean, 18 contract tests passing
+**Last commit**: `51d8e66` fix(db): correct dev credentials, add .env.local, seed script
 
 ---
 
@@ -89,4 +90,20 @@ App:   http://localhost:1303
 ```bash
 cd D:\Project\izhubs-erp
 git log --oneline -8
+```
+
+### Session 2026-03-14 commits (newest → oldest)
+```
+51d8e66 fix(db): correct dev credentials, add .env.local, seed script + test-credentials.md
+ab2def2 fix(routing): remove next-intl plugin, middleware auth-only
+be41d14 refactor(core): ApiResponse factory + engine layer with Zod enforcement
+5ea0ce7 feat(ui): Sidebar with real nav links + Header with theme switcher and user menu
+31d3e28 feat(rbac+core): RBAC engine, soft-delete pattern, withPermission guard
+```
+
+## Dev startup
+
+```bash
+docker compose up -d postgres redis   # start DB (first time or after reboot)
+npm run dev                           # start app on :1303
 ```
