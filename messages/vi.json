@@ -1,0 +1,42 @@
+{
+  "common": {
+    "save": "Lưu",
+    "cancel": "Huỷ",
+    "delete": "Xoá",
+    "edit": "Chỉnh sửa",
+    "create": "Tạo mới",
+    "search": "Tìm kiếm",
+    "loading": "Đang tải...",
+    "error": "Có lỗi xảy ra",
+    "success": "Lưu thành công",
+    "confirm_delete": "Bạn có chắc muốn xoá?"
+  },
+  "nav": {
+    "dashboard":   "Tổng quan",
+    "contacts":    "Liên hệ",
+    "deals":       "Cơ hội",
+    "contracts":   "Hợp đồng",
+    "reports":     "Báo cáo",
+    "automation":  "Tự động hoá",
+    "audit_log":   "Lịch sử",
+    "settings":    "Cài đặt"
+  },
+  "settings": {
+    "appearance":      "Giao diện",
+    "custom_fields":   "Trường tuỳ chỉnh",
+    "pipeline":        "Giai đoạn pipeline",
+    "extensions":      "Extensions",
+    "integrations":    "Tích hợp",
+    "gdpr":            "Dữ liệu & Quyền riêng tư",
+    "theme":           "Màu sắc",
+    "language":        "Ngôn ngữ",
+    "timezone":        "Múi giờ"
+  },
+  "themes": {
+    "indigo": "Indigo Tối",
+    "emerald": "Xanh lá",
+    "rose": "Hồng",
+    "amber": "Vàng",
+    "light": "Sáng"
+  }
+}

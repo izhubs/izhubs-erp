@@ -1,0 +1,42 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "success": "Saved successfully",
+    "confirm_delete": "Are you sure you want to delete this?"
+  },
+  "nav": {
+    "dashboard":   "Dashboard",
+    "contacts":    "Contacts",
+    "deals":       "Deals",
+    "contracts":   "Contracts",
+    "reports":     "Reports",
+    "automation":  "Automation",
+    "audit_log":   "Audit Log",
+    "settings":    "Settings"
+  },
+  "settings": {
+    "appearance":      "Appearance",
+    "custom_fields":   "Custom Fields",
+    "pipeline":        "Pipeline Stages",
+    "extensions":      "Extensions",
+    "integrations":    "Integrations",
+    "gdpr":            "Data & Privacy",
+    "theme":           "Theme",
+    "language":        "Language",
+    "timezone":        "Timezone"
+  },
+  "themes": {
+    "indigo": "Indigo Dark",
+    "emerald": "Emerald",
+    "rose": "Rose",
+    "amber": "Amber",
+    "light": "Light"
+  }
+}

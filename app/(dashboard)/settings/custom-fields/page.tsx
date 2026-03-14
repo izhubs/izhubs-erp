@@ -1,0 +1,10 @@
+﻿// TODO: implement Custom Fields
+export default function Page() {
+  return (
+    <div>
+      <div className="page-header"><h1>Custom Fields</h1></div>
+      <div className="card"><p className="text-muted">Coming soon.</p></div>
+    </div>
+  );
+}
+
