@@ -1,116 +1,85 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/core/engine/db';
 import { ContactSchema } from '@/core/schema/entities';
+import { withPermission } from '@/core/engine/rbac';
 
-// Helper to check if UUID is valid
-const isValidUUID = (uuid: string) => 
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid);
+const isValidUUID = (id: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export const GET = withPermission('contacts:read', async (req, _claims, ctx) => {
   try {
-    const { id } = params;
+    const id = ctx?.params?.id;
+    if (!id || !isValidUUID(id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
 
-    if (!isValidUUID(id)) {
-      return NextResponse.json({ error: 'Invalid ID format' }, { status: 400 });
-    }
-
-    const result = await db.query('SELECT * FROM contacts WHERE id = $1', [id]);
-
-    if (result.rowCount === 0) {
-      return NextResponse.json({ error: 'Contact not found' }, { status: 404 });
-    }
+    // Soft-delete: exclude soft-deleted records
+    const result = await db.query(
+      'SELECT * FROM contacts WHERE id = $1 AND deleted_at IS NULL',
+      [id]
+    );
+    if (result.rowCount === 0) return NextResponse.json({ error: 'Contact not found' }, { status: 404 });
 
     return NextResponse.json({ data: result.rows[0] });
-  } catch (error: any) {
-    console.error('Contact GET Error:', error);
+  } catch (e: any) {
+    console.error(e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export const PUT = withPermission('contacts:write', async (req, _claims, ctx) => {
   try {
-    const { id } = params;
-
-    if (!isValidUUID(id)) {
-      return NextResponse.json({ error: 'Invalid ID format' }, { status: 400 });
-    }
+    const id = ctx?.params?.id;
+    if (!id || !isValidUUID(id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
 
     const body = await req.json();
-
-    // Partial Zod parse for updates
-    const UpdateSchema = ContactSchema.partial().omit({ 
-      id: true, 
-      createdAt: true, 
-      updatedAt: true 
-    });
-
+    const UpdateSchema = ContactSchema.partial().omit({ id: true, createdAt: true, updatedAt: true });
     const result = UpdateSchema.safeParse(body);
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: 'Validation failed', details: result.error.format() },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Validation failed', details: result.error.format() }, { status: 400 });
     }
 
     const updates = result.data;
-    if (Object.keys(updates).length === 0) {
-       return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
-    }
+    if (Object.keys(updates).length === 0) return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
 
-    // Build dynamic UPDATE query
     const setClauses: string[] = [];
     const values: any[] = [];
-    let paramIndex = 1;
-
+    let idx = 1;
     for (const [key, value] of Object.entries(updates)) {
-      // Map JS camelCase to SQL snake_case
-      const dbCol = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-      setClauses.push(`${dbCol} = $${paramIndex}`);
+      setClauses.push(`${key.replace(/[A-Z]/g, l => `_${l.toLowerCase()}`)} = $${idx++}`);
       values.push(value);
-      paramIndex++;
     }
-
     setClauses.push(`updated_at = NOW()`);
-    values.push(id); // push id as the LAST parameter
+    values.push(id);
 
-    const updateQuery = `
-      UPDATE contacts 
-      SET ${setClauses.join(', ')}
-      WHERE id = $${paramIndex}
-      RETURNING *
-    `;
-
-    const updateResult = await db.query(updateQuery, values);
-
-    if (updateResult.rowCount === 0) {
-      return NextResponse.json({ error: 'Contact not found' }, { status: 404 });
-    }
-
+    // Only update non-deleted records
+    const updateResult = await db.query(
+      `UPDATE contacts SET ${setClauses.join(', ')} WHERE id = $${idx} AND deleted_at IS NULL RETURNING *`,
+      values
+    );
+    if (updateResult.rowCount === 0) return NextResponse.json({ error: 'Contact not found' }, { status: 404 });
     return NextResponse.json({ data: updateResult.rows[0] });
-  } catch (error: any) {
-    console.error('Contact PUT Error:', error);
+  } catch (e: any) {
+    console.error(e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export const DELETE = withPermission('contacts:delete', async (req, _claims, ctx) => {
   try {
-    const { id } = params;
+    const id = ctx?.params?.id;
+    if (!id || !isValidUUID(id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
 
-    if (!isValidUUID(id)) {
-      return NextResponse.json({ error: 'Invalid ID format' }, { status: 400 });
-    }
-
-    const result = await db.query('DELETE FROM contacts WHERE id = $1 RETURNING id', [id]);
-
-    if (result.rowCount === 0) {
-      return NextResponse.json({ error: 'Contact not found' }, { status: 404 });
-    }
+    // SOFT DELETE — never physically remove records
+    const result = await db.query(
+      `UPDATE contacts SET deleted_at = NOW(), updated_at = NOW() 
+       WHERE id = $1 AND deleted_at IS NULL RETURNING id`,
+      [id]
+    );
+    if (result.rowCount === 0) return NextResponse.json({ error: 'Contact not found' }, { status: 404 });
 
     return NextResponse.json({ data: { success: true, id: result.rows[0].id } });
-  } catch (error: any) {
-    console.error('Contact DELETE Error:', error);
+  } catch (e: any) {
+    console.error(e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});
