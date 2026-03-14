@@ -1,0 +1,32 @@
+version: '3.8'
+
+# Staging override for docker-compose.yml
+# Usage: docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d
+
+services:
+  app:
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production # Run nextjs in production mode even in staging
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-https://staging.erp.yourdomain.com}
+      # Show debug logs in staging
+      - DEBUG=true
+    volumes:
+      # Remove local bind mounts so we test the actual built container
+      - /app/node_modules
+      - /app/.next
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  postgres:
+    restart: unless-stopped
+    # Expose heavily restricted port or no port
+    ports: []
+    environment:
+      - POSTGRES_DB=izhubs_erp_staging
+
+  redis:
+    restart: unless-stopped
+    ports: []

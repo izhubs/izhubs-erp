@@ -1,0 +1,41 @@
+version: '3.8'
+
+# Production override for docker-compose.yml
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  app:
+    # Use pre-built image from registry if available, otherwise build
+    # image: ghcr.io/izhubs/izhubs-erp:latest
+    restart: always
+    environment:
+      - NODE_ENV=production
+      # In production, these should come from real secure secrets
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-https://erp.yourdomain.com}
+    volumes:
+      # Remove bind mounts for code hot-reload, keep only persistent data if any
+      - /app/node_modules
+      - /app/.next
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+
+  postgres:
+    restart: always
+    # Do NOT expose postgres port directly to host in production
+    ports: []
+    # In production, you might not want to run postgres in docker compose
+    # but rather use a managed database service like RDS/Neon/Supabase.
+    # If using this, ensure the volume is properly backed up.
+
+  redis:
+    restart: always
+    # Do NOT expose redis port directly to host in production
+    ports: []
