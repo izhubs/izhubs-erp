@@ -1,9 +1,5 @@
-import createNextIntlPlugin from 'next-intl/plugin';
-import type { NextConfig } from 'next';
-
-const withNextIntl = createNextIntlPlugin('./lib/i18n/index.ts');
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   output: 'standalone',
 
   sassOptions: {
@@ -31,4 +27,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+export default nextConfig;
