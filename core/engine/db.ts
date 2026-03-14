@@ -2,7 +2,7 @@ import { Pool } from 'pg';
 
 // Use a single pool for the application
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/izhubs_erp',
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:izhubs_dev_2026@localhost:5432/izhubs_erp',
 });
 
 // Helper for standardized querying
