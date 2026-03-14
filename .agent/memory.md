@@ -3,9 +3,9 @@
 ## Current Status
 
 **Phase**: v0.1 Foundation MVP in progress
-**Last updated**: 2026-03-14
+**Last updated**: 2026-03-14 (session 2 — architecture & docs day)
 **Health**: ✅ TypeScript clean, 18 contract tests passing
-**Last commit**: `51d8e66` fix(db): correct dev credentials, add .env.local, seed script
+**Last commit**: `ce0e891` docs(memory): session notes
 
 ---
 
@@ -57,6 +57,24 @@ npm run test:contracts  # all must pass
 - Core engine layer: `core/engine/contacts.ts`, `core/engine/deals.ts` — only these may query the DB directly
 - `ApiResponse` factory: `core/engine/response.ts` — ALL API routes must use this, never `NextResponse.json()` directly
 
+### Session 2 — 2026-03-14 (Architecture, Infra & Docs)
+- Port changed to **1303** (first commit memorial)
+- Docker: `docker-compose.prod.yml`, `docker-compose.staging.yml`, bridge network `izhubs_network`
+- Git workflow: `master` → `production` branch (Coolify auto-deploys from `production`)
+- NPM aliases: `docker:dev`, `docker:staging`, `docker:prod`, `docker:down`, `verify`
+- `scripts/verify.sh`: typecheck + lint + contract tests + build
+- Golden Rules expanded to **8 rules** (incl. no direct DB, API-only, modular code)
+- **11 awesome-skills** installed from antigravity-awesome-skills catalog into `.agent/skills/`
+- `.agent/skills/clean-code-and-modularity.md` — Uncle Bob + GoF design patterns
+- `.agent/skills/database-safety.md` — Zod enforcement, immutable migrations, API-only access
+- `docs/public-api-and-webhooks.md` — API Key system + outbound webhook plan (v0.2)
+- `docs/data-layer-architecture.md` — 3 data gates: Create, Import (4-stage clean pipeline), Sync
+- `docs/product-vision.md` — core design principle: "Simple UX = More data"; 6 unsolved market gaps
+- `docs/ui-design-language.md` — Linear/Notion/Vercel inspired; 1vh dashboard rule; table + chart anti-patterns
+- `docs/knowledge-and-search.md` — Document Hub, AI chatbot (static + dynamic), global search, performance budget
+- Automation decision: **No n8n embed** (too heavy). v0.3 = lightweight built-in automation engine.
+- Community PR target: `master` branch (never `production`)
+
 ## Key Decisions
 
 | Decision | Why |
@@ -73,9 +91,20 @@ npm run test:contracts  # all must pass
 | MIT license | Community first, no feature gating |
 
 ## Active Backlog (v0.1)
-
 1. Pipeline Kanban view
 2. Custom Fields UI
+
+## Planned (v0.2)
+- Global search ⌘K (title full-text)
+- Import pipeline with Data Quality Report
+- API Key system + `/api/public/v1/`
+- Outbound webhook dispatcher
+
+## Planned (v0.3)
+- Document Hub (internal knowledge base)
+- AI chatbot (static docs + dynamic SQL)
+- Lightweight automation engine (Trigger → Condition → Action)
+- Sync connectors (Google Contacts, Shopify...)
 
 ## Credentials (local dev)
 
@@ -94,11 +123,21 @@ git log --oneline -8
 
 ### Session 2026-03-14 commits (newest → oldest)
 ```
-51d8e66 fix(db): correct dev credentials, add .env.local, seed script + test-credentials.md
-ab2def2 fix(routing): remove next-intl plugin, middleware auth-only
-be41d14 refactor(core): ApiResponse factory + engine layer with Zod enforcement
-5ea0ce7 feat(ui): Sidebar with real nav links + Header with theme switcher and user menu
-31d3e28 feat(rbac+core): RBAC engine, soft-delete pattern, withPermission guard
+ce0e891 docs(memory): session notes
+95845df docs: knowledge hub, ai chatbot, global search + performance budget
+60340f8 docs(ui): 1vh rule, table/chart anti-patterns
+30a7fa5 docs: ui-design-language.md
+bd6947c docs: data-layer-architecture
+be41d14 refactor(core): ApiResponse factory + Zod enforcement
+a9f57ac docs(skill): clean-code + Uncle Bob + GoF patterns
+9189da6 rule: Golden Rule #8 — clean code
+fbf43b5 feat(skills): 11 awesome-skills installed
+0258d09 rule: direct DB access banned
+b95c568 docs: public-api-and-webhooks plan
+b516dd6 docs: git-workflow.md
+fed0b55 chore(ops): docker overrides + verify.sh
+e923751 chore(docker): bridge network
+8180047 chore: port 3000→1303
 ```
 
 ## Dev startup
