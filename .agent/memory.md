@@ -23,6 +23,8 @@
 - MCP config: ready for when mcp-server is implemented
 - Auth: JWT login / register / refresh with `jose` (v0.1)
 - Core API: Contacts and Deals CRUD endpoints with Zod validation (v0.1)
+- RBAC: Permission matrix (superadmin/admin/member/viewer), `withPermission()` route guard (v0.1)
+- Soft-delete: All entities use `deleted_at` flag — nothing is physically removed from DB (migration 006)
 
 ## Key Decisions
 
@@ -41,9 +43,8 @@
 
 1. Pipeline Kanban view
 2. Custom Fields UI
-3. RBAC
-4. Sidebar with real nav links
-5. Header with user menu + theme switcher
+3. Sidebar with real nav links
+4. Header with user menu + theme switcher
 
 ## Credentials (local dev)
 
