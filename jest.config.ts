@@ -5,6 +5,7 @@ const config: Config = {
   preset: 'ts-jest',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    '^jose$': require.resolve('jose'),
   },
   testMatch: [
     '**/tests/unit/**/*.test.ts',
