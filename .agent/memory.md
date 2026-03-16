@@ -3,9 +3,14 @@
 ## Current Status
 
 **Phase**: v0.1 Foundation MVP in progress
-**Last updated**: 2026-03-16 (session 3 — skills, arch cleanup, event bus, infra)
+**Last updated**: 2026-03-16 (session 5 — Strategic brief + pipeline-kanban track started)
 **Health**: ✅ TypeScript clean, 18 contract tests passing
-**Last commit**: `5bf64b1` feat(infra): health check, migration runner, docker improvements
+**Last commit**: `8911273` feat(agent): conductor methodology + changelog system
+
+### 🎯 Target Persona (confirmed 2026-03-16)
+**Vibe business owner / solopreneur** — tech-savvy, solo or tiny team (1-5 people), runs the business like a dev vibe codes. Currently on Google Sheets/Notion/Airtable but outgrown it. Found izhubs on community/GitHub. Must self-serve without any onboarding help. Community-led GTM: GitHub → Show HN → Product Hunt. Monetization TBD — MIT free first, build user base.
+
+**Critical UX rule from persona:** Every action ≤ 5 seconds. Product must be self-explanatory. Demo mode / sample data required before community launch.
 
 ---
 
@@ -112,8 +117,18 @@ npm run test:contracts  # all must pass
 | Zod on DB output | Runtime contract enforcement — DB drift caught immediately |
 | MIT license | Community first, no feature gating |
 
+### Session 5 — 2026-03-16 (Strategic Brief + Pipeline Kanban Track)
+- **Strategic brief**: confirmed target persona as vibe business owners/solopreneurs, community-led GTM
+- **Persona rule**: product must self-serve — demo data, no onboarding help needed
+- **Track started**: `pipeline-kanban` — SPEC.md written with 3-phase approach (API → UI → Tests)
+- **Gap identified**: `/api/v1/deals/[id]` missing GET/PATCH/DELETE — Phase 1 of kanban track fixes this
+- **Open UX question**: deal value currency (VND vs multi-currency), contact name join strategy
+
 ## Active Backlog (v0.1)
-1. Pipeline Kanban view
+1. Pipeline Kanban view ← **IN PROGRESS** (SPEC: `.agent/tracks/2026-03-16-pipeline-kanban/SPEC.md`)
+   - Phase 1: Complete deals API (missing `/deals/[id]`)
+   - Phase 2: Kanban UI with @dnd-kit
+   - Phase 3: Contract tests
 2. Custom Fields UI
 
 ## Planned (v0.2)

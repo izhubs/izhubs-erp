@@ -1,12 +1,13 @@
 import { db } from '@/core/engine/db';
-import { DealSchema } from '@/core/schema/entities';
-import type { Deal } from '@/core/schema/entities';
+import { DealSchema, DealStageSchema } from '@/core/schema/entities';
+import type { Deal, DealStage } from '@/core/schema/entities';
 import { eventBus } from '@/core/engine/event-bus';
 
 // =============================================================
 // Deals Engine
 // ONLY layer allowed to query the deals table directly.
 // Always parses DB output through Zod before returning.
+// No cross-imports from other engine modules.
 // =============================================================
 
 const COLUMNS = `
@@ -23,6 +24,7 @@ const COLUMNS = `
 export interface ListOptions {
   page?: number;
   limit?: number;
+  stage?: DealStage;
 }
 
 export interface ListResult<T> {
@@ -30,17 +32,35 @@ export interface ListResult<T> {
   meta: { total: number; page: number; limit: number; totalPages: number };
 }
 
-export async function listDeals({ page = 1, limit = 50 }: ListOptions = {}): Promise<ListResult<Deal>> {
+export async function listDeals({ page = 1, limit = 50, stage }: ListOptions = {}): Promise<ListResult<Deal>> {
   const offset = (page - 1) * limit;
+  const stageFilter = stage ? `AND stage = $3` : '';
+  const stageParam = stage ? [limit, offset, stage] : [limit, offset];
+
   const [rows, count] = await Promise.all([
-    db.query(`SELECT ${COLUMNS} FROM deals WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT $1 OFFSET $2`, [limit, offset]),
-    db.query(`SELECT COUNT(*) FROM deals WHERE deleted_at IS NULL`),
+    db.query(
+      `SELECT ${COLUMNS} FROM deals WHERE deleted_at IS NULL ${stageFilter} ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
+      stageParam
+    ),
+    db.query(
+      `SELECT COUNT(*) FROM deals WHERE deleted_at IS NULL${stage ? ` AND stage = $1` : ''}`,
+      stage ? [stage] : []
+    ),
   ]);
   const total = parseInt(count.rows[0].count);
   return {
     data: rows.rows.map(row => DealSchema.parse(row)),
     meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
   };
+}
+
+export async function getDealsByStage(stage: DealStage): Promise<Deal[]> {
+  DealStageSchema.parse(stage); // validate before hitting DB
+  const result = await db.query(
+    `SELECT ${COLUMNS} FROM deals WHERE stage = $1 AND deleted_at IS NULL ORDER BY created_at DESC`,
+    [stage]
+  );
+  return result.rows.map(row => DealSchema.parse(row));
 }
 
 export async function getDeal(id: string): Promise<Deal | null> {

@@ -49,3 +49,6 @@ export const DELETE = withPermission('deals:delete', async (_req, _claims, ctx) 
     return ApiResponse.serverError(e, 'deals.delete');
   }
 });
+
+// PATCH = partial update (alias for PUT — same logic, semantic HTTP)
+export const PATCH = PUT;
