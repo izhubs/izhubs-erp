@@ -73,21 +73,22 @@ export async function getAuthClaims(req: Request): Promise<Claims | null> {
     const token = authHeader.split(' ')[1];
     try {
       const claims = await verifyJwt(token);
-      if (claims.type !== 'access') return null;
-      return claims;
+      if (claims.type === 'access') return claims;
+      // Wrong token type — fall through to cookie
     } catch {
-      return null;
+      // Token expired or invalid — fall through to cookie check below.
+      // Do NOT return null here; the cookie may still be valid.
     }
   }
 
   // 2. Fallback: try hz_access cookie (browser FE sessions)
+  // Browser sends this automatically on same-origin requests after login.
   const cookieHeader = req.headers.get('cookie') ?? '';
   const match = cookieHeader.match(/(?:^|;\s*)hz_access=([^;]+)/);
   if (match) {
     try {
       const claims = await verifyJwt(decodeURIComponent(match[1]));
-      if (claims.type !== 'access') return null;
-      return claims;
+      if (claims.type === 'access') return claims;
     } catch {
       return null;
     }
