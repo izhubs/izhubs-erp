@@ -1,6 +1,7 @@
 import { db } from '@/core/engine/db';
 import { DealSchema } from '@/core/schema/entities';
 import type { Deal } from '@/core/schema/entities';
+import { eventBus } from '@/core/engine/event-bus';
 
 // =============================================================
 // Deals Engine
@@ -54,7 +55,9 @@ export async function createDeal(input: Omit<Deal, 'id' | 'createdAt' | 'updated
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING ${COLUMNS}`,
     [input.name, input.value, input.stage, input.contactId, input.companyId, input.ownerId, input.closedAt, input.customFields ?? {}]
   );
-  return DealSchema.parse(result.rows[0]);
+  const deal = DealSchema.parse(result.rows[0]);
+  await eventBus.emit('deal.created', { deal });
+  return deal;
 }
 
 export async function updateDeal(id: string, input: Partial<Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Deal | null> {
@@ -68,6 +71,8 @@ export async function updateDeal(id: string, input: Partial<Omit<Deal, 'id' | 'c
     values.push(value);
   }
   if (setClauses.length === 0) return getDeal(id);
+  const previousDeal = await getDeal(id);
+  if (!previousDeal) return null;
 
   setClauses.push(`updated_at = NOW()`);
   values.push(id);
@@ -77,7 +82,22 @@ export async function updateDeal(id: string, input: Partial<Omit<Deal, 'id' | 'c
     values
   );
   if (result.rowCount === 0) return null;
-  return DealSchema.parse(result.rows[0]);
+  const deal = DealSchema.parse(result.rows[0]);
+
+  // Emit semantic stage events
+  if (input.stage && previousDeal && input.stage !== previousDeal.stage) {
+    await eventBus.emit('deal.stage_changed', {
+      deal,
+      fromStage: previousDeal.stage,
+      toStage: input.stage,
+    });
+    if (input.stage === 'won') await eventBus.emit('deal.won', { deal });
+    if (input.stage === 'lost') await eventBus.emit('deal.lost', { deal });
+  } else {
+    await eventBus.emit('deal.updated', { deal, changes: input });
+  }
+
+  return deal;
 }
 
 export async function softDeleteDeal(id: string): Promise<string | null> {
@@ -86,5 +106,7 @@ export async function softDeleteDeal(id: string): Promise<string | null> {
     [id]
   );
   if (result.rowCount === 0) return null;
-  return result.rows[0].id as string;
+  const dealId = result.rows[0].id as string;
+  await eventBus.emit('deal.deleted', { dealId });
+  return dealId;
 }

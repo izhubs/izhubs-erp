@@ -2,6 +2,7 @@ import { db } from '@/core/engine/db';
 import { ContactSchema } from '@/core/schema/entities';
 import type { Contact } from '@/core/schema/entities';
 import { z } from 'zod';
+import { eventBus } from '@/core/engine/event-bus';
 
 // =============================================================
 // Contacts Engine
@@ -53,7 +54,9 @@ export async function createContact(input: Omit<Contact, 'id' | 'createdAt' | 'u
      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ${COLUMNS}`,
     [input.name, input.email, input.phone, input.title, input.companyId, input.ownerId, input.customFields ?? {}]
   );
-  return ContactSchema.parse(result.rows[0]);
+  const contact = ContactSchema.parse(result.rows[0]);
+  await eventBus.emit('contact.created', { contact });
+  return contact;
 }
 
 export async function updateContact(id: string, input: Partial<Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Contact | null> {
@@ -76,7 +79,9 @@ export async function updateContact(id: string, input: Partial<Omit<Contact, 'id
     values
   );
   if (result.rowCount === 0) return null;
-  return ContactSchema.parse(result.rows[0]);
+  const contact = ContactSchema.parse(result.rows[0]);
+  await eventBus.emit('contact.updated', { contact, changes: input });
+  return contact;
 }
 
 export async function softDeleteContact(id: string): Promise<string | null> {
@@ -85,5 +90,7 @@ export async function softDeleteContact(id: string): Promise<string | null> {
     [id]
   );
   if (result.rowCount === 0) return null;
-  return result.rows[0].id as string;
+  const contactId = result.rows[0].id as string;
+  await eventBus.emit('contact.deleted', { contactId });
+  return contactId;
 }
