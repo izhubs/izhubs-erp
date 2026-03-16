@@ -3,9 +3,9 @@
 ## Current Status
 
 **Phase**: v0.1 Foundation MVP in progress
-**Last updated**: 2026-03-14 (session 2 — architecture & docs day)
+**Last updated**: 2026-03-16 (session 3 — skills, arch cleanup, event bus)
 **Health**: ✅ TypeScript clean, 18 contract tests passing
-**Last commit**: `ce0e891` docs(memory): session notes
+**Last commit**: `d2a360a` feat(core): withTransaction + ErrorCodes registry
 
 ---
 
@@ -56,6 +56,15 @@ npm run test:contracts  # all must pass
 - Soft-delete: All entities use `deleted_at` flag — nothing is physically removed from DB (migration 006)
 - Core engine layer: `core/engine/contacts.ts`, `core/engine/deals.ts` — only these may query the DB directly
 - `ApiResponse` factory: `core/engine/response.ts` — ALL API routes must use this, never `NextResponse.json()` directly
+
+### Session 3 — 2026-03-16 (Skills, Architecture Cleanup, Event Bus)
+- **12 new skills installed**: 7 from antigravity (nextjs-best-practices, nextjs-app-router-patterns, zod-validation-expert, postgres-best-practices, clean-code, typescript-expert, bullmq-specialist) + 5 ERP-specific (add-custom-field, create-module, create-extension, mcp-tool-design, event-bus-patterns)
+- **AGENTS.md**: Anti-pattern Quick Reference table, 18 skills fully documented, memory.md path fixed
+- **auth engine** (`core/engine/auth/users.ts`): `getUserByEmail`, `isEmailTaken`, `createUser` — Zod on all DB output
+- **login/route.ts + register/route.ts**: Refactored — removed direct `db` import + `NextResponse.json()`, now use engine + `ApiResponse`
+- **Event Bus**: `contacts.ts` emits `contact.created/updated/deleted`; `deals.ts` emits `deal.created/updated/stage_changed/won/lost/deleted` (with stage transition detection)
+- **`db.withTransaction(fn)`**: Atomic multi-write helper added to `core/engine/db.ts`
+- **`ErrorCodes` registry**: Machine-readable error codes added to `core/engine/response.ts`
 
 ### Session 2 — 2026-03-14 (Architecture, Infra & Docs)
 - Port changed to **1303** (first commit memorial)
