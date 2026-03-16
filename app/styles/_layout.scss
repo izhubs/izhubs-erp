@@ -8,9 +8,14 @@
 
 .app-layout {
   display: grid;
-  grid-template-columns: var(--sidebar-width) 1fr;
+  // Bug fix: use CSS variable so grid tracks the sidebar width dynamically
+  grid-template-columns: var(--sidebar-current-width, var(--sidebar-width)) 1fr;
   grid-template-rows: var(--header-height) 1fr;
   min-height: 100vh;
+  transition: grid-template-columns var(--transition-normal);
+
+  // Set on parent when sidebar is collapsed
+  &.sidebar-collapsed { --sidebar-current-width: 64px; }
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;

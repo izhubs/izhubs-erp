@@ -9,6 +9,7 @@
 @use 'layout';
 @use 'components';
 @use 'shell';      // Header, Sidebar, Dropdown components
+@use 'kanban';     // Pipeline Kanban board
 
 // ---- Base Reset ----
 *, *::before, *::after {

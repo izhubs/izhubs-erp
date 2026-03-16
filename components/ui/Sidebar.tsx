@@ -23,9 +23,14 @@ const BOTTOM_ITEMS = [
   { href: '/settings', label: 'Settings', icon: <Settings size={18} /> },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({
+  collapsed = false,
+  onCollapse,
+}: {
+  collapsed?: boolean;
+  onCollapse?: (v: boolean) => void;
+}) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
 
   const isActive = (href: string) =>
     href === '/dashboard' ? pathname === href : pathname.startsWith(href);
@@ -68,7 +73,7 @@ export default function Sidebar() {
         ))}
 
         <button
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={() => onCollapse?.(!collapsed)}
           className="nav-link"
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
