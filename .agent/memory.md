@@ -86,6 +86,10 @@ npm run test:contracts  # all must pass
 - **Pipeline Kanban board** (`components/kanban/`): KanbanBoard, KanbanColumn, DealCard, DealFormModal.
   Optimistic drag-drop, stage moves via PATCH `/api/v1/deals/:id`, board stats ($pipeline/$won/count), New Deal modal.
   `deals/page.tsx` Server Component fetches from engine directly.
+- **Contacts list page** (`components/contacts/`): ContactsTable (search, avatar, edit/delete), ContactFormModal.
+  PATCH alias on contacts/[id]/route.ts.
+- **Dashboard home** (`app/(dashboard)/page.tsx`): real KPIs (contacts/deals/pipeline/won), pipeline bar chart, recent contacts.
+- **3 critical bugfixes** (commit `5ae7153`): middleware.ts Edge Runtime (use jose directly), auth/users.ts (no deleted_at), rbac.ts (cookie auth fallback for browser FE).
 
 ### Session 2 — 2026-03-14 (Architecture, Infra & Docs)
 - Port changed to **1303** (first commit memorial)
