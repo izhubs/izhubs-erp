@@ -46,10 +46,11 @@ Any time the user says:
 ## Phase 5 — Ship
 
 14. Use `@commit-push` workflow to commit and push
-15. Update `.agent/memory.md`:
-    - Move feature from Backlog → Done
-    - Note any new decisions or constraints discovered
-    - Add any follow-up items to Backlog
+15. **Update `.agent/memory.md`** — required before closing the cycle:
+    - Move feature from `Active Backlog` → `What's Done`
+    - Update `Last updated` date and `Last commit` hash
+    - Note any new decisions, constraints, or follow-up items in backlog
+    - Keep file under 200 lines (archive old sessions if needed)
 
 ## Phase 6 — Reset
 

@@ -11,9 +11,19 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-izhubs_dev_2026}
       - JWT_SECRET=${JWT_SECRET:-dev_jwt_secret_change_in_production}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dev_refresh_secret_change_in_production}
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-izhubs_dev_2026}@postgres:5432/izhubs_erp
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     volumes:
       - .:/app
       - /app/node_modules
@@ -46,6 +56,11 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - izhubs_network
 

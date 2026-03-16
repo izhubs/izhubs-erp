@@ -18,7 +18,8 @@
     "test:integration": "jest --testPathPattern=tests/integration",
     "test:e2e": "playwright test",
     "test:contracts": "jest --testPathPattern=tests/contracts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "node scripts/migrate.js"
   },
   "dependencies": {
     "jose": "^6.2.1",
