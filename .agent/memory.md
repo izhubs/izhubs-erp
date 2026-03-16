@@ -129,26 +129,41 @@ npm run test:contracts  # all must pass
 - **Persona rule**: product must self-serve — demo data, no onboarding help needed
 - **Track started**: `pipeline-kanban` — SPEC.md written with 3-phase approach (API → UI → Tests)
 - **Gap identified**: `/api/v1/deals/[id]` missing GET/PATCH/DELETE — Phase 1 of kanban track fixes this
-- **Open UX question**: deal value currency (VND vs multi-currency), contact name join strategy
+
+### Session 6 — 2026-03-16 (Strategy, UX Specs, Structural Sprints)
+- **Monetization model finalized**: WordPress analogy — Templates (themes) + Modules (plugins) + Managed hosting + Marketplace. See `master-plan.md` § Monetization.
+- **JSON-first architecture decision**: Templates AND automation rules stored as JSON (like n8n). Portable, shareable, AI-generatable. NOT TypeScript files.
+- **Bootstrapping strategy**: Gumroad before marketplace. First maker earns $100 → social proof → community self-grows.
+- **Risk register**: 20 stuck points + solutions documented in brain/risk-register.md
+- **UX specs written**: `docs/ux-contacts-page.md`, `docs/ux-deals-kanban.md`, `docs/ux-dashboard.md`, `docs/ux-page-template.md`
+- **2 structural SPECs created** (foundation before community launch):
+  - `json-template-format` → `.agent/tracks/2026-03-16-json-template-format/SPEC.md`
+  - `automation-schema` → `.agent/tracks/2026-03-16-automation-schema/SPEC.md`
+- **New tracks planned**: `pre-launch-hardening` (mobile/health/pool), `v0.2-platform-stability` (stages/import/PWA)
+- **Key design decision**: `EnrichmentProvider` interface for community social data connectors (LinkedIn, Apollo) — defined in v0.3 Extension SDK
 
 ## Active Backlog (v0.1)
-1. Pipeline Kanban view ← **IN PROGRESS** (SPEC: `.agent/tracks/2026-03-16-pipeline-kanban/SPEC.md`)
-   - Phase 1: Complete deals API (missing `/deals/[id]`)
-   - Phase 2: Kanban UI with @dnd-kit
-   - Phase 3: Contract tests
-2. Custom Fields UI
+1. **Pipeline Kanban view** ← **IN PROGRESS** (SPEC: `.agent/tracks/2026-03-16-pipeline-kanban/SPEC.md`)
+2. **Demo mode** ← **BLOCKER for launch** (no SPEC yet — create before coding)
+3. **Pre-launch hardening** (SPEC: `.agent/tracks/2026-03-16-pre-launch-hardening/SPEC.md`) — mobile dnd, /api/health, DB pool
+4. **Community launch** — README, GIF demo, Show HN timing
 
-## Planned (v0.2)
-- Global search ⌘K (title full-text)
-- Import pipeline with Data Quality Report
-- API Key system + `/api/public/v1/`
-- Outbound webhook dispatcher
+## Planned v0.2 (structural first, then features)
+> **Note**: Do structural sprints BEFORE features. Schema mistakes are expensive to fix later.
+- 🏗️ **json-template-format** (SPEC: `.agent/tracks/2026-03-16-json-template-format/SPEC.md`) — migrate templates to JSON
+- 🏗️ **automation-schema** (SPEC: `.agent/tracks/2026-03-16-automation-schema/SPEC.md`) — DB table + Zod for Trigger→Condition→Action
+- Dynamic pipeline stages (Options API)
+- CSV import via BullMQ (async)
+- Global search ⌨K
+- API Key system
 
-## Planned (v0.3)
+## Planned v0.3 (Extension Platform)
+- **enrichment-provider-contract** — `EnrichmentProvider` interface for community social data connectors
 - Document Hub (internal knowledge base)
 - AI chatbot (static docs + dynamic SQL)
-- Lightweight automation engine (Trigger → Condition → Action)
+- Automation visual builder UI (uses automation-schema from v0.2)
 - Sync connectors (Google Contacts, Shopify...)
+
 
 ## Credentials (local dev)
 
