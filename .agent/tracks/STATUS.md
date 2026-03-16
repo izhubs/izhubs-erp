@@ -6,6 +6,8 @@ _Last updated: 2026-03-16_
 | Date Created | Slug | Status | Description |
 |---|---|---|---|
 | 2026-03-16 | pipeline-kanban | in-progress | Kanban board view for deal pipeline — WOW moment #1 |
+| 2026-03-16 | community-launch | planning | GitHub + Show HN launch assets, README, demo sequence |
+| 2026-03-16 | izhubs-website | planning | erp.izhubs.com — landing page + docs + changelog |
 | 2026-03-16 | custom-fields-ui | planning | UI for managing custom field definitions |
 | 2026-03-16 | global-search | planning | Global ⌘K search (v0.2) |
 | 2026-03-16 | import-pipeline | planning | Data import with quality report (v0.2) |

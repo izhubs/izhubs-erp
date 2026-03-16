@@ -25,7 +25,7 @@ type UserWithHash = z.infer<typeof UserRowSchema>;
 export async function getUserByEmail(email: string): Promise<UserWithHash | null> {
   const result = await db.query(
     `SELECT id, name, email, role, active, password_hash
-     FROM users WHERE email = $1 AND deleted_at IS NULL`,
+     FROM users WHERE email = $1`,
     [email]
   );
   if (!result.rowCount || result.rowCount === 0) return null;
@@ -35,7 +35,7 @@ export async function getUserByEmail(email: string): Promise<UserWithHash | null
 export async function getUserById(id: string): Promise<PublicUser | null> {
   const result = await db.query(
     `SELECT id, name, email, role, active
-     FROM users WHERE id = $1 AND deleted_at IS NULL`,
+     FROM users WHERE id = $1`,
     [id]
   );
   if (!result.rowCount || result.rowCount === 0) return null;
@@ -44,7 +44,7 @@ export async function getUserById(id: string): Promise<PublicUser | null> {
 
 export async function isEmailTaken(email: string): Promise<boolean> {
   const result = await db.query(
-    `SELECT id FROM users WHERE email = $1 AND deleted_at IS NULL`,
+    `SELECT id FROM users WHERE email = $1`,
     [email]
   );
   return (result.rowCount ?? 0) > 0;

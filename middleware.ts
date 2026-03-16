@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyJwt } from '@/core/engine/auth';
+import { jwtVerify } from 'jose';
 
 // Paths that require an active session
 const PROTECTED_PATHS = ['/dashboard', '/contacts', '/deals', '/settings', '/setup', '/reports', '/automation', '/audit-log', '/contracts'];
 // Auth paths that redirect away if already logged in
 const AUTH_PATHS = ['/login', '/register'];
+
+// Edge-compatible JWT verify — no pg, no Node.js crypto
+const getSecret = () => new TextEncoder().encode(
+  process.env.JWT_SECRET || 'dev-jwt-secret-do-not-use-in-production-123456789'
+);
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -18,8 +23,8 @@ export default async function middleware(req: NextRequest) {
 
   if (refreshCookie?.value) {
     try {
-      const decoded = await verifyJwt(refreshCookie.value);
-      if (decoded?.type === 'refresh') isAuthenticated = true;
+      const { payload } = await jwtVerify(refreshCookie.value, getSecret());
+      if ((payload as any).type === 'refresh') isAuthenticated = true;
     } catch {
       isAuthenticated = false;
     }

@@ -60,20 +60,40 @@ export function hasPermission(role: string, permission: Permission): boolean {
 }
 
 /**
- * Extract the JWT claims from a request's Authorization header.
+ * Extract the JWT claims from a request's Authorization header OR cookie.
+ * Supports both:
+ *   - Browser FE: reads hz_access cookie (set by login endpoint)
+ *   - API clients: reads Authorization: Bearer <token> header
  * Returns null if missing or invalid.
  */
 export async function getAuthClaims(req: Request): Promise<Claims | null> {
+  // 1. Try Authorization header (API clients, MCP tools)
   const authHeader = req.headers.get('Authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
-  const token = authHeader.split(' ')[1];
-  try {
-    const claims = await verifyJwt(token);
-    if (claims.type !== 'access') return null;
-    return claims;
-  } catch {
-    return null;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    try {
+      const claims = await verifyJwt(token);
+      if (claims.type !== 'access') return null;
+      return claims;
+    } catch {
+      return null;
+    }
   }
+
+  // 2. Fallback: try hz_access cookie (browser FE sessions)
+  const cookieHeader = req.headers.get('cookie') ?? '';
+  const match = cookieHeader.match(/(?:^|;\s*)hz_access=([^;]+)/);
+  if (match) {
+    try {
+      const claims = await verifyJwt(decodeURIComponent(match[1]));
+      if (claims.type !== 'access') return null;
+      return claims;
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
 }
 
 /**

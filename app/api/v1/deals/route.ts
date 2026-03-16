@@ -1,4 +1,4 @@
-import { DealSchema } from '@/core/schema/entities';
+import { DealSchema, DealStageSchema } from '@/core/schema/entities';
 import { withPermission } from '@/core/engine/rbac';
 import { ApiResponse } from '@/core/engine/response';
 import * as DealsEngine from '@/core/engine/deals';
@@ -6,9 +6,20 @@ import * as DealsEngine from '@/core/engine/deals';
 export const GET = withPermission('deals:read', async (req) => {
   try {
     const { searchParams } = new URL(req.url);
+    const stageParam = searchParams.get('stage');
+
+    // Validate stage param if provided
+    let stage: ReturnType<typeof DealStageSchema.parse> | undefined;
+    if (stageParam) {
+      const parsed = DealStageSchema.safeParse(stageParam);
+      if (!parsed.success) return ApiResponse.validationError(parsed.error);
+      stage = parsed.data;
+    }
+
     const result = await DealsEngine.listDeals({
       page: parseInt(searchParams.get('page') || '1'),
       limit: parseInt(searchParams.get('limit') || '50'),
+      stage,
     });
     return ApiResponse.success(result.data, 200, result.meta);
   } catch (e) {
