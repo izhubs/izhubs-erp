@@ -26,7 +26,11 @@ description: daily startup — understand context and what to do next
    **Project**: izhubs ERP | Phase: [from memory.md]
    **Health**: [✅ TypeScript clean | ❌ X errors] | [✅ X/X tests | ❌ failures]
    
-   ### 🔥 Active Tracks
+   ### 🎯 CURRENT MICRO-SPRINT FOCUS (DO NOT IGNORE)
+   [Look at STATUS.md -> Phase 0: The Builder OS. Pick the ONE track that is '🚧 NEXT' or 'in-progress']
+   [Display its Slug and Description clearly here]
+
+   ### 🔥 Other Active Tracks
    [list from STATUS.md with current phase]
    
    ### 📦 Recent Commits (3 days)
