@@ -59,15 +59,18 @@ app/            ← Next.js frontend
 If the user says **"hi"**, **"hello"**, **"good morning"**, or **"chào buổi sáng"**:
 1. Immediately run the `.agent/workflows/morning-start.md` workflow.
 2. Read `.agent/memory.md` → understand current state and what's in-progress
-3. Summarize the state to the user and ask what they want to work on today.
+3. Read `.agent/tracks/STATUS.md` → check active tracks
+4. Summarize the state to the user and ask what they want to work on today.
 
 Every session:
 1. Read the relevant skill in `.agent/skills/` before implementing
 2. Check `core/schema/` for existing types before creating new ones
-3. Run `npm run test:contracts` after every significant change
-4. Update `.agent/memory.md` after completing work
+3. **If user wants a NEW feature** → use `conductor-new-track` skill FIRST, create SPEC.md BEFORE writing any code
+4. Run `npm run test:contracts` after every significant change
+5. Update `.agent/memory.md` and `.agent/tracks/STATUS.md` after completing work
 
 **memory.md format reminder**: Update `What's Done`, `Active Backlog`, and `Dev startup` sections. Keep under 200 lines.
+**CHANGELOG.md reminder**: Update `## [Unreleased]` section with any user-facing changes after each session.
 
 ---
 
@@ -87,6 +90,18 @@ Every session:
 | `event-bus-patterns` | Publish or subscribe to system events |
 | `clean-code-and-modularity` | Before writing ANY UI or logic — Uncle Bob + GoF |
 | `database-safety` | Zod enforcement, soft-delete, immutable migrations |
+
+### Project Management & Memory Skills
+
+| Skill | When to use |
+|-------|-------------|
+| `conductor-new-track` | **MANDATORY** — User wants to build any new feature (even vague) → clarify spec FIRST |
+| `conductor-status` | View all active tracks and project status (auto-called by /morning-start) |
+| `conductor-manage` | Archive/restore/complete a track when done |
+| `conductor-validator` | Validate SPEC.md before starting implementation |
+| `conductor-setup` | One-time setup — initialize tracks directory (already done) |
+| `context-driven-development` | Managing project context artifacts across sessions |
+| `changelog-automation` | Generate changelog from commits, update CHANGELOG.md at release |
 
 ### From antigravity-awesome-skills (installed in `.agent/skills/`)
 
@@ -117,8 +132,20 @@ Every session:
 
 | Workflow | When to use |
 |----------|-------------|
-| `morning-start` | Start of every work session |
+| `morning-start` | Start of every work session (reads memory + tracks + changelog) |
 | `add-feature` | Add any new feature end-to-end |
 | `commit-push` | Commit and push changes safely |
 | `rollback` | Revert to a previous state |
 | `review-skills` | Periodic check for new awesome-skills (monthly) |
+
+## Track Files
+
+```
+.agent/tracks/
+  STATUS.md          ← Master board of all feature tracks
+  archive/           ← Completed/paused tracks
+  [date]-[slug]/
+    SPEC.md          ← Feature specification (created by conductor-new-track)
+```
+
+> **Rule**: Every feature starts with a SPEC.md. No code without spec.

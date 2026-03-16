@@ -3,7 +3,7 @@
 ## Current Status
 
 **Phase**: v0.1 Foundation MVP in progress
-**Last updated**: 2026-03-16 (session 3 — skills, arch cleanup, event bus)
+**Last updated**: 2026-03-16 (session 4 — Conductor methodology + changelog system)
 **Health**: ✅ TypeScript clean, 18 contract tests passing
 **Last commit**: `d2a360a` feat(core): withTransaction + ErrorCodes registry
 
@@ -56,6 +56,15 @@ npm run test:contracts  # all must pass
 - Soft-delete: All entities use `deleted_at` flag — nothing is physically removed from DB (migration 006)
 - Core engine layer: `core/engine/contacts.ts`, `core/engine/deals.ts` — only these may query the DB directly
 - `ApiResponse` factory: `core/engine/response.ts` — ALL API routes must use this, never `NextResponse.json()` directly
+
+### Session 4 — 2026-03-16 (Conductor Methodology + Changelog System)
+- **7 new skills installed**: `conductor-new-track`, `conductor-status`, `conductor-manage`, `conductor-setup`, `conductor-validator`, `changelog-automation`, `context-driven-development`
+- **AGENTS.md**: Added Project Management & Memory Skills section, updated session startup rules, added CHANGELOG.md reminder
+- **`.agent/tracks/STATUS.md`**: Created — master board with 8 backlog items migrated from memory.md backlog
+- **`.agent/tracks/archive/`**: Directory created for completed tracks
+- **`CHANGELOG.md`**: Created — v0.1.0 documented from session history, `[Unreleased]` ready for next changes
+- **`/morning-start` workflow**: Enhanced to 5 steps — loads memory + tracks + recent commits + TypeScript check + Morning Brief display. Now prompts conductor-new-track for any new feature request.
+- **Decision**: Every new feature MUST have a SPEC.md via `conductor-new-track` before code is written
 
 ### Session 3 — 2026-03-16 (Skills, Architecture Cleanup, Event Bus)
 - **12 new skills installed**: 7 from antigravity (nextjs-best-practices, nextjs-app-router-patterns, zod-validation-expert, postgres-best-practices, clean-code, typescript-expert, bullmq-specialist) + 5 ERP-specific (add-custom-field, create-module, create-extension, mcp-tool-design, event-bus-patterns)
