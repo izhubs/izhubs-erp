@@ -23,6 +23,17 @@ Stack: Next.js 14 + PostgreSQL + Redis + Docker
 7. **DIRECT DATABASE ACCESS IS BANNED** — Only `core/engine/` may talk directly to the database. All modules, extensions, the frontend, and any external tools (n8n, webhooks, MCP) MUST call the versioned REST API (`core/api/v1/`). No exceptions.
 8. **REUSE OVER REPEAT — MODULAR BY DEFAULT** — Any logic that appears in 2+ places MUST be extracted to `lib/utils/`, `lib/hooks/`, or `core/engine/`. No inline CSS (`style={{}}`). No hardcoded colors/spacing (use `var(--token)`). No component > 150 lines. Read `.agent/skills/clean-code-and-modularity.md` before writing any UI or logic.
 
+### ⚡ Anti-pattern Quick Reference
+
+| ❌ NEVER do this | ✅ Do this instead |
+|---|---|
+| `import { db } from '@/core/engine/db'` (in a route) | `import * as ContactsEngine from '@/core/engine/contacts'` |
+| `return NextResponse.json({...})` | `return ApiResponse.success(data)` or `ApiResponse.error(...)` |
+| `DELETE FROM contacts WHERE id = $1` | `UPDATE contacts SET deleted_at = NOW() WHERE id = $1` |
+| `ALTER TABLE contacts ADD COLUMN custom_note TEXT` | Use `customFields.set({ entityType, entityId, fieldKey, fieldValue })` |
+| Edit `core/schema/entities.ts` to add business types | Create types in `modules/<name>/schema.ts` |
+| Subscribe to DB triggers in an extension | `eventBus.on('deal.won', handler)` |
+
 ---
 
 ## Architecture in 3 sentences
@@ -47,20 +58,26 @@ app/            ← Next.js frontend
 
 If the user says **"hi"**, **"hello"**, **"good morning"**, or **"chào buổi sáng"**:
 1. Immediately run the `.agent/workflows/morning-start.md` workflow.
-2. Read `memory.md` → understand current state and what's in-progress
+2. Read `.agent/memory.md` → understand current state and what's in-progress
 3. Summarize the state to the user and ask what they want to work on today.
-2. Read the relevant skill in `.agent/skills/` before implementing
-3. Check `core/schema/` for existing types before creating new ones
-4. Run `npm test` after every significant change
-5. Update `memory.md` after completing work
+
+Every session:
+1. Read the relevant skill in `.agent/skills/` before implementing
+2. Check `core/schema/` for existing types before creating new ones
+3. Run `npm run test:contracts` after every significant change
+4. Update `.agent/memory.md` after completing work
+
+**memory.md format reminder**: Update `What's Done`, `Active Backlog`, and `Dev startup` sections. Keep under 200 lines.
 
 ---
 
 ## Available Skills
 
+### ERP-Specific Skills (`.agent/skills/`)
+
 | Skill | When to use |
 |-------|-------------|
-| `erp-architecture` | Understand the full system before any change |
+| `erp-architecture` | Understand the full system before ANY change |
 | `add-entity` | Add a new core entity to the system |
 | `migration-guide` | Write a DB migration correctly |
 | `add-custom-field` | Add a user-defined field to an entity |
@@ -68,22 +85,31 @@ If the user says **"hi"**, **"hello"**, **"good morning"**, or **"chào buổi s
 | `create-extension` | Build a guardrailed extension/plugin |
 | `mcp-tool-design` | Add a new tool to the MCP server |
 | `event-bus-patterns` | Publish or subscribe to system events |
+| `clean-code-and-modularity` | Before writing ANY UI or logic — Uncle Bob + GoF |
+| `database-safety` | Zod enforcement, soft-delete, immutable migrations |
 
-### From antigravity-awesome-skills (installed in .agent/skills/)
+### From antigravity-awesome-skills (installed in `.agent/skills/`)
 
 | Skill | When to use |
 |-------|-------------|
 | `architecture` | Before designing any new module or major feature |
 | `api-design-principles` | Every time a new route is added to `core/api/v1/` |
-| `test-driven-development` | Write contract tests FIRST before implementation |
+| `api-security-best-practices` | Auth, API keys, or webhooks |
+| `clean-code` | Code review or refactoring sessions |
 | `database-design` | New tables, relations, or major schema changes |
-| `security-auditor` | Before releasing auth, API keys, or webhooks to production |
-| `api-security-best-practices` | When implementing Public API / API key system |
-| `docker-expert` | Docker Compose troubleshooting or Coolify setup |
-| `playwright-skill` | E2E testing for critical flows (login, CRUD, onboarding) |
 | `debugging-strategies` | Systematic troubleshooting when root cause is unclear |
-| `create-pr` | Packaging community contributions into clean pull requests |
 | `doc-coauthoring` | Writing architecture docs or contributor guides |
+| `docker-expert` | Docker Compose troubleshooting or Coolify setup |
+| `nextjs-best-practices` | App Router, Server Components, data fetching |
+| `nextjs-app-router-patterns` | Advanced RSC, streaming, parallel routes |
+| `playwright-skill` | E2E testing for critical flows (login, CRUD, onboarding) |
+| `postgres-best-practices` | Query optimization, indexing, schema performance |
+| `security-auditor` | Before releasing auth, API keys, or webhooks to production |
+| `test-driven-development` | Write contract tests FIRST before implementation |
+| `typescript-expert` | Advanced types, generics, type-level programming |
+| `bullmq-specialist` | Redis queue / background jobs (v0.2+) |
+| `zod-validation-expert` | Complex Zod schemas, custom refinements, inference |
+| `create-pr` | Packaging community contributions into clean pull requests |
 
 ---
 
