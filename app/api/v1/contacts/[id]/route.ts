@@ -49,3 +49,6 @@ export const DELETE = withPermission('contacts:delete', async (_req, _claims, ct
     return ApiResponse.serverError(e, 'contacts.delete');
   }
 });
+
+// PATCH = partial update alias
+export const PATCH = PUT;

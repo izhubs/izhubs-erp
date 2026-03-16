@@ -3,9 +3,9 @@
 ## Current Status
 
 **Phase**: v0.1 Foundation MVP in progress
-**Last updated**: 2026-03-16 (session 3 — skills, arch, event bus, infra, **kanban**)
-**Health**: ✅ TypeScript clean, 18 contract tests passing
-**Last commit**: `8f9ccdc` feat(ui): Pipeline Kanban board
+**Last updated**: 2026-03-16 (session 5 — Strategic brief + tracks + website scaffold)
+**Health**: ✅ TypeScript clean, 34 contract tests passing
+**Last commit (app)**: `8911273` feat(agent): conductor methodology + changelog systemboard
 
 ### 🎯 Target Persona (confirmed 2026-03-16)
 **Vibe business owner / solopreneur** — tech-savvy, solo or tiny team (1-5 people), runs the business like a dev vibe codes. Currently on Google Sheets/Notion/Airtable but outgrown it. Found izhubs on community/GitHub. Must self-serve without any onboarding help. Community-led GTM: GitHub → Show HN → Product Hunt. Monetization TBD — MIT free first, build user base.
