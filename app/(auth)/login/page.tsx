@@ -28,7 +28,7 @@ export default function LoginPage() {
       const json = await res.json();
       
       if (!res.ok) {
-        throw new Error(json.error || 'Failed to login');
+        throw new Error(json.error?.message || json.message || 'Login failed');
       }
 
       // We have access token, and refresh is in HTTP Only Cookie.
