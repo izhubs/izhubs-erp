@@ -62,7 +62,8 @@ Custom fields ready for project type, retainer value, renewal date.
 
 ### 🧩 Guardrailed Extensions
 Extensions communicate only via EventBus + Core API — never direct database access.  
-Community can build plugins safely. The core never breaks.
+Community can build plugins safely because they run inside a strict V8 Isolate Sandbox. The core never breaks.
+→ [Read the Extension Architecture](docs/architecture.md)
 
 ### 🌐 Internationalization
 Built-in i18n with `next-intl`. Missing translations automatically fall back to English.  

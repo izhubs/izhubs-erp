@@ -1,76 +1,57 @@
-# izhubs ERP — Architecture & Project Structure
+# Architecture: Guardrailed Extensions
 
-> AI-self-buildable. Every AI tool reading this should understand, build, and extend the system correctly.
-> Full detail: `.agent/AGENTS.md` và `.agent/skills/erp-architecture.md`
+## The Vision
+izhubs ERP is designed as a Platform. The core engine remains immutable, while community developers build industry-specific features via Extensions (Plugins). 
 
-## Philosophy
+To ensure the system never breaks and user data is never leaked or destroyed by poorly written or malicious plugins, all Extensions must run within a **Strict Sandbox Architecture**.
 
-> **"ERP phải theo doanh nghiệp, không phải ngược lại."**
+## The 3-Layer Security Model
 
-## Architecture — 3 Layers
+### Layer 1: Data Flow Safety (The Event Bus)
+Extensions **never** have direct Database (PostgreSQL) access. They cannot run SQL queries or use Prisma/TypeORM directly.
+- **Mechanism**: The core Next.js App (`core/engine/*`) emits events (e.g., `deal.created`, `invoice.paid`) to a **BullMQ Queue** (backed by Redis).
+- **Benefit**: Extensions run asynchronously in the background. If a plugin crashes or runs an infinite loop, it only stalls the isolated background worker, not the main Next.js thread.
 
-```
-EXTENSIONS   ← User plugins (manifest + ExtensionBase SDK, guardrailed)
-MODULES      ← Business logic (CRM, contracts, invoices, automation)  
-CORE ENGINE  ← Immutable foundation (entities, events, versioned API)
-```
+### Layer 2: Execution Safety (The V8 Isolate)
+To prevent Extensions from interacting with the underlying OS file system or performing unauthorized network requests, their code is executed inside a V8 Isolate Sandbox (using the `isolated-vm` library), similar to Cloudflare Workers or Figma Plugins.
+- **No `require()`**: Extensions cannot import `fs`, `child_process`, or any arbitrary Node.js modules.
+- **Resource Limits**: 
+  - **Memory Limit**: Max 64MB RAM per execution context.
+  - **Time Limit**: Max 500ms execution time (prevents `while(true)` freezes).
+- **Stateless**: The Isolate is spun up when an event occurs, the code runs, and the Isolate is immediately destroyed. Extensions cannot share global memory states.
 
-**Golden Rules:**
-- `core/schema/` là source of truth — không ai được modify contracts
-- Extensions giao tiếp ONLY qua EventBus + Core API — không đụng DB trực tiếp
-- Mọi DB change → migration file trong `database/migrations/`
-- Custom fields → qua `custom-fields.ts`, không thêm column
+### Layer 3: Network Isolation (The Controlled I/O)
+Extensions cannot use `fetch()` or `axios` directly to exfiltrate data.
+- **Controlled API SDK**: We inject an `izhubs` SDK object into the V8 context. If an extension wants to send a webhook to Zalo, it must call `izhubs.http.post()`.
+- **Benefit**: The Core system logs every outbound request. Users can view the Audit Log to see exactly what external endpoints a specific plugin is talking to.
 
-## Project Structure
+---
 
-```
-izhubs-erp/
-├── .agent/              ← AI reads this FIRST
-│   ├── AGENTS.md        ← Golden rules
-│   ├── memory.md        ← Living context
-│   ├── skills/          ← erp-architecture, add-entity, migration-guide
-│   └── workflows/       ← morning-start, add-feature, commit-push, rollback, review-skills
-├── core/
-│   ├── schema/          ← entities.ts, events.ts, index.ts (SOURCE OF TRUTH)
-│   └── engine/          ← event-bus.ts, entity-engine.ts, custom-fields.ts
-├── modules/             ← crm, contracts, invoices, reports, automation
-├── extensions/sdk/      ← ExtensionBase.ts, types.ts
-├── templates/
-│   ├── industry/        ← agency, restaurant, coworking, ecommerce
-│   └── CONTRIBUTING_TEMPLATES.md
-├── ai/                  ← mcp-server/, agent/
-├── app/                 ← Next.js frontend
-├── database/migrations/ ← Sequential SQL
-├── tests/               ← unit, integration, e2e, contracts
-└── docs/                ← This file + competitive analysis
-```
+## ⚙️ The Data Flow (Real-world Example)
 
-## Tech Stack
+**Scenario**: A user installs a "Slack Notifier" extension that sends a message when a Deal > $10,000 is marked as Won.
 
-| Layer | Tech |
-|-------|------|
-| Frontend | Next.js 14 App Router |
-| Database | PostgreSQL (migrations, no ORM) |
-| Validation | Zod (all types from core/schema/) |
-| Auth | JWT (jose) |
-| Cache | Redis |
-| AI | MCP Server + Built-in Agent |
-| Deploy | Docker Compose + Coolify |
+1. **User Action**: User moves a deal to "Won" in the Kanban board.
+2. **Core System**: `core/engine/deals.ts` successfully updates PostgreSQL.
+3. **Event Emission**: `eventBus.emit('deal.won', { dealId: 101, value: 15000, tenantId: 2 })` is sent to BullMQ. Next.js returns `200 OK` to the browser instantly.
+4. **The Sandbox Manager (Worker)**:
+   - BullMQ picks up the job.
+   - The Manager creates a new `isolated-vm` instance (The Sandbox).
+   - Injects the event payload: `context.setSync('eventPayload', payload)`.
+   - Injects the SDK: `context.setSync('izhubsSdk', secureSdkBindings)`.
+5. **Extension Execution**: The Slack Notifier code runs inside the Sandbox:
+   ```javascript
+   // Running inside isolated-vm
+   export default async function onEvent(payload, izhubs) {
+       if (payload.eventName === 'deal.won' && payload.data.value > 10000) {
+           const deal = await izhubs.api.deals.get(payload.data.dealId);
+           await izhubs.http.post('https://hooks.slack.com/services/XXX', { text: `Huge deal won: ${deal.title}!` });
+       }
+   }
+   ```
+6. **Cleanup**: The code finishes, or hits the 500ms timeout. The Sandbox is destroyed. The Worker marks the BullMQ job as complete.
 
-## Industry Templates System
+---
 
-**3-level niche system** — unique to izhubs ERP:
-```
-Level 1: Industry template (agency, restaurant, coworking, ecommerce...)
-Level 2: Sub-template (fine-dining, street-food, cafe...)  
-Level 3: AI-generated (user describes business → AI generates custom config)
-```
-
-## Daily Dev Workflow
-
-```
-1. "Use @morning-start"       → AI reads context, summarizes status
-2. "Tôi muốn thêm [feature]" → AI reads skill → implements → tests
-3. "Use @commit-push"         → contract tests → typecheck → commit
-4. "Use @rollback"            → revert to any previous commit
-```
+> **Note for v0.1 - v0.2 Builders**: 
+> This is the *end-state architecture*. When bootstrapping the first version of the platform, focus heavily on structuring the `core/engine` cleanly and emitting events to BullMQ. The `isolated-vm` strict sandbox can be layered on top during the `v0.4+ Extension Platform` phase once the first party plugins are proven to work using standard Node.js callbacks.
