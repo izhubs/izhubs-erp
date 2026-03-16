@@ -274,3 +274,42 @@ Before writing any UI component:
 3. Match the density and motion spec above.
 4. Ask: *"Does this look like it belongs next to Linear or Notion?"*
 5. If you're unsure — simpler is always better.
+
+---
+
+## ⚠️ Known Visual Issues (To Fix — assigned to agent)
+
+Diagnosed 2026-03-16. These cause the "hơi kỳ" feeling.
+
+### 🔴 Bug 1 — Sidebar collapse leaves empty gap [CRITICAL]
+**File:** `app/styles/_layout.scss`  
+**Problem:** `.app-layout` grid column is hardcoded `var(--sidebar-width)` (240px). When sidebar collapses (`.collapsed { width: 64px }`), the grid column stays 240px → 176px dead space on the left.  
+**Fix:** Use a CSS variable on `.app-layout` that updates when the sidebar class changes:
+```scss
+.app-layout { grid-template-columns: var(--sidebar-current-width, var(--sidebar-width)) 1fr; }
+.app-layout.sidebar-collapsed { --sidebar-current-width: 64px; }
+```
+Or pass the class to the parent in `app/(dashboard)/layout.tsx` and drive via CSS.
+
+### 🟠 Bug 2 — Background palette mismatch [HIGH]
+**File:** `app/styles/_tokens.scss`  
+**Problem:** Backgrounds use **slate** palette (`#0f172a`, `#1e293b`) but primary uses **indigo**. The blue-grey + purple clash creates visual incoherence.  
+**Fix:** Replace slate backgrounds with dark-purple as per design document spec:
+```scss
+--color-bg:         #0f0f13;  /* ← was #0f172a (slate-900) */
+--color-bg-surface: #17171f;  /* ← was #1e293b (slate-800) */
+--color-bg-card:    #17171f;
+--color-bg-input:   #0f0f13;
+--color-bg-hover:   #1e1e28;  /* ← was #334155 (slate-700) */
+--color-border:     #2a2a38;  /* ← was #334155 (too bright) */
+```
+
+### 🟡 Bug 3 — Base font size too large [MEDIUM]
+**File:** `app/styles/_tokens.scss`  
+**Problem:** `--font-size-base: 16px` but design spec requires **14px** (dense, Linear-like).  
+**Fix:**
+```scss
+--font-size-base: 14px;  /* ← was 16px */
+```
+Also update typography references that rely on base sizing.
+
