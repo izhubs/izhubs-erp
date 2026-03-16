@@ -1,9 +1,16 @@
 import { Pool, PoolClient } from 'pg';
 
-// Use a single pool for the application
+// Single connection pool — max 10 to prevent exhaustion in production.
+// Default pg pool is 10 but set explicitly for clarity and override safety.
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgresql://postgres:izhubs_dev_2026@localhost:5432/izhubs_erp',
+  max: 10,               // max concurrent connections
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
 });
+
+console.log('[db] pool max:', 10, '| idle timeout: 30s | connect timeout: 5s');
+
 
 // Helper for standardized querying
 export const db = {

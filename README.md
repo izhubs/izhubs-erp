@@ -80,14 +80,25 @@ Currently: 🇬🇧 English · 🇻🇳 Vietnamese
 git clone https://github.com/izhubs/izhubs-erp.git
 cd izhubs-erp
 
-# 2. Copy env
+# 2. Configure environment
 cp .env.example .env.local
+# Edit .env.local — set DATABASE_URL, REDIS_URL, JWT_SECRET
 
-# 3. Start with Docker
+# 3. Start services
 docker compose up -d
 
-# 4. Open
-open http://localhost:1303/setup
+# 4. Run database migrations
+npm run db:migrate
+
+# 5. Load sample data (recommended for first run)
+npm run seed:demo
+# → Creates demo@izhubs.com / Demo@12345 with 20 contacts + 15 deals
+
+# 6. Start the app (local dev)
+npm run dev
+
+# 7. Open
+open http://localhost:1303
 ```
 
 ### Requirements
@@ -146,12 +157,15 @@ If your AI tool supports slash commands or file mentions (like Antigravity or Cu
 ### ✅ v0.0 — Scaffold (March 2026)
 Full project foundation: AI context layer, core schema, templates, SCSS themes, PWA, i18n, app shell, DB migrations, lib stubs.
 
-### 🔨 v0.1 — Foundation MVP *(in progress)*
-- [ ] JWT auth (login, register, refresh)
-- [ ] Core API: contacts + deals CRUD
-- [ ] Pipeline Kanban view
-- [ ] Custom Fields UI
-- [ ] RBAC — roles and permissions
+### ✅ v0.1 — Foundation MVP *(in progress)*
+- [x] JWT auth (login, register, refresh)
+- [x] Core API: contacts + deals CRUD
+- [x] Pipeline Kanban view (drag-drop, optimistic, 7 stages)
+- [x] Custom Fields UI
+- [x] RBAC — roles and permissions
+- [ ] Demo data seed (`npm run seed:demo`)
+- [ ] Self-host documentation
+- [ ] Community launch (Show HN)
 
 ### 📋 v0.2 — Business Logic
 - [ ] Automation rules engine
@@ -206,10 +220,17 @@ Open a GitHub Issue with steps to reproduce.
 
 izhubs ERP is **self-host first**. Your data stays yours.
 
-```yaml
-# docker-compose.yml is ready to go
-docker compose up -d
+```bash
+# Full setup (copy & paste)
+git clone https://github.com/izhubs/izhubs-erp.git && cd izhubs-erp
+cp .env.example .env.local   # fill in secrets
+docker compose up -d          # start Postgres + Redis
+npm run db:migrate            # apply schema
+npm run seed:demo             # optional: load sample data
+npm run dev                   # http://localhost:1303
 ```
+
+See [docs/self-host.md](docs/self-host.md) for detailed instructions, environment variables, and Coolify deployment guide.
 
 Cloud hosting (managed, backups, updates) coming in v0.2.
 
