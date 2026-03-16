@@ -3,9 +3,9 @@
 ## Current Status
 
 **Phase**: v0.1 Foundation MVP in progress
-**Last updated**: 2026-03-16 (session 5 — Strategic brief + pipeline-kanban track started)
+**Last updated**: 2026-03-16 (session 3 — skills, arch, event bus, infra, **kanban**)
 **Health**: ✅ TypeScript clean, 18 contract tests passing
-**Last commit**: `8911273` feat(agent): conductor methodology + changelog system
+**Last commit**: `8f9ccdc` feat(ui): Pipeline Kanban board
 
 ### 🎯 Target Persona (confirmed 2026-03-16)
 **Vibe business owner / solopreneur** — tech-savvy, solo or tiny team (1-5 people), runs the business like a dev vibe codes. Currently on Google Sheets/Notion/Airtable but outgrown it. Found izhubs on community/GitHub. Must self-serve without any onboarding help. Community-led GTM: GitHub → Show HN → Product Hunt. Monetization TBD — MIT free first, build user base.
@@ -83,6 +83,9 @@ npm run test:contracts  # all must pass
 - **`npm run db:migrate`**: migration runner `scripts/migrate.js` with `schema_migrations` tracking
 - **docker-compose.yml**: REDIS_URL + DATABASE_URL env, healthchecks for app + redis services
 - **`feature-cycle.md`**: Phase 5 memory.md update steps explicit
+- **Pipeline Kanban board** (`components/kanban/`): KanbanBoard, KanbanColumn, DealCard, DealFormModal.
+  Optimistic drag-drop, stage moves via PATCH `/api/v1/deals/:id`, board stats ($pipeline/$won/count), New Deal modal.
+  `deals/page.tsx` Server Component fetches from engine directly.
 
 ### Session 2 — 2026-03-14 (Architecture, Infra & Docs)
 - Port changed to **1303** (first commit memorial)
