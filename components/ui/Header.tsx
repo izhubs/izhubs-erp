@@ -56,8 +56,9 @@ export default function Header({ mobileMenuButton }: { mobileMenuButton?: React.
   const handleLogout = () => {
     // Clear all auth tokens from localStorage
     localStorage.removeItem('hz_access');
-    // Expire the refresh token cookie on all paths
-    document.cookie = 'hz_refresh=; Max-Age=0; path=/; SameSite=Strict';
+    // Expire both cookies — refresh (httpOnly) and access (readable by JS)
+    document.cookie = 'hz_refresh=; Max-Age=0; path=/; SameSite=Lax';
+    document.cookie = 'hz_access=; Max-Age=0; path=/; SameSite=Lax';
     // Use replace() not href= so the dashboard page is removed from history.
     // Pressing the browser back button after logout will NOT return here.
     window.location.replace('/login');

@@ -2,10 +2,11 @@
 
 ## Current Status
 
-**Phase**: v0.1 Foundation MVP in progress
-**Last updated**: 2026-03-16 (session 7 — Pivot: Vertical-first + Ship Fast)
-**Health**: ✅ TypeScript clean, 34 contract tests passing
-**Last commit (app)**: `8911273` feat(agent): conductor methodology + changelog systemboard
+**Phase**: v0.1 Foundation MVP — sprint finalizing
+**Last updated**: 2026-03-16 (session 8 — Seed Data + Multi-role Docs + Sprint Update)
+**Health**: ✅ TypeScript clean, 46 contract tests passing
+**Last commit (app)**: `1b35990` docs: add multi-role perspective
+**Last commit (docs)**: `9b272b1` docs: add build philosophy + honest competitor comparison
 
 ### 🎯 Target Persona (confirmed 2026-03-16)
 **Agency owner / Freelancer** — runs agency hoặc freelance, 1-5 người, tech-savvy vibe coder. Đang dùng **Airtable, Notion, hoặc Google Sheets** để track clients/deals nhưng đã outgrown. Found izhubs trên GitHub/Show HN. Phải self-serve hoàn toàn. Sẵn sàng trả $29 cho template tốt.
@@ -151,11 +152,17 @@ npm run test:contracts  # all must pass
 
 ## Active Backlog (v0.1) — SHIP FIRST
 > **Rule**: v0.1 must be done BEFORE anything else. No v0.2 work until v0.1 is complete.
-1. **Demo seed** ← **BLOCKER #1** — `npm run seed:demo` với agency sample data (clients, deals, activities)
-2. **Gumroad templates** ← **BLOCKER #2 (revenue)** — Agency Starter Pack $29, Freelancer OS $29 — ship before Show HN
-3. **Migration 008: tenant_id** — Add `tenant_id` to all tables now (default=1), prevents breaking change at v1.0
-4. **Docker dev simplify** — Remove Redis from docker-compose.yml (keep only postgres), add back when BullMQ needed
-5. **Community launch** — README update + GIF demo + Show HN post
+1. **Gumroad templates** ← **BLOCKER #1 (revenue)** — Package Agency + Freelancer seed as Gumroad pack $29 each
+2. **README GIF demo** — screen recording showing import + pipeline in action
+3. **Community launch** — Show HN post + GitHub release
+
+## Done in v0.1 (session 8)
+- ✅ Migration 008: tenant_id on all tables (default=1, future multi-tenant ready)
+- ✅ Docker dev simplify: Redis commented out, uncomment at v0.2 when BullMQ needed
+- ✅ 5 industry seed scripts (agency, freelancer, coworking, restaurant, cafe) — 100% English
+- ✅ seed.js runner: `npm run seed:agency/freelancer/coworking/restaurant/cafe/all`
+- ✅ docs/multi-role-perspective.md: CEO/Manager/Rep/Ops views
+- ✅ izhubs-erp-docs: build-philosophy.md + why-izhubs.md
 
 ## Planned v0.2 — Import + MCP (1 month)
 > **Theme**: Own the migration narrative. Make switching from Airtable/Notion = zero friction.

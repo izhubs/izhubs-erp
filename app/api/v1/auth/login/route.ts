@@ -46,6 +46,19 @@ export async function POST(req: Request) {
       maxAge: 60 * 60 * 24 * 7,
     });
 
+    // Also set hz_access as a short-lived cookie so the browser sends it
+    // automatically on all same-origin API requests (no Authorization header needed).
+    // httpOnly=false so JS can also read it for non-browser clients.
+    cookies().set({
+      name: 'hz_access',
+      value: accessToken,
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 15, // 15 minutes — matches JWT expiry
+    });
+
     return ApiResponse.success({
       accessToken,
       user: { id: user.id, name: user.name, email: user.email, role: user.role },
