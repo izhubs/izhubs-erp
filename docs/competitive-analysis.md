@@ -1,6 +1,8 @@
-# izhubs ERP vs 10 CRM/ERP trên thị trường
+# izhubs ERP — Competitive Analysis (Vertical CRM)
 
-## Positioning
+## Updated Positioning (2026-03-16)
+
+**Focus**: Agency & Freelancer CRM with native Airtable/Notion/Sheets import
 
 ```
                     ENTERPRISE
@@ -11,52 +13,56 @@ FREE ←──────────────────┼─────
   ERPNext ●   Frappe ●  |  ● Zoho     ● HubSpot
     SuiteCRM ●          |        ● Pipedrive
                         |
-                izhubs ERP ★
+                izhubs ERP ★  ← Vertical CRM for agencies
                         ↓
-                SMB / Solo Builder / Business Owner
+               Agency / Freelancer / Solo Builder
 ```
 
-**Target**: Business owner dùng AI (Cursor, Antigravity, Claude) để setup và extend — không cần IT team.
+**Migration path we own**: Airtable → izhubs · Notion → izhubs · Google Sheets → izhubs
 
-## So sánh nhanh
+## Competitor Comparison
 
-| | HubSpot | Salesforce | Odoo | ERPNext | Twenty | izhubs ERP |
-|---|---|---|---|---|---|---|
-| Open source | ❌ | ❌ | ✅ Community | ✅ MIT | ✅ AGPL | ✅ **MIT** |
-| Self-host | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Target | Marketing | Enterprise | Dev/IT | Dev/IT | Developer | **Business owner** |
-| Industry templates | ❌ | ❌ | Limited | ❌ | ❌ | ✅ **+ Sub + AI niche** |
-| Vibe coding | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ **Core feature** |
-| Beautiful UI | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ (target) |
-| Setup < 5 min | ✅ (cloud) | ❌ | ❌ | ❌ | ✅ | ✅ **Docker** |
+| | HubSpot | Pipedrive | Twenty | Notion CRM | izhubs ERP |
+|---|---|---|---|---|---|
+| Open source | ❌ | ❌ | ✅ AGPL | ❌ | ✅ **MIT** |
+| Self-host | ❌ | ❌ | ✅ | ❌ | ✅ |
+| Target | Marketing | Sales team | Developer | Knowledge worker | **Agency/Freelancer** |
+| Airtable import | Manual CSV | Manual CSV | ❌ | Native | ✅ **AI-mapped** |
+| Notion import | ❌ | ❌ | ❌ | N/A | ✅ **v0.2** |
+| Vibe coding | ❌ | ❌ | ❌ | ❌ | ✅ **Core feature** |
+| Industry templates | ❌ | ❌ | ❌ | Community | ✅ **Monetized** |
+| MCP Server | ❌ | ❌ | ❌ | ❌ | ✅ **v0.2** |
+| Setup < 5 min | ✅ cloud | ✅ cloud | ✅ | ✅ SaaS | ✅ **Docker** |
 
-## Unique differentiators (chỉ izhubs có)
+## Unique Differentiators (only izhubs)
 
-1. **Industry Templates + Sub-templates + AI niche generation**
-2. **Vibe coding native** — `.agent/` context layer built-in từ ngày đầu
-3. **Guardrailed Extension SDK** — community build mà không break core
-4. **MCP Server** — mọi AI tool đều tích hợp được
+1. **Native import from Airtable / Notion / Google Sheets** — AI column mapping, zero config
+2. **Vertical CRM templates** — pre-configured for Agency, Restaurant, Coworking (not generic)
+3. **Vibe coding native** — `.agent/` context layer + MCP Server, built-in day 1
+4. **Guardrailed Extension SDK** — community builds without breaking core
 
-## ✅ Nên làm
+## Monetization Moat
 
-1. MIT Core thật sự mạnh (không cắt xén)
-2. Beautiful UI từ ngày đầu
-3. Setup < 5 phút bằng Docker
-4. Guardrailed Extension SDK
-5. CONTRIBUTING guides rõ ràng
-6. MCP Server từ sớm
-7. Backward compatible API (contract tests)
-8. Build in public — community trust sớm hơn
+| Revenue Source | When | Type |
+|---|---|---|
+| Agency Starter Pack template | **Now** (Gumroad) | One-time $29 |
+| Freelancer OS template | **Now** (Gumroad) | One-time $29 |
+| Managed cloud hosting | v0.3 | Recurring $19/mo |
+| Marketplace listing fees | v0.5+ | Revenue share |
 
-## ❌ Nên tránh
+## ✅ Do
 
-1. Cạnh tranh feature với Salesforce (sai target)
-2. Cắt free tier → mất community
-3. UI phức tạp cho non-dev
-4. Plugin đụng DB trực tiếp (WordPress security nightmare)
-5. Break Core API không version
-6. Quá nhiều modules cùng lúc (Odoo effect)
-7. Hardcode business logic vào core
-8. Thiếu test cho core → một PR xấu phá cả ecosystem
-9. Lock vào một AI provider
-10. Feature-gating để monetize sớm
+1. Own the "migrate from Airtable/Notion" narrative — publish comparison content
+2. Launch on Gumroad before GitHub launch (revenue before fame)
+3. Build MCP Server in v0.2 — demo "ask Claude about your deals" on Show HN
+4. Focus Agency vertical until $5K MRR, then expand
+5. Backward compatible API always — contract tests protect community trust
+
+## ❌ Don't
+
+1. Compete on feature count with Salesforce or HubSpot
+2. Go multi-vertical before owning one vertical well
+3. Launch managed cloud before having 20 self-hosted users
+4. Build Extension Marketplace before having 10 extensions
+5. Feature-gate free tier (kills community trust = kills moat)
+6. Add accounting, HR, inventory in v0.x (scope creep kills solo projects)

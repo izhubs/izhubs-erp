@@ -1,10 +1,18 @@
-﻿// TODO: implement Contracts
-export default function Page() {
+import ComingSoon from '@/components/ui/ComingSoon';
+
+export const metadata = { title: 'Contracts — izhubs ERP' };
+
+export default function ContractsPage() {
   return (
-    <div>
-      <div className="page-header"><h1>Contracts</h1></div>
-      <div className="card"><p className="text-muted">Coming soon.</p></div>
-    </div>
+    <ComingSoon
+      title="Contracts"
+      milestone="v0.2"
+      description="Attach contracts to deals and contacts, track signing status."
+      plannedFeatures={[
+        'Upload and link PDF contracts to deals',
+        'Track signing status (draft / sent / signed / expired)',
+        'Expiry reminders via notification',
+      ]}
+    />
   );
 }
-

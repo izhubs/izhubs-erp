@@ -3,14 +3,21 @@
 ## Current Status
 
 **Phase**: v0.1 Foundation MVP in progress
-**Last updated**: 2026-03-16 (session 5 — Strategic brief + tracks + website scaffold)
+**Last updated**: 2026-03-16 (session 7 — Pivot: Vertical-first + Ship Fast)
 **Health**: ✅ TypeScript clean, 34 contract tests passing
 **Last commit (app)**: `8911273` feat(agent): conductor methodology + changelog systemboard
 
 ### 🎯 Target Persona (confirmed 2026-03-16)
-**Vibe business owner / solopreneur** — tech-savvy, solo or tiny team (1-5 people), runs the business like a dev vibe codes. Currently on Google Sheets/Notion/Airtable but outgrown it. Found izhubs on community/GitHub. Must self-serve without any onboarding help. Community-led GTM: GitHub → Show HN → Product Hunt. Monetization TBD — MIT free first, build user base.
+**Agency owner / Freelancer** — runs agency hoặc freelance, 1-5 người, tech-savvy vibe coder. Đang dùng **Airtable, Notion, hoặc Google Sheets** để track clients/deals nhưng đã outgrown. Found izhubs trên GitHub/Show HN. Phải self-serve hoàn toàn. Sẵn sàng trả $29 cho template tốt.
 
-**Critical UX rule from persona:** Every action ≤ 5 seconds. Product must be self-explanatory. Demo mode / sample data required before community launch.
+**Critical UX rule:** Every action ≤ 5 seconds. Self-explanatory. Zero onboarding needed.
+
+### 🚀 Strategic Pivot (2026-03-16)
+- **Vertical-first**: Agency/Freelancer vertical trước. KHÔNG mở rộng vertical mới cho đến khi $5K MRR
+- **Native Import**: Airtable / Notion / Google Sheets import là GO-TO-MARKET, không phải optional
+- **Monetize NOW**: Templates trên Gumroad ($29 each) TRƯỚC community launch
+- **MCP Server sớm**: Move từ v0.3 lên v0.2 — demo "chat với ERP data" = viral moment
+- **Bỏ Redis cho dev**: Remove Redis dependency khỏi docker-compose.yml dev (chỉ giữ cho prod khi cần BullMQ)
 
 ---
 
@@ -142,27 +149,33 @@ npm run test:contracts  # all must pass
 - **New tracks planned**: `pre-launch-hardening` (mobile/health/pool), `v0.2-platform-stability` (stages/import/PWA)
 - **Key design decision**: `EnrichmentProvider` interface for community social data connectors (LinkedIn, Apollo) — defined in v0.3 Extension SDK
 
-## Active Backlog (v0.1)
-1. **Pipeline Kanban view** ← **IN PROGRESS** (SPEC: `.agent/tracks/2026-03-16-pipeline-kanban/SPEC.md`)
-2. **Demo mode** ← **BLOCKER for launch** (no SPEC yet — create before coding)
-3. **Pre-launch hardening** (SPEC: `.agent/tracks/2026-03-16-pre-launch-hardening/SPEC.md`) — mobile dnd, /api/health, DB pool
-4. **Community launch** — README, GIF demo, Show HN timing
+## Active Backlog (v0.1) — SHIP FIRST
+> **Rule**: v0.1 must be done BEFORE anything else. No v0.2 work until v0.1 is complete.
+1. **Demo seed** ← **BLOCKER #1** — `npm run seed:demo` với agency sample data (clients, deals, activities)
+2. **Gumroad templates** ← **BLOCKER #2 (revenue)** — Agency Starter Pack $29, Freelancer OS $29 — ship before Show HN
+3. **Migration 008: tenant_id** — Add `tenant_id` to all tables now (default=1), prevents breaking change at v1.0
+4. **Docker dev simplify** — Remove Redis from docker-compose.yml (keep only postgres), add back when BullMQ needed
+5. **Community launch** — README update + GIF demo + Show HN post
 
-## Planned v0.2 (structural first, then features)
-> **Note**: Do structural sprints BEFORE features. Schema mistakes are expensive to fix later.
-- 🏗️ **json-template-format** (SPEC: `.agent/tracks/2026-03-16-json-template-format/SPEC.md`) — migrate templates to JSON
-- 🏗️ **automation-schema** (SPEC: `.agent/tracks/2026-03-16-automation-schema/SPEC.md`) — DB table + Zod for Trigger→Condition→Action
-- Dynamic pipeline stages (Options API)
-- CSV import via BullMQ (async)
-- Global search ⌨K
-- API Key system
+## Planned v0.2 — Import + MCP (1 month)
+> **Theme**: Own the migration narrative. Make switching from Airtable/Notion = zero friction.
+- 🏗️ **Airtable import** — CSV/API export → AI column mapper → contacts+deals+custom_fields
+- 🏗️ **Notion import** — CSV export → same AI mapper
+- 🏗️ **Google Sheets import** — Google Sheets API or CSV
+- **MCP Server** (moved up from v0.3) — query ERP data with Claude/Cursor
+- **Agency vertical polish** — staged pipeline, project tracking custom fields, retainer deal type
+- 🏗️ **json-template-format** — migrate templates to JSON for Gumroad distribution
 
-## Planned v0.3 (Extension Platform)
-- **enrichment-provider-contract** — `EnrichmentProvider` interface for community social data connectors
-- Document Hub (internal knowledge base)
-- AI chatbot (static docs + dynamic SQL)
-- Automation visual builder UI (uses automation-schema from v0.2)
-- Sync connectors (Google Contacts, Shopify...)
+## Planned v0.3 — Managed Cloud (3 months)
+- **tenant_id activated** — multi-tenant mode for managed hosting ($19/mo)
+- **Automation schema** — Trigger→Condition→Action DB table + Zod
+- **E2E Playwright tests** — protect core flows before managed cloud launch
+- **2nd vertical** (Restaurant or Coworking) — only after Agency = $5K MRR
+
+## Planned v0.4+ — Extension Platform
+- Extension Marketplace (after community = 10+ extensions)
+- AI chatbot on ERP data (needs enough user data)
+- Automation visual builder
 
 
 ## Credentials (local dev)

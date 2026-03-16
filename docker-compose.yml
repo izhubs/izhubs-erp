@@ -11,12 +11,11 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-izhubs_dev_2026}
       - JWT_SECRET=${JWT_SECRET:-dev_jwt_secret_change_in_production}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dev_refresh_secret_change_in_production}
-      - REDIS_URL=redis://redis:6379
       - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-izhubs_dev_2026}@postgres:5432/izhubs_erp
+      # REDIS_URL: uncomment when BullMQ is implemented (v0.2)
+      # - REDIS_URL=redis://redis:6379
     depends_on:
       postgres:
-        condition: service_healthy
-      redis:
         condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
@@ -50,19 +49,19 @@ services:
     networks:
       - izhubs_network
 
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    networks:
-      - izhubs_network
+  # redis:  ← Uncomment when BullMQ background jobs are needed (v0.2)
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - izhubs_network
 
 networks:
   izhubs_network:
@@ -70,4 +69,4 @@ networks:
 
 volumes:
   postgres_data:
-  redis_data:
+  # redis_data:  ← Uncomment with Redis service (v0.2)

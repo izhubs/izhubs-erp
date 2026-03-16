@@ -1,10 +1,19 @@
-﻿// TODO: implement Integrations
-export default function Page() {
+import ComingSoon from '@/components/ui/ComingSoon';
+
+export const metadata = { title: 'Integrations — izhubs ERP' };
+
+export default function IntegrationsPage() {
   return (
-    <div>
-      <div className="page-header"><h1>Integrations</h1></div>
-      <div className="card"><p className="text-muted">Coming soon.</p></div>
-    </div>
+    <ComingSoon
+      title="Integrations"
+      milestone="v0.2"
+      description="Connect izhubs ERP to your other tools via outbound webhooks and API keys."
+      plannedFeatures={[
+        'Outbound webhooks (send events to n8n, Zapier, Make)',
+        'Public API key management',
+        'Google Contacts sync',
+        'Telegram / Zalo / Slack notification channels',
+      ]}
+    />
   );
 }
-

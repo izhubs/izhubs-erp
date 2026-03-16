@@ -1,10 +1,19 @@
-﻿// TODO: implement Gdpr
-export default function Page() {
+import ComingSoon from '@/components/ui/ComingSoon';
+
+export const metadata = { title: 'GDPR & Privacy — izhubs ERP' };
+
+export default function GdprPage() {
   return (
-    <div>
-      <div className="page-header"><h1>Gdpr</h1></div>
-      <div className="card"><p className="text-muted">Coming soon.</p></div>
-    </div>
+    <ComingSoon
+      title="GDPR & Privacy"
+      milestone="v0.2"
+      description="Tools to help you comply with privacy regulations."
+      plannedFeatures={[
+        'Contact data export (right to portability)',
+        'Contact deletion request workflow (right to erasure)',
+        'Consent tracking per contact',
+        'Data retention policy settings',
+      ]}
+    />
   );
 }
-

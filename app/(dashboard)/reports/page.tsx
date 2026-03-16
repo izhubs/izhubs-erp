@@ -1,10 +1,20 @@
-﻿// TODO: implement Reports
-export default function Page() {
+import ComingSoon from '@/components/ui/ComingSoon';
+
+export const metadata = { title: 'Reports — izhubs ERP' };
+
+export default function ReportsPage() {
   return (
-    <div>
-      <div className="page-header"><h1>Reports</h1></div>
-      <div className="card"><p className="text-muted">Coming soon.</p></div>
-    </div>
+    <ComingSoon
+      title="Reports"
+      milestone="v0.2"
+      description="Visual insights into your pipeline, contacts, and revenue."
+      plannedFeatures={[
+        'Pipeline conversion funnel',
+        'Revenue by stage and time period',
+        'Contact growth over time',
+        'Won / Lost deal breakdown',
+        'Export as PDF or CSV',
+      ]}
+    />
   );
 }
-

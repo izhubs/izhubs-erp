@@ -54,9 +54,13 @@ export default function Header() {
   };
 
   const handleLogout = () => {
+    // Clear all auth tokens from localStorage
     localStorage.removeItem('hz_access');
-    document.cookie = 'hz_refresh=; Max-Age=0; path=/';
-    window.location.href = '/login';
+    // Expire the refresh token cookie on all paths
+    document.cookie = 'hz_refresh=; Max-Age=0; path=/; SameSite=Strict';
+    // Use replace() not href= so the dashboard page is removed from history.
+    // Pressing the browser back button after logout will NOT return here.
+    window.location.replace('/login');
   };
 
   return (

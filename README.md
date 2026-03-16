@@ -2,15 +2,15 @@
 
 # izhubs ERP
 
-**AI-extensible business management that adapts to your business — not the other way around.**
+**The CRM for agencies and freelancers who migrated from Airtable, Notion, or Google Sheets — and want AI to help them grow.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-6366f1.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178c6.svg)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)](https://nextjs.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![v0.0 Scaffold](https://img.shields.io/badge/status-scaffold_complete-22c55e.svg)](#roadmap)
+[![v0.1 Foundation MVP](https://img.shields.io/badge/status-foundation_mvp-6366f1.svg)](#roadmap)
 
-[Website](https://izhubs.com) · [Docs](#getting-started) · [Templates](templates/CONTRIBUTING_TEMPLATES.md) · [Roadmap](#roadmap)
+[Website](https://izhubs.com) · [Templates on Gumroad](#templates) · [Docs](#getting-started) · [Roadmap](#roadmap)
 
 </div>
 
@@ -18,37 +18,34 @@
 
 ## Why izhubs ERP?
 
-Most ERP and CRM systems are built for IT teams, not business owners.  
-**izhubs ERP** flips that — built for people who want to customize their system using AI, without writing code.
+Agencies and freelancers outgrow Airtable, Notion, and Google Sheets fast.
+But moving to Salesforce or HubSpot means paying $100+/user/month for tools built for enterprise sales teams — not solo builders.
 
-| | Traditional ERP | izhubs ERP |
-|--|--|--|
-| **Target** | IT admin, developer | Business owner, solo builder |
-| **Setup** | Days of configuration | Docker + AI-guided wizard |
-| **Customize** | Write code or pay consultant | Describe to AI → done |
-| **Extend** | Complex plugin system | Vibe-code with guardrails |
-| **UI** | Functional but outdated | Beautiful-first |
-| **License** | Paid / Open Core | **MIT — truly free** |
+**izhubs ERP** fills the gap: a beautiful, self-hosted CRM built for agencies and freelancers, that imports your existing data from Airtable/Notion/Sheets in minutes, and lets AI tools extend it — without writing code.
+
+| | HubSpot | Airtable | izhubs ERP |
+|--|--|--|--|
+| **Target** | Marketing teams | Spreadsheet users | **Agency / Freelancer** |
+| **Self-host** | ❌ | ❌ | ✅ Free forever |
+| **Import from Airtable/Notion** | Manual CSV | N/A | ✅ **AI-mapped** |
+| **Vibe coding** | ❌ | ❌ | ✅ **Built-in** |
+| **License** | Paid | Freemium | **MIT — truly free** |
 
 ---
 
 ## Key Features
 
-### 🏭 Industry Templates
-Pre-configured pipelines, custom fields, and automations for your specific business type.
+### 📥 Import from Airtable · Notion · Google Sheets *(v0.2)*
+Upload your existing client list → AI maps the columns → your data is organized in 2 minutes. No manual re-entry.
 
-| Template | Stages | Sub-templates |
-|----------|--------|---------------|
-| 🎯 **Agency / Freelancer** | lead → proposal → active → renewal | — |
-| 🍽️ **Restaurant / F&B** | inquiry → reservation → seated → done | Fine dining, Street food, Cafe |
-| 🏢 **Coworking / Office** | lead → consulting → site visit → won | — |
-| 🛒 **E-commerce** | new order → shipped → delivered | — |
-| ✨ **Your industry** | AI-generated from your description | [Contribute one →](templates/CONTRIBUTING_TEMPLATES.md) |
+### 🎯 Agency & Freelancer Vertical First
+Pipeline pre-configured for agencies: Lead → Proposal → Active → Retainer → Renewal.  
+Custom fields ready for project type, retainer value, renewal date.
 
 ### 🤖 AI-Native from Day One
-- **`.agent/` context layer** — every AI tool (Cursor, Claude, Antigravity) understands the project instantly
-- **MCP Server** — query your ERP data with natural language from any AI tool
-- **Vibe workflows** — `@morning-start`, `@feature-cycle`, `@commit-push`, `@rollback`
+- **`.agent/` context layer** — Cursor, Claude, Antigravity understand the project instantly
+- **MCP Server** *(v0.2)* — query your CRM data with natural language from any AI tool
+- **Vibe workflows** — `@morning-start`, `@feature-cycle`, `@commit-push`
 
 ### 🎨 Theme System
 5 built-in themes switchable without rebuild. User preference saved per account.
@@ -154,40 +151,32 @@ If your AI tool supports slash commands or file mentions (like Antigravity or Cu
 
 ## Roadmap
 
-### ✅ v0.0 — Scaffold (March 2026)
-Full project foundation: AI context layer, core schema, templates, SCSS themes, PWA, i18n, app shell, DB migrations, lib stubs.
-
-### ✅ v0.1 — Foundation MVP *(in progress)*
+### 🔥 NOW — v0.1 Ship (March 2026)
 - [x] JWT auth (login, register, refresh)
 - [x] Core API: contacts + deals CRUD
 - [x] Pipeline Kanban view (drag-drop, optimistic, 7 stages)
 - [x] Custom Fields UI
 - [x] RBAC — roles and permissions
-- [ ] Demo data seed (`npm run seed:demo`)
-- [ ] Self-host documentation
-- [ ] Community launch (Show HN)
+- [ ] **Demo data seed** (`npm run seed:demo`) ← BLOCKER
+- [ ] **Gumroad templates** — Agency Starter Pack $29 · Freelancer OS $29 ← REVENUE FIRST
+- [ ] Community launch (Show HN, GitHub)
 
-### 📋 v0.2 — Business Logic
+### 📥 v0.2 — Import + MCP (1 month)
+- [ ] **Airtable import** — AI column mapping → contacts + deals
+- [ ] **Notion import** — same AI mapper
+- [ ] **Google Sheets import** — CSV or API
+- [ ] **MCP Server** — `ask Claude about my deals` (moved up from v0.3)
+- [ ] Agency vertical polish (retainer deal type, project tracking fields)
+
+### ☁️ v0.3 — Managed Cloud (3 months)
+- [ ] **$19/mo hosted** — multi-tenant via tenant_id (schema ready since v0.1)
 - [ ] Automation rules engine
-- [ ] Email integration (SMTP + Resend)
-- [ ] CSV import / export
-- [ ] Webhook outbound (n8n, Zapier, Make)
-- [ ] Messaging (Telegram, Zalo, Slack)
+- [ ] E2E Playwright tests
 
-### 🧩 v0.3 — Extension System
+### 🚀 v0.4+ — Scale
+- [ ] 2nd vertical (Restaurant F&B) — after Agency $5K MRR
 - [ ] Extension Marketplace
-- [ ] MCP Server (AI tool integration)
-- [ ] GraphQL API
-
-### 🤖 v0.5 — AI Native
-- [ ] Chat with your ERP data
-- [ ] Natural language automation builder
-- [ ] AI-generated insights
-
-### 🏢 v1.0 — Enterprise Ready
-- [ ] SSO (SAML, OIDC)
-- [ ] Multi-tenant cloud
-- [ ] Security audit
+- [ ] AI chatbot on your ERP data
 
 ---
 
