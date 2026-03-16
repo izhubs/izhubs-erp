@@ -3,9 +3,9 @@
 ## Current Status
 
 **Phase**: v0.1 Foundation MVP in progress
-**Last updated**: 2026-03-16 (session 4 — Conductor methodology + changelog system)
+**Last updated**: 2026-03-16 (session 3 — skills, arch cleanup, event bus, infra)
 **Health**: ✅ TypeScript clean, 18 contract tests passing
-**Last commit**: `d2a360a` feat(core): withTransaction + ErrorCodes registry
+**Last commit**: `5bf64b1` feat(infra): health check, migration runner, docker improvements
 
 ---
 
@@ -74,6 +74,10 @@ npm run test:contracts  # all must pass
 - **Event Bus**: `contacts.ts` emits `contact.created/updated/deleted`; `deals.ts` emits `deal.created/updated/stage_changed/won/lost/deleted` (with stage transition detection)
 - **`db.withTransaction(fn)`**: Atomic multi-write helper added to `core/engine/db.ts`
 - **`ErrorCodes` registry**: Machine-readable error codes added to `core/engine/response.ts`
+- **`GET /api/health`**: check DB + Redis TCP, return 200/503 (no extra package needed)
+- **`npm run db:migrate`**: migration runner `scripts/migrate.js` with `schema_migrations` tracking
+- **docker-compose.yml**: REDIS_URL + DATABASE_URL env, healthchecks for app + redis services
+- **`feature-cycle.md`**: Phase 5 memory.md update steps explicit
 
 ### Session 2 — 2026-03-14 (Architecture, Infra & Docs)
 - Port changed to **1303** (first commit memorial)
