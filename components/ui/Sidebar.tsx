@@ -26,9 +26,13 @@ const BOTTOM_ITEMS = [
 export default function Sidebar({
   collapsed = false,
   onCollapse,
+  mobileOpen = false,
+  onMobileClose,
 }: {
   collapsed?: boolean;
   onCollapse?: (v: boolean) => void;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 }) {
   const pathname = usePathname();
 
@@ -36,7 +40,7 @@ export default function Sidebar({
     href === '/dashboard' ? pathname === href : pathname.startsWith(href);
 
   return (
-    <aside className={`sidebar${collapsed ? ' collapsed' : ''}`}>
+    <aside className={`sidebar${collapsed ? ' collapsed' : ''}${mobileOpen ? ' mobile-open' : ''}`}>
       {/* Logo */}
       <div className="sidebar-logo">
         <div className="sidebar-logo__mark">iz</div>
@@ -51,6 +55,7 @@ export default function Sidebar({
             href={item.href}
             title={collapsed ? item.label : undefined}
             className={`nav-link${isActive(item.href) ? ' nav-link--active' : ''}`}
+            onClick={onMobileClose}
           >
             <span className="nav-link__icon">{item.icon}</span>
             {!collapsed && <span className="nav-link__label">{item.label}</span>}

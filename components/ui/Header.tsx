@@ -20,7 +20,7 @@ function applyTheme(themeId: string) {
   localStorage.setItem('hz_theme', themeId);
 }
 
-export default function Header() {
+export default function Header({ mobileMenuButton }: { mobileMenuButton?: React.ReactNode }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [themeMenuOpen, setThemeMenuOpen] = useState(false);
   const [currentTheme, setCurrentTheme] = useState('default');
@@ -65,6 +65,8 @@ export default function Header() {
 
   return (
     <header className="header">
+      {/* Hamburger — only visible on mobile via CSS */}
+      {mobileMenuButton}
       <div className="header-controls">
 
         {/* Theme Switcher */}

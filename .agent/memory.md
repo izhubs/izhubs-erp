@@ -177,6 +177,20 @@ npm run test:contracts  # all must pass
 - AI chatbot on ERP data (needs enough user data)
 - Automation visual builder
 
+## 🗂️ Industry Seed Data — Backlog
+
+### ✅ Tier 1 — Done (5 industries, 100% English)
+`seed:agency` · `seed:freelancer` · `seed:coworking` · `seed:restaurant` · `seed:cafe`
+Each = 15 contacts + 15 deals + custom fields. Runner: `node scripts/seed.js --industry=xxx`
+
+### ⏳ Tier 2 — Pending (build after $5K MRR from Tier 1)
+Photography Studio · Beauty Salon / Spa · Catering / Event · IT Consulting ·
+Tutoring Center · Language School · Real Estate Agency
+
+### 🔜 Tier 3 — Future
+Fashion Boutique · Pet Shop · Gym / Fitness · Clinic · Event Management ·
+E-commerce · Construction · Travel Agency
+
 
 ## Credentials (local dev)
 

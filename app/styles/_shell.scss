@@ -143,3 +143,63 @@
 
   &:hover { background: var(--color-bg-hover); }
 }
+
+// ---- Mobile hamburger (hidden on desktop) ----
+
+.mobile-menu-btn {
+  display: none;
+  padding: var(--space-2);
+  margin-right: var(--space-2);
+}
+
+// ---- Mobile sidebar overlay (backdrop) ----
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: var(--z-overlay, 200);
+}
+
+// ---- Mobile breakpoint ----
+@media (max-width: 767px) {
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .sidebar-overlay {
+    display: block;
+  }
+
+  // Sidebar: hide off-screen by default, slide in when .mobile-open
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    z-index: calc(var(--z-overlay, 200) + 1);
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  // App layout on mobile — full width, single col
+  .app-layout {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "header"
+      "main";
+  }
+
+  .main-content {
+    grid-area: main;
+    padding: var(--space-3);
+    overflow-y: auto;
+  }
+}
+

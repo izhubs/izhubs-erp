@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { Deal } from '@/core/schema/entities';
 import styles from './kanban.module.scss';
+import { apiFetch } from '@/lib/apiFetch';
 
 interface Props {
   onClose: () => void;
@@ -22,9 +23,8 @@ export default function DealFormModal({ onClose, onCreated }: Props) {
     setError(null);
 
     try {
-      const res = await fetch('/api/v1/deals', {
+      const res = await apiFetch('/api/v1/deals', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: form.name.trim(),
           value: parseFloat(form.value) || 0,

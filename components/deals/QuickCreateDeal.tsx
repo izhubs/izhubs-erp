@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { apiFetch } from '@/lib/apiFetch';
 
 interface Props {
   stage: string;
@@ -18,9 +19,8 @@ export default function QuickCreateDeal({ stage, onCreated, onCancel }: Props) {
     if (!name.trim()) return;
     setLoading(true);
     try {
-      const res = await fetch('/api/v1/deals', {
+      const res = await apiFetch('/api/v1/deals', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: name.trim(), value: Number(value) || 0, stage }),
       });
       const json = await res.json();

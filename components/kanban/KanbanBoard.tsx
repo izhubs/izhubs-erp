@@ -5,6 +5,8 @@ import type { Deal, DealStage } from '@/core/schema/entities';
 import KanbanColumn from './KanbanColumn';
 import DealFormModal from './DealFormModal';
 import styles from './kanban.module.scss';
+import { apiFetch } from '@/lib/apiFetch';
+
 
 const STAGES: { id: DealStage; label: string; color: string }[] = [
   { id: 'new',         label: 'New',         color: 'var(--color-text-muted)' },
@@ -28,22 +30,26 @@ export default function KanbanBoard({ initialDeals }: Props) {
 
   // Optimistic stage move
   const moveCard = useCallback(async (dealId: string, toStage: DealStage) => {
-    const prev = deals.find(d => d.id === dealId);
-    if (!prev || prev.stage === toStage) return;
+    setDeals(current => {
+      const prev = current.find(d => d.id === dealId);
+      if (!prev || prev.stage === toStage) return current;
+      return current.map(d => d.id === dealId ? { ...d, stage: toStage } : d);
+    });
 
-    // Optimistic update
-    setDeals(ds => ds.map(d => d.id === dealId ? { ...d, stage: toStage } : d));
+    // Save previous stage for rollback
+    const prevStage = deals.find(d => d.id === dealId)?.stage;
 
     try {
-      const res = await fetch(`/api/v1/deals/${dealId}`, {
+      const res = await apiFetch(`/api/v1/deals/${dealId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ stage: toStage }),
       });
       if (!res.ok) throw new Error('Failed to update deal stage');
     } catch (err) {
       // Rollback on error
-      setDeals(ds => ds.map(d => d.id === dealId ? { ...d, stage: prev.stage } : d));
+      if (prevStage) {
+        setDeals(current => current.map(d => d.id === dealId ? { ...d, stage: prevStage } : d));
+      }
       setError('Failed to move deal. Please try again.');
       setTimeout(() => setError(null), 3000);
     }

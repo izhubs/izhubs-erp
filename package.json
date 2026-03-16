@@ -20,7 +20,13 @@
     "test:contracts": "jest --testPathPattern=tests/contracts",
     "typecheck": "tsc --noEmit",
     "db:migrate": "node scripts/migrate.js",
-    "seed:demo": "node scripts/seed-demo.js"
+    "seed:demo": "node scripts/seed.js --industry=agency",
+    "seed:agency": "node scripts/seed.js --industry=agency",
+    "seed:freelancer": "node scripts/seed.js --industry=freelancer",
+    "seed:coworking": "node scripts/seed.js --industry=coworking",
+    "seed:restaurant": "node scripts/seed.js --industry=restaurant",
+    "seed:cafe": "node scripts/seed.js --industry=cafe",
+    "seed:all": "node scripts/seed.js --industry=all"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

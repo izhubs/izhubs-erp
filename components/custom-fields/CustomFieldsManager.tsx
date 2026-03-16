@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import type { CustomFieldDefinition } from '@/core/schema/entities';
 import styles from './custom-fields.module.scss';
+import { apiFetch } from '@/lib/apiFetch';
 
 type EntityType = 'contact' | 'company' | 'deal' | 'activity';
 type FieldType = 'text' | 'number' | 'date' | 'boolean' | 'select' | 'multiselect' | 'url' | 'email' | 'phone';
@@ -65,9 +66,8 @@ export default function CustomFieldsManager({ initialFields }: Props) {
       : undefined;
 
     try {
-      const res = await fetch('/api/v1/custom-fields', {
+      const res = await apiFetch('/api/v1/custom-fields', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           entityType: activeTab,
           key: form.key,
@@ -93,7 +93,7 @@ export default function CustomFieldsManager({ initialFields }: Props) {
     if (!confirm('Delete this custom field? Existing values in records will be preserved.')) return;
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/v1/custom-fields/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/v1/custom-fields/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Delete failed');
       setFields(prev => prev.filter(f => f.id !== id));
     } catch {

@@ -41,14 +41,14 @@ export type Company = z.infer<typeof CompanySchema>;
 export const ContactSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1),
-  email: z.string().email().optional(),
-  phone: z.string().optional(),
-  title: z.string().optional(),
-  companyId: z.string().uuid().optional(),
-  ownerId: z.string().uuid().optional(),
+  email: z.string().email().optional().nullable(),
+  phone: z.string().optional().nullable(),
+  title: z.string().optional().nullable(),
+  companyId: z.string().uuid().optional().nullable(),
+  ownerId: z.string().uuid().optional().nullable(),
   customFields: z.record(z.unknown()).default({}),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 export type Contact = z.infer<typeof ContactSchema>;
 
@@ -66,15 +66,16 @@ export const DealStageSchema = z.enum([
 export const DealSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1),
-  value: z.number().min(0).default(0),
+  // pg returns DECIMAL/NUMERIC as strings — coerce handles string → number
+  value: z.coerce.number().min(0).default(0),
   stage: DealStageSchema.default('new'),
-  contactId: z.string().uuid().optional(),
-  companyId: z.string().uuid().optional(),
-  ownerId: z.string().uuid().optional(),
-  closedAt: z.date().optional(),
+  contactId: z.string().uuid().optional().nullable(),
+  companyId: z.string().uuid().optional().nullable(),
+  ownerId: z.string().uuid().optional().nullable(),
+  closedAt: z.coerce.date().optional().nullable(),
   customFields: z.record(z.unknown()).default({}),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 export type Deal = z.infer<typeof DealSchema>;
 export type DealStage = z.infer<typeof DealStageSchema>;
