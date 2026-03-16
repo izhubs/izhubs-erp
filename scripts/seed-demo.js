@@ -17,11 +17,11 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgresql://postgres:izhubs_dev_2026@localhost:5432/izhubs_erp',
 });
 
-// Simple password hasher matching core/engine/auth.ts implementation (sha256 + salt)
+// Password hasher matching core/engine/auth/crypto.ts (scrypt, NOT sha256!)
 function hashPassword(password) {
   const salt = crypto.randomBytes(16).toString('hex');
-  const hash = crypto.createHash('sha256').update(salt + password).digest('hex');
-  return `${salt}:${hash}`;
+  const derivedKey = crypto.scryptSync(password, salt, 64).toString('hex');
+  return `${salt}:${derivedKey}`;
 }
 
 // ----------------------------------------------------------------
@@ -100,18 +100,14 @@ async function seedUser(client) {
   const result = await client.query(
     `INSERT INTO users (name, email, password_hash, role)
      VALUES ($1, $2, $3, $4)
-     ON CONFLICT (email) DO NOTHING
+     ON CONFLICT (email) DO UPDATE
+       SET password_hash = EXCLUDED.password_hash,
+           role = EXCLUDED.role,
+           name = EXCLUDED.name
      RETURNING id`,
     [DEMO_USER.name, DEMO_USER.email, passwordHash, DEMO_USER.role]
   );
-
-  if (result.rowCount > 0) {
-    return result.rows[0].id;
-  }
-
-  // Already exists — fetch id
-  const existing = await client.query('SELECT id FROM users WHERE email = $1', [DEMO_USER.email]);
-  return existing.rows[0].id;
+  return result.rows[0].id;
 }
 
 async function seedContacts(client, ownerId) {
