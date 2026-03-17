@@ -10,7 +10,9 @@ export interface Claims extends JWTPayload {
   email: string;
   role: string;
   type: 'access' | 'refresh';
+  tenantId?: string; // Tenant ID — optional for single-tenant mode (defaults to '00000000-...-0001')
 }
+
 
 /**
  * Sign a new JWT

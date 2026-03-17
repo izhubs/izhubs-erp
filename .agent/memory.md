@@ -3,8 +3,8 @@
 ## Current Status
 
 **Phase**: v0.1 Foundation MVP — sprint finalizing
-**Last updated**: 2026-03-16 (session 8 — Seed Data + Multi-role Docs + Sprint Update)
-**Health**: ✅ TypeScript clean, 46 contract tests passing
+**Last updated**: 2026-03-17 (session 9 — Module Registry + Modularization Architecture)
+**Health**: ✅ TypeScript clean, 58 contract tests passing
 **Last commit (app)**: `1b35990` docs: add multi-role perspective
 **Last commit (docs)**: `9b272b1` docs: add build philosophy + honest competitor comparison
 
@@ -69,6 +69,35 @@ npm run test:contracts  # all must pass
 - Soft-delete: All entities use `deleted_at` flag — nothing is physically removed from DB (migration 006)
 - Core engine layer: `core/engine/contacts.ts`, `core/engine/deals.ts` — only these may query the DB directly
 - `ApiResponse` factory: `core/engine/response.ts` — ALL API routes must use this, never `NextResponse.json()` directly
+
+### Session 9 — 2026-03-17 (Module Registry + Modularization Architecture)
+- **Module Registry system**: DB migrations 009+010 (modules + tenant_modules tables), 7 official modules seeded
+- **Registry engine**: `core/engine/modules.ts` — CRUD + 60s in-memory cache for `isModuleActive()`
+- **API routes**: `GET /api/v1/modules`, `POST/DELETE /api/v1/modules/[id]/install`
+- **`withModule()` HOF**: Security guard in `rbac.ts` — blocks 403 if module not active for tenant (API-level protection)
+- **App Store UI**: `modules/registry/components/` — AppStore + ModuleCard + useModules hook at `/settings/modules`
+- **CRM module manifest**: `modules/crm/index.ts` implementing `IzhubsModule` interface
+- **12 contract tests**: `tests/contracts/modules-api.test.ts` — all passing
+- **`tenantId?`** added to JWT Claims for multi-tenant module checks
+- **Key architecture decisions chốt**:
+  - Fat Module pattern (mỗi module tự chứa engine + API + UI)
+  - Feature Toggle via DB (code bundle sẵn, cài = flip is_active)
+  - Community modules via npm packages (v0.4, NOT PR vào monorepo)
+  - Community module data via JSONB `module_records` table (v0.4, NOT raw SQL)
+- **Sprint notes saved**: `izhubs-erp-docs` brain artifacts — full pickup instructions
+- **📁 Files created/modified in this session:**
+  - DB: `database/migrations/009_modules.sql`, `database/migrations/010_tenant_modules.sql`
+  - Core: `core/types/module.interface.ts`, `core/engine/modules.ts`
+  - Core (modified): `core/engine/rbac.ts` (+withModule HOF), `core/engine/auth/jwt.ts` (+tenantId)
+  - API: `app/api/v1/modules/route.ts`, `app/api/v1/modules/[id]/install/route.ts`
+  - UI: `modules/registry/components/AppStore.tsx`, `modules/registry/components/AppStore.module.scss`
+  - UI: `modules/registry/components/ModuleCard.tsx`, `modules/registry/components/ModuleCard.module.scss`
+  - UI: `modules/registry/hooks/useModules.ts`
+  - Page: `app/(dashboard)/settings/modules/page.tsx`
+  - Manifest: `modules/crm/index.ts`
+  - Tests: `tests/contracts/modules-api.test.ts` (12 tests)
+- **⚠️ Chưa chạy migration**: Cần `npm run db:migrate` để tạo bảng modules + tenant_modules trước khi test UI
+- **⚠️ Chưa move CRM code**: `core/engine/contacts.ts` + `deals.ts` vẫn ở core, chưa move vào `modules/crm/engine/` (v0.2)
 
 ### Session 4 — 2026-03-16 (Conductor Methodology + Changelog System)
 - **7 new skills installed**: `conductor-new-track`, `conductor-status`, `conductor-manage`, `conductor-setup`, `conductor-validator`, `changelog-automation`, `context-driven-development`

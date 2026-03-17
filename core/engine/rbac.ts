@@ -131,3 +131,57 @@ export function withPermission(
     return handler(req, claims, ctx);
   };
 }
+
+/**
+ * Route guard HOF that enforces BOTH:
+ * 1. RBAC permission check (same as withPermission)
+ * 2. Module activation check — blocks 403 if the module is not active for this tenant
+ *
+ * Use this on ALL routes that belong to a specific module.
+ * This ensures hacker cannot bypass by calling /api/premium/xyz directly.
+ *
+ * Usage:
+ *   export const GET = withModule('invoices', 'contacts:read', async (req, claims, ctx) => { ... })
+ */
+export function withModule(
+  moduleId: string,
+  permission: Permission,
+  handler: RouteHandler
+) {
+  return async (req: Request, ctx?: { params: Record<string, string> }) => {
+    // Step 1: Auth check
+    const claims = await getAuthClaims(req);
+    if (!claims) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Step 2: RBAC permission check
+    if (!hasPermission(claims.role, permission)) {
+      return NextResponse.json(
+        { error: 'Forbidden', required: permission },
+        { status: 403 }
+      );
+    }
+
+    // Step 3: Module activation check (uses 60s cached result)
+    // Import lazily to avoid circular dependency at module load time
+    const { isModuleActive } = await import('./modules');
+    const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000001';
+    const tenantId = claims.tenantId ?? DEFAULT_TENANT_ID;
+    const active = await isModuleActive(tenantId, moduleId);
+
+    if (!active) {
+      return NextResponse.json(
+        {
+          error: 'Module not active',
+          code: 'MODULE_NOT_ACTIVE',
+          module: moduleId,
+          message: `The '${moduleId}' module is not installed. Go to Settings → Modules to activate it.`,
+        },
+        { status: 403 }
+      );
+    }
+
+    return handler(req, claims, ctx);
+  };
+}
