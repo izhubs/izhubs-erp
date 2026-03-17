@@ -17,38 +17,38 @@ function hashPassword(password) {
   return `${salt}:${hash}`;
 }
 
-async function upsertUser(client, user) {
+async function upsertUser(client, user, tenantId = '00000000-0000-0000-0000-000000000001') {
   const passwordHash = hashPassword(user.password);
   const result = await client.query(
-    `INSERT INTO users (name, email, password_hash, role)
-     VALUES ($1, $2, $3, $4)
+    `INSERT INTO users (name, email, password_hash, role, tenant_id)
+     VALUES ($1, $2, $3, $4, $5)
      ON CONFLICT (email) DO NOTHING
      RETURNING id`,
-    [user.name, user.email, passwordHash, user.role]
+    [user.name, user.email, passwordHash, user.role, tenantId]
   );
   if (result.rowCount > 0) return result.rows[0].id;
   const existing = await client.query('SELECT id FROM users WHERE email = $1', [user.email]);
   return existing.rows[0].id;
 }
 
-async function seedCustomFields(client, ownerId, fields) {
+async function seedCustomFields(client, ownerId, fields, tenantId = '00000000-0000-0000-0000-000000000001') {
   let inserted = 0;
   for (const f of fields) {
     const res = await client.query(
-      `INSERT INTO custom_field_definitions (entity_type, key, label, type, options)
-       VALUES ($1, $2, $3, $4, $5)
-       ON CONFLICT (entity_type, key) DO NOTHING`,
-      [f.entity, f.key, f.label, f.type, f.options ? JSON.stringify(f.options) : null]
+      `INSERT INTO custom_field_definitions (entity_type, key, label, type, options, tenant_id)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (tenant_id, entity_type, key) DO NOTHING`,
+      [f.entity, f.key, f.label, f.type, f.options ? JSON.stringify(f.options) : null, tenantId]
     );
     if (res.rowCount > 0) inserted++;
   }
   return inserted;
 }
 
-async function seedContacts(client, ownerId, contacts) {
+async function seedContacts(client, ownerId, contacts, tenantId = '00000000-0000-0000-0000-000000000001') {
   const existing = await client.query(
-    'SELECT id, email FROM contacts WHERE owner_id = $1 AND deleted_at IS NULL ORDER BY created_at ASC',
-    [ownerId]
+    'SELECT id, email FROM contacts WHERE owner_id = $1 AND tenant_id = $2 AND deleted_at IS NULL ORDER BY created_at ASC',
+    [ownerId, tenantId]
   );
   const existingEmails = new Set(existing.rows.map(r => r.email));
   const idMap = Object.fromEntries(existing.rows.map(r => [r.email, r.id]));
@@ -62,9 +62,9 @@ async function seedContacts(client, ownerId, contacts) {
       continue;
     }
     const result = await client.query(
-      `INSERT INTO contacts (name, email, phone, title, owner_id, custom_fields)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-      [c.name, c.email, c.phone || null, c.title || null, ownerId, JSON.stringify(c.custom_fields || {})]
+      `INSERT INTO contacts (name, email, phone, title, owner_id, custom_fields, tenant_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+      [c.name, c.email, c.phone || null, c.title || null, ownerId, JSON.stringify(c.custom_fields || {}), tenantId]
     );
     ids.push(result.rows[0].id);
     inserted++;
@@ -72,10 +72,10 @@ async function seedContacts(client, ownerId, contacts) {
   return { inserted, ids };
 }
 
-async function seedDeals(client, ownerId, contactIds, deals) {
+async function seedDeals(client, ownerId, contactIds, deals, tenantId = '00000000-0000-0000-0000-000000000001') {
   const existing = await client.query(
-    'SELECT name FROM deals WHERE owner_id = $1 AND deleted_at IS NULL',
-    [ownerId]
+    'SELECT name FROM deals WHERE owner_id = $1 AND tenant_id = $2 AND deleted_at IS NULL',
+    [ownerId, tenantId]
   );
   const existingNames = new Set(existing.rows.map(r => r.name));
   let inserted = 0;
@@ -85,35 +85,35 @@ async function seedDeals(client, ownerId, contactIds, deals) {
     const contactId = contactIds[d.contactIdx] ?? null;
     const closedAt = d.closedAt ? new Date(d.closedAt).toISOString() : null;
     await client.query(
-      `INSERT INTO deals (name, value, stage, contact_id, owner_id, closed_at, custom_fields)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-      [d.name, d.value, d.stage, contactId, ownerId, closedAt, JSON.stringify(d.custom_fields || {})]
+      `INSERT INTO deals (name, value, stage, contact_id, owner_id, closed_at, custom_fields, tenant_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      [d.name, d.value, d.stage, contactId, ownerId, closedAt, JSON.stringify(d.custom_fields || {}), tenantId]
     );
     inserted++;
   }
   return inserted;
 }
 
-async function runSeed(industryModule) {
+async function runSeed(industryModule, tenantId = '00000000-0000-0000-0000-000000000001') {
   const client = await pool.connect();
   const { industry, adminUser, customFields, contacts, deals } = industryModule;
 
-  console.log(`\n🌱 izhubs ERP — Seed: ${industry.toUpperCase()}\n`);
+  console.log(`\n🌱 izhubs ERP — Seed: ${industry.toUpperCase()} (tenant: ${tenantId.split('-')[0]})\n`);
   try {
     process.stdout.write('  👤 Admin user...');
-    const userId = await upsertUser(client, adminUser);
+    const userId = await upsertUser(client, adminUser, tenantId);
     console.log(` ✅ ${adminUser.email}`);
 
     process.stdout.write('  🏷️  Custom fields...');
-    const cfInserted = await seedCustomFields(client, userId, customFields);
+    const cfInserted = await seedCustomFields(client, userId, customFields, tenantId);
     console.log(` ✅ ${cfInserted} new`);
 
     process.stdout.write('  👥 Contacts...');
-    const { inserted: cInserted, ids: contactIds } = await seedContacts(client, userId, contacts);
+    const { inserted: cInserted, ids: contactIds } = await seedContacts(client, userId, contacts, tenantId);
     console.log(` ✅ ${cInserted} new (${contacts.length} total)`);
 
     process.stdout.write('  💼 Deals...');
-    const dInserted = await seedDeals(client, userId, contactIds, deals);
+    const dInserted = await seedDeals(client, userId, contactIds, deals, tenantId);
     console.log(` ✅ ${dInserted} new (${deals.length} total)`);
 
     console.log(`\n✅ Done: ${contacts.length} contacts, ${deals.length} deals`);
@@ -129,4 +129,4 @@ async function runSeed(industryModule) {
   }
 }
 
-module.exports = { runSeed, hashPassword };
+module.exports = { runSeed, hashPassword, upsertUser, seedCustomFields, seedContacts, seedDeals };

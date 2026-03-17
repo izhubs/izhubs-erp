@@ -93,6 +93,11 @@ export default function LoginPage() {
         <a href="/register" className="text-muted" style={{ textDecoration: 'none' }}>Create an account</a>
         <a href="/setup" className="text-muted" style={{ textDecoration: 'none' }}>First time? Set up workspace →</a>
       </div>
+      <div style={{ marginTop: 'var(--space-3)', textAlign: 'center', fontSize: 'var(--font-size-sm)' }}>
+        <a href="/demo" style={{ color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
+          ✨ Try live demo — no signup needed
+        </a>
+      </div>
     </div>
   );
 }
