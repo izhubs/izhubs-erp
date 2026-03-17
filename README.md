@@ -4,7 +4,7 @@
 
 **The CRM for agencies and freelancers who migrated from Airtable, Notion, or Google Sheets — and want AI to help them grow.**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-6366f1.svg)](https://opensource.org/licenses/MIT)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-6366f1.svg)](https://opensource.org/licenses/AGPL-3.0)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178c6.svg)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)](https://nextjs.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
@@ -29,7 +29,7 @@ But moving to Salesforce or HubSpot means paying $100+/user/month for tools buil
 | **Self-host** | ❌ | ❌ | ✅ Free forever |
 | **Import from Airtable/Notion** | Manual CSV | N/A | ✅ **AI-mapped** |
 | **Vibe coding** | ❌ | ❌ | ✅ **Built-in** |
-| **License** | Paid | Freemium | **MIT — truly free** |
+| **License** | Paid | Freemium | **AGPL-3.0 — truly open source** |
 
 ---
 
@@ -228,7 +228,7 @@ Cloud hosting (managed, backups, updates) coming in v0.2.
 
 ## License
 
-MIT © [izhubs](https://izhubs.com) — free to use, modify, and distribute.
+AGPL-3.0 © [izhubs](https://izhubs.com) — free to use, modify, and distribute under the terms of the GNU Affero General Public License v3.0.
 
 ---
 

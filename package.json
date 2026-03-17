@@ -1,6 +1,7 @@
 {
   "name": "izhubs-erp",
   "version": "0.1.0",
+  "license": "AGPL-3.0",
   "private": true,
   "description": "izhubs ERP — Open-source, AI-extensible business management. Adapts to your business, not the other way around.",
   "scripts": {
