@@ -1,0 +1,31 @@
+---
+name: Trigger Docs Rebuild
+
+# Fires when ANY doc or changelog is updated on main/production in izhubs-erp
+on:
+  push:
+    branches: [main, production]
+    paths:
+      - 'CHANGELOG.md'
+      - 'docs/**'
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger izhubs-erp-docs rebuild
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.DOCS_REPO_TOKEN }}
+          script: |
+            await github.rest.repos.createDispatchEvent({
+              owner: 'izhubs',
+              repo: 'izhubs-erp-docs',
+              event_type: 'izhubs-erp-docs-update',
+              client_payload: {
+                ref: context.ref,
+                sha: context.sha,
+                triggered_by: 'izhubs-erp doc or changelog changes'
+              }
+            });
+            console.log('Dispatch sent to izhubs-erp-docs ✓');

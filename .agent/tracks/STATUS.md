@@ -1,11 +1,24 @@
 # Track Status Board
-_Last updated: 2026-03-16 (Session 8 — Seed Data + Docs)_
+_Last updated: 2026-03-16 (Session 9 — Execution Blueprint & Micro-Sprints)_
 
-> **Strategic Direction**: Vertical-first (Agency/Freelancer) · Native import from Airtable/Notion/Sheets · Ship fast · Monetize via Gumroad templates
+> **Strategic Direction**: All-in-one ERP via Phased Platform Architecture. Focus on the Kernel first, then the Wedge (CRM/Import) to get users, then expand via Marketplace.
 
 ---
 
-## 🔥 v0.1 — Ship NOW
+## 🏁 Phase 0: The Builder OS & Micro-Sprints (Current Focus)
+**Rule**: Ship to local/dev environment every 3 days. Focus only on the active Micro-Sprint.
+
+| Date | Slug | Status | Description |
+|------|------|--------|-------------|
+| 2026-03-16 | 2026-03-16-kernel-sprint-0 | 🚧 NEXT | Next.js Setup, DB Schema (User/Tenant), Auth JWT, Docker |
+| 2026-03-16 | 2026-03-16-core-entity-sprint-1 | planning | Deals & Contacts CRUD API + Basic form |
+| 2026-03-16 | 2026-03-16-view-sprint-2 | planning | Kanban Board UI and Drag-Drop Optimistic updates |
+| 2026-03-16 | 2026-03-16-interactive-demo | planning ⭐ ACTIVATION | Personalized Demo: Industry + Role selector → Auto-login → Full dashboard |
+| 2026-03-16 | 2026-03-16-wedge-sprint-3 | planning | AI CSV Import — The killer feature for launch |
+
+---
+
+## 🔥 v0.1 — Foundation MVP (Completed Work)
 
 | Date | Slug | Status | Description |
 |------|------|--------|-------------|
@@ -14,15 +27,12 @@ _Last updated: 2026-03-16 (Session 8 — Seed Data + Docs)_
 | 2026-03-16 | tenant-id-migration | ✅ done | migration 008 — tenant_id on all tables, default=1 |
 | 2026-03-16 | docker-dev-simplify | ✅ done | Redis commented out dev compose — uncomment when BullMQ needed |
 | 2026-03-16 | multi-role-perspective | ✅ done | docs/multi-role-perspective.md — CEO/Manager/Rep/Ops views |
-| 2026-03-16 | gumroad-templates | 🚧 NEXT | Package Agency + Freelancer seed as Gumroad template pack $29 |
-| 2026-03-16 | pre-launch-hardening | planning | .env.example review · README GIF demo |
-| 2026-03-16 | community-launch | planning | Show HN · GitHub release · GIF demo |
 
 ## 🏗️ v0.2 — Import + MCP (1 month)
 
 | Date | Slug | Status | Description |
 |------|------|--------|-------------|
-| 2026-03-16 | airtable-import | planning | CSV/API → AI column mapper → contacts+deals |
+| 2026-03-16 | airtable-import | planning | CSV/API → AI column mapper → contacts+deals (Covered by Wedge Sprint 3) |
 | 2026-03-16 | notion-import | planning | Notion CSV export → same AI mapper |
 | 2026-03-16 | sheets-import | planning | Google Sheets CSV or API |
 | 2026-03-16 | mcp-server | planning 🔼 MOVED UP | MCP Server — moved from v0.3, viral demo potential |
@@ -48,4 +58,4 @@ _Last updated: 2026-03-16 (Session 8 — Seed Data + Docs)_
 
 ---
 
-> **Rule**: No v0.2 work until Gumroad revenue > $0. No v0.3 until 20+ self-hosted users.
+> **Rule**: Follow the Conductor track strictly. Do not open the code editor until the daily spec is approved by Agent.
