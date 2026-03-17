@@ -2,11 +2,11 @@
 
 ## Current Status
 
-**Phase**: v0.1 Foundation MVP — Interactive Demo shipped
-**Last updated**: 2026-03-17 (session 10 — Interactive Demo + Migration Squash)
-**Health**: ✅ TypeScript clean, 58 contract tests passing
-**Last commit**: `93d26e0` feat(demo): Interactive Demo + squashed migrations + centralized types
-**Last commit (docs)**: `9b272b1` docs: add build philosophy + honest competitor comparison
+**Phase**: v0.1 Foundation MVP — **4 sprints done, all shipped to GitHub**
+**Last updated**: 2026-03-17 (session 10 — Interactive Demo + AI CSV Import + Migration Squash)
+**Health**: ✅ TypeScript clean | ✅ 58/58 contract tests passing | ✅ pushed to remote
+**Last commit**: `37989a7` chore(agent): STATUS + task.md — wedge-sprint-3 done
+**Remote**: `https://github.com/izhubs/izhubs-erp` (branch: master)
 
 ### 🎯 Target Persona (confirmed 2026-03-16)
 **Agency owner / Freelancer** — runs agency hoặc freelance, 1-5 người, tech-savvy vibe coder. Đang dùng **Airtable, Notion, hoặc Google Sheets** để track clients/deals nhưng đã outgrown. Found izhubs trên GitHub/Show HN. Phải self-serve hoàn toàn. Sẵn sàng trả $29 cho template tốt.
@@ -49,15 +49,39 @@ npm run test:contracts  # all must pass
 ---
 
 
-## What's Done
+## ✅ What's Shipped (as of 2026-03-17)
 
-- Full project scaffold at `D:\Project\izhubs-erp`
-- AI context layer: AGENTS.md, memory.md, 3 skills, 6 workflows (incl. feature-cycle)
-- Core schema: entities, events, event-bus (typed Zod)
-- DB migrations: 001 (init) → 005 (audit log)
-- Extension SDK: ExtensionBase.ts
-- Templates: agency, restaurant (+ 3 sub-templates), coworking, ecommerce + AI niche prompt
-- SCSS: 5 themes (indigo, emerald, rose, amber, light) + full component system
+### Infrastructure
+- Full Next.js 14 App Router scaffold at `D:\Project\izhubs-erp`
+- Docker Compose: postgres + redis (redis commented out for dev)
+- Auth: JWT (access 15m + refresh 7d), httpOnly cookies, `withPermission()` RBAC guard
+- DB: single `001_initial_schema.sql` (pure DDL) + `002_seed_data.sql` (system INSERTs)
+- Migration runner: `scripts/migrate.js` (sequential, tracked in `schema_migrations`)
+- API contract tests: 58 tests across auth, contacts, deals, RBAC, modules
+
+### Features
+- **CRM Pipeline**: Contacts + Deals CRUD, Kanban drag-drop, soft delete
+- **Module Registry**: modules table, tenant_modules activation, `withModule()` guard, App Store UI
+- **Multi-tenant**: all tables have `tenant_id`, default tenant = `00000000-...-0001`
+- **Interactive Demo** (`/demo`): industry + role wizard → auto-login JWT → full dashboard, no signup
+  - `core/types/demo.ts`: centralized `INDUSTRIES`, `ROLES`, `IndustryId`, `RoleId`
+  - `core/engine/demo.ts`: demo tenant creation + programmatic seeding
+  - `POST /api/v1/demo-login`: 30-min JWT, no password
+  - Dashboard banner for demo sessions
+- **AI CSV Import** (`/import`): drag-drop wizard → AI column mapping → bulk ingest contacts/deals
+  - `core/engine/import-ai.ts`: GPT-4o-mini primary + fuzzy fallback (no API key needed)
+  - `core/engine/import.ts`: job lifecycle, bulk ingest
+  - `POST /api/v1/import` → `POST /api/v1/import/[id]/confirm` → `GET /api/v1/import/[id]`
+
+### Seed Data
+- 5 industries: `seed-agency.js`, `seed-freelancer.js`, `seed-coworking.js`, `seed-restaurant.js`, `seed-cafe.js`
+- `scripts/seeds/_base.js`: all seed fns accept `tenantId` for isolation
+- `npm run seed:agency` / `npm run seed:demo` etc.
+
+### AI / Agent Layer
+- `.agent/memory.md`, `STATUS.md`, 3 sprints of tracks (SPEC.md per track)
+- Skills: clean-code, conductor, typescript-expert, etc.
+- Workflows: morning-start, feature-cycle, git-workflow, rollback, add-feature
 - PWA: manifest.json + service worker
 - App shell: login, setup wizard, dashboard layout, 12 page stubs
 - Lib stubs: email, webhooks, messaging (Telegram/Slack/Zalo), GDPR, rate-limiter
