@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, Users, Briefcase, FileText,
   Activity, Settings, BarChart2, Zap,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, Upload,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { href: '/dashboard',  label: 'Dashboard',  icon: <LayoutDashboard size={18} /> },
   { href: '/contacts',   label: 'Contacts',   icon: <Users size={18} /> },
   { href: '/deals',      label: 'Deals',      icon: <Briefcase size={18} /> },
+  { href: '/import',     label: 'Import',     icon: <Upload size={18} /> },
   { href: '/contracts',  label: 'Contracts',  icon: <FileText size={18} /> },
   { href: '/automation', label: 'Automation', icon: <Zap size={18} /> },
   { href: '/reports',    label: 'Reports',    icon: <BarChart2 size={18} /> },
