@@ -1,5 +1,5 @@
 import { listDeals } from '@/core/engine/deals';
-import KanbanBoard from '@/components/deals/KanbanBoard';
+import KanbanBoard from '@/components/kanban/KanbanBoard';
 
 export const metadata = { title: 'Pipeline — izhubs ERP' };
 

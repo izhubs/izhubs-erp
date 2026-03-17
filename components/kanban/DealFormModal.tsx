@@ -1,16 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import type { Deal } from '@/core/schema/entities';
+import type { Deal, DealStage } from '@/core/schema/entities';
 import styles from './kanban.module.scss';
 import { apiFetch } from '@/lib/apiFetch';
 
 interface Props {
   onClose: () => void;
   onCreated: (deal: Deal) => void;
+  defaultStage?: DealStage;
 }
 
-export default function DealFormModal({ onClose, onCreated }: Props) {
+export default function DealFormModal({ onClose, onCreated, defaultStage = 'new' }: Props) {
   const [form, setForm] = useState({ name: '', value: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,15 +29,15 @@ export default function DealFormModal({ onClose, onCreated }: Props) {
         body: JSON.stringify({
           name: form.name.trim(),
           value: parseFloat(form.value) || 0,
-          stage: 'new',
+          stage: defaultStage,
         }),
       });
 
       const json = await res.json();
       if (!res.ok) throw new Error(json.error?.message || 'Failed to create deal');
       onCreated(json.data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setLoading(false);
     }
