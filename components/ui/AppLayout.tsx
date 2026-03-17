@@ -4,9 +4,12 @@ import { useState, useEffect } from 'react';
 import Sidebar from '@/components/ui/Sidebar';
 import Header from '@/components/ui/Header';
 import { Menu } from 'lucide-react';
+import type { NavItem } from '@/templates/engine/template.schema';
 
 interface Props {
   children: React.ReactNode;
+  navItems: NavItem[];
+  bottomItems?: NavItem[];
 }
 
 function DemoBanner() {
@@ -62,7 +65,7 @@ function DemoBanner() {
   );
 }
 
-export default function AppLayout({ children }: Props) {
+export default function AppLayout({ children, navItems, bottomItems }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -81,6 +84,8 @@ export default function AppLayout({ children }: Props) {
       )}
 
       <Sidebar
+        navItems={navItems}
+        bottomItems={bottomItems}
         collapsed={collapsed}
         onCollapse={setCollapsed}
         mobileOpen={mobileOpen}

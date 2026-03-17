@@ -2,10 +2,10 @@
 
 ## Current Status
 
-**Phase**: v0.1 Foundation MVP — **4 sprints done, all shipped to GitHub**
-**Last updated**: 2026-03-17 (session 10 — Interactive Demo + AI CSV Import + Migration Squash)
-**Health**: ✅ TypeScript clean | ✅ 58/58 contract tests passing | ✅ pushed to remote
-**Last commit**: `37989a7` chore(agent): STATUS + task.md — wedge-sprint-3 done
+**Phase**: v0.1 Foundation MVP — **Phase 0 sprints done + Multi-Industry Theme Layer 2 shipped**
+**Last updated**: 2026-03-17 (session 11 — Multi-Industry Theme Architecture + DB migrations fix)
+**Health**: ✅ TypeScript clean | ✅ 58/58 contract tests passing | ✅ DB migrated + seeded
+**Last work**: Multi-Industry Theme Layer 2 (Layout Engine) + DB bootstrap fix + MIGRATIONS.md guide
 **Remote**: `https://github.com/izhubs/izhubs-erp` (branch: master)
 
 ### 🎯 Target Persona (confirmed 2026-03-16)

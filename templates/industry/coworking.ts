@@ -49,6 +49,36 @@ const coworkingTemplate: IndustryTemplate = {
 
   suggestedModules: ['crm', 'contracts', 'invoices', 'reports'],
   demoData: true,
+
+  navConfig: {
+    sidebar: [
+      { id: 'dashboard',  label: 'Dashboard',    href: '/dashboard',  icon: 'LayoutDashboard', roles: ['admin', 'member', 'viewer'] },
+      { id: 'contacts',   label: 'Khách hàng',   href: '/contacts',   icon: 'Users',           roles: ['admin', 'member'] },
+      { id: 'deals',      label: 'Cơ hội',       href: '/deals',      icon: 'Building2',       roles: ['admin', 'member'] },
+      { id: 'contracts',  label: 'Hợp đồng',     href: '/contracts',  icon: 'FileText',        roles: ['admin', 'member'] },
+      { id: 'reports',    label: 'Báo cáo',      href: '/reports',    icon: 'BarChart2',       roles: ['admin'] },
+    ],
+    bottomItems: [
+      { id: 'settings',   label: 'Cài đặt',      href: '/settings',   icon: 'Settings',        roles: ['admin'] },
+    ],
+    dashboardLayout: {
+      rows: [
+        { colSpan: 6,  widgetId: 'active-contracts' },
+        { colSpan: 6,  widgetId: 'occupancy-rate' },
+        { colSpan: 8,  widgetId: 'pipeline-summary' },
+        { colSpan: 4,  widgetId: 'tasks-due-today' },
+        { colSpan: 12, widgetId: 'recent-activity' },
+      ],
+    },
+  },
+
+  themeDefaults: {
+    '--color-primary':       '#1d4ed8',
+    '--color-primary-hover': '#1e40af',
+    '--color-primary-light': '#dbeafe',
+    '--color-primary-muted': '#1e3a8a',
+  },
+
   version: '1.0.0',
   author: 'izhubs',
 };

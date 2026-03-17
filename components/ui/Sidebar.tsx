@@ -1,44 +1,95 @@
 'use client';
 
+// =============================================================
+// izhubs ERP — Sidebar (Dumb Component)
+// Renders purely from NavItem[] props — zero business logic inside.
+// No if (industry === ...) allowed here. Inversion of Control.
+//
+// Data flow:
+//   DB (industry_templates) → lib/nav-config.ts → DashboardLayout → Sidebar props
+// =============================================================
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import {
   LayoutDashboard, Users, Briefcase, FileText,
   Activity, Settings, BarChart2, Zap,
-  ChevronLeft, ChevronRight, Upload,
+  ChevronLeft, ChevronRight, Upload, ShoppingCart,
+  Building2, CalendarHeart, UtensilsCrossed, Box,
+  Star, Globe, Headphones, Package, PieChart,
+  Layers, Bell, Lock, Database, Cpu,
+  LucideIcon,
 } from 'lucide-react';
-import { useState } from 'react';
+import type { NavItem } from '@/templates/engine/template.schema';
 
-const NAV_ITEMS = [
-  { href: '/dashboard',  label: 'Dashboard',  icon: <LayoutDashboard size={18} /> },
-  { href: '/contacts',   label: 'Contacts',   icon: <Users size={18} /> },
-  { href: '/deals',      label: 'Deals',      icon: <Briefcase size={18} /> },
-  { href: '/import',     label: 'Import',     icon: <Upload size={18} /> },
-  { href: '/contracts',  label: 'Contracts',  icon: <FileText size={18} /> },
-  { href: '/automation', label: 'Automation', icon: <Zap size={18} /> },
-  { href: '/reports',    label: 'Reports',    icon: <BarChart2 size={18} /> },
-  { href: '/audit-log',  label: 'Audit Log',  icon: <Activity size={18} /> },
-];
+// =============================================================
+// ICON_MAP — resolves Lucide icon name (string) → component.
+// Add entries here as new templates use new icons.
+// =============================================================
+const ICON_MAP: Record<string, LucideIcon> = {
+  LayoutDashboard, Users, Briefcase, FileText,
+  Activity, Settings, BarChart2, Zap,
+  Upload, ShoppingCart, Building2, CalendarHeart,
+  UtensilsCrossed, Box, Star, Globe, Headphones,
+  Package, PieChart, Layers, Bell, Lock,
+  Database, Cpu,
+};
 
-const BOTTOM_ITEMS = [
-  { href: '/settings', label: 'Settings', icon: <Settings size={18} /> },
-];
+function NavIcon({ name, size = 18 }: { name: string; size?: number }) {
+  const Icon = ICON_MAP[name];
+  if (!Icon) return <span style={{ width: size, height: size, display: 'inline-block' }} />;
+  return <Icon size={size} />;
+}
 
-export default function Sidebar({
-  collapsed = false,
-  onCollapse,
-  mobileOpen = false,
-  onMobileClose,
-}: {
+// =============================================================
+
+interface SidebarProps {
+  /** Main navigation items — pre-filtered by role from lib/nav-config */
+  navItems: NavItem[];
+  /** Items pinned to the bottom (e.g. Settings) */
+  bottomItems?: NavItem[];
+  /** Collapsed state controlled by parent */
   collapsed?: boolean;
   onCollapse?: (v: boolean) => void;
   mobileOpen?: boolean;
   onMobileClose?: () => void;
-}) {
+}
+
+export default function Sidebar({
+  navItems,
+  bottomItems = [],
+  collapsed = false,
+  onCollapse,
+  mobileOpen = false,
+  onMobileClose,
+}: SidebarProps) {
   const pathname = usePathname();
 
   const isActive = (href: string) =>
     href === '/dashboard' ? pathname === href : pathname.startsWith(href);
+
+  const renderNavItem = (item: NavItem) => (
+    <Link
+      key={item.id}
+      href={item.href}
+      title={collapsed ? item.label : undefined}
+      className={`nav-link${isActive(item.href) ? ' nav-link--active' : ''}`}
+      onClick={onMobileClose}
+    >
+      <span className="nav-link__icon">
+        <NavIcon name={item.icon} />
+      </span>
+      {!collapsed && (
+        <span className="nav-link__label">
+          {item.label}
+          {item.badge && (
+            <span className="nav-link__badge">{item.badge}</span>
+          )}
+        </span>
+      )}
+    </Link>
+  );
 
   return (
     <aside className={`sidebar${collapsed ? ' collapsed' : ''}${mobileOpen ? ' mobile-open' : ''}`}>
@@ -48,35 +99,14 @@ export default function Sidebar({
         {!collapsed && <span className="sidebar-logo__name">izhubs ERP</span>}
       </div>
 
-      {/* Main Nav */}
+      {/* Main Nav — rendered from navItems prop */}
       <nav style={{ padding: 'var(--space-3)', flex: 1 }}>
-        {NAV_ITEMS.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            title={collapsed ? item.label : undefined}
-            className={`nav-link${isActive(item.href) ? ' nav-link--active' : ''}`}
-            onClick={onMobileClose}
-          >
-            <span className="nav-link__icon">{item.icon}</span>
-            {!collapsed && <span className="nav-link__label">{item.label}</span>}
-          </Link>
-        ))}
+        {navItems.map(renderNavItem)}
       </nav>
 
-      {/* Bottom: Settings + Collapse toggle */}
+      {/* Bottom: Dynamic bottom items + Collapse toggle */}
       <div style={{ borderTop: '1px solid var(--color-border)', padding: 'var(--space-3)' }}>
-        {BOTTOM_ITEMS.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            title={collapsed ? item.label : undefined}
-            className={`nav-link${isActive(item.href) ? ' nav-link--active' : ''}`}
-          >
-            <span className="nav-link__icon">{item.icon}</span>
-            {!collapsed && <span className="nav-link__label">{item.label}</span>}
-          </Link>
-        ))}
+        {bottomItems.map(renderNavItem)}
 
         <button
           onClick={() => onCollapse?.(!collapsed)}

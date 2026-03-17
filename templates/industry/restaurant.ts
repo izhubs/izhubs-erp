@@ -47,6 +47,33 @@ const restaurantTemplate: IndustryTemplate = {
   suggestedModules: ['crm', 'reports'],
   demoData: true,
 
+  navConfig: {
+    sidebar: [
+      { id: 'dashboard',  label: 'Tổng quan',    href: '/dashboard',  icon: 'LayoutDashboard', roles: ['admin', 'member', 'viewer'] },
+      { id: 'contacts',   label: 'Khách hàng',   href: '/contacts',   icon: 'Users',           roles: ['admin', 'member'] },
+      { id: 'deals',      label: 'Đặt bàn',      href: '/deals',      icon: 'UtensilsCrossed', roles: ['admin', 'member'] },
+      { id: 'reports',    label: 'Báo cáo',      href: '/reports',    icon: 'BarChart2',       roles: ['admin'] },
+    ],
+    bottomItems: [
+      { id: 'settings',   label: 'Cài đặt',      href: '/settings',   icon: 'Settings',        roles: ['admin'] },
+    ],
+    dashboardLayout: {
+      rows: [
+        { colSpan: 12, widgetId: 'reservations-today' },
+        { colSpan: 6,  widgetId: 'revenue-today' },
+        { colSpan: 6,  widgetId: 'tables-status' },
+        { colSpan: 12, widgetId: 'recent-activity' },
+      ],
+    },
+  },
+
+  themeDefaults: {
+    '--color-primary':       '#f59e0b',
+    '--color-primary-hover': '#d97706',
+    '--color-primary-light': '#fef3c7',
+    '--color-primary-muted': '#78350f',
+  },
+
   // Common niche variants — human-written
   subTemplates: [
     {

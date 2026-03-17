@@ -27,7 +27,9 @@
     "seed:coworking": "node scripts/seed.js --industry=coworking",
     "seed:restaurant": "node scripts/seed.js --industry=restaurant",
     "seed:cafe": "node scripts/seed.js --industry=cafe",
-    "seed:all": "node scripts/seed.js --industry=all"
+    "seed:all": "node scripts/seed.js --industry=all",
+    "seed:industry-templates": "npx tsx scripts/seed-industry-templates.ts",
+    "seed:industry-templates-dry": "npx tsx scripts/seed-industry-templates.ts --dry-run"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

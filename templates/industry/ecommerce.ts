@@ -47,6 +47,35 @@ const ecommerceTemplate: IndustryTemplate = {
 
   suggestedModules: ['crm', 'reports'],
   demoData: true,
+
+  navConfig: {
+    sidebar: [
+      { id: 'dashboard',  label: 'Dashboard',    href: '/dashboard',  icon: 'LayoutDashboard', roles: ['admin', 'member', 'viewer'] },
+      { id: 'contacts',   label: 'Khách mua',    href: '/contacts',   icon: 'Users',           roles: ['admin', 'member'] },
+      { id: 'deals',      label: 'Đơn hàng',     href: '/deals',      icon: 'ShoppingCart',    roles: ['admin', 'member'] },
+      { id: 'reports',    label: 'Báo cáo',      href: '/reports',    icon: 'BarChart2',       roles: ['admin'] },
+    ],
+    bottomItems: [
+      { id: 'settings',   label: 'Cài đặt',      href: '/settings',   icon: 'Settings',        roles: ['admin'] },
+    ],
+    dashboardLayout: {
+      rows: [
+        { colSpan: 4,  widgetId: 'orders-today' },
+        { colSpan: 4,  widgetId: 'revenue-today' },
+        { colSpan: 4,  widgetId: 'pending-shipments' },
+        { colSpan: 8,  widgetId: 'pipeline-summary' },
+        { colSpan: 4,  widgetId: 'top-customers' },
+      ],
+    },
+  },
+
+  themeDefaults: {
+    '--color-primary':       '#f97316',
+    '--color-primary-hover': '#ea580c',
+    '--color-primary-light': '#ffedd5',
+    '--color-primary-muted': '#7c2d12',
+  },
+
   version: '1.0.0',
   author: 'izhubs',
 };

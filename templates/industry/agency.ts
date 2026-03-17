@@ -47,6 +47,37 @@ const agencyTemplate: IndustryTemplate = {
 
   suggestedModules: ['crm', 'contracts', 'invoices', 'reports'],
   demoData: true,
+
+  navConfig: {
+    sidebar: [
+      { id: 'dashboard',  label: 'Dashboard',    href: '/dashboard',  icon: 'LayoutDashboard', roles: ['admin', 'member', 'viewer'] },
+      { id: 'contacts',   label: 'Contacts',     href: '/contacts',   icon: 'Users',           roles: ['admin', 'member'] },
+      { id: 'deals',      label: 'Deals',        href: '/deals',      icon: 'Briefcase',       roles: ['admin', 'member'] },
+      { id: 'contracts',  label: 'Contracts',    href: '/contracts',  icon: 'FileText',        roles: ['admin', 'member'] },
+      { id: 'automation', label: 'Automation',   href: '/automation', icon: 'Zap',             roles: ['admin'] },
+      { id: 'reports',    label: 'Reports',      href: '/reports',    icon: 'BarChart2',       roles: ['admin'] },
+    ],
+    bottomItems: [
+      { id: 'settings',   label: 'Settings',     href: '/settings',   icon: 'Settings',        roles: ['admin'] },
+    ],
+    dashboardLayout: {
+      rows: [
+        { colSpan: 8,  widgetId: 'pipeline-summary' },
+        { colSpan: 4,  widgetId: 'tasks-due-today' },
+        { colSpan: 6,  widgetId: 'revenue-this-month' },
+        { colSpan: 6,  widgetId: 'deals-by-stage' },
+        { colSpan: 12, widgetId: 'recent-activity' },
+      ],
+    },
+  },
+
+  themeDefaults: {
+    '--color-primary':       '#6366f1',
+    '--color-primary-hover': '#4f46e5',
+    '--color-primary-light': '#e0e7ff',
+    '--color-primary-muted': '#312e81',
+  },
+
   version: '1.0.0',
   author: 'izhubs',
 };
