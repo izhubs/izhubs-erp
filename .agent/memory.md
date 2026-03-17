@@ -2,10 +2,10 @@
 
 ## Current Status
 
-**Phase**: v0.1 Foundation MVP — sprint finalizing
-**Last updated**: 2026-03-17 (session 9 — Module Registry + Modularization Architecture)
+**Phase**: v0.1 Foundation MVP — Interactive Demo shipped
+**Last updated**: 2026-03-17 (session 10 — Interactive Demo + Migration Squash)
 **Health**: ✅ TypeScript clean, 58 contract tests passing
-**Last commit (app)**: `1b35990` docs: add multi-role perspective
+**Last commit**: `93d26e0` feat(demo): Interactive Demo + squashed migrations + centralized types
 **Last commit (docs)**: `9b272b1` docs: add build philosophy + honest competitor comparison
 
 ### 🎯 Target Persona (confirmed 2026-03-16)
@@ -38,6 +38,7 @@ Full details: `.agent/skills/clean-code-and-modularity.md` and `.agent/skills/da
 | **withPermission() guard** | Every API route must be wrapped with `withPermission('resource:action', handler)`. |
 | **No component > 150 lines** | Split if exceeded. |
 | **Sequential migrations** | New migration = new file `00X_description.sql`. Never edit committed migrations. |
+| **Schema vs Seed separation** | `001_initial_schema.sql` = pure DDL only (CREATE TABLE + indexes). `002_seed_data.sql` = system defaults (default tenant, modules catalog). Industry seed data stays in `scripts/seeds/seed-[industry].js` — one file per industry. Never mix DDL and DML in the same migration file. |
 
 ### Before every commit
 ```bash

@@ -10,6 +10,7 @@
 @use 'components';
 @use 'shell';      // Header, Sidebar, Dropdown components
 @use 'kanban';     // Pipeline Kanban board
+@use 'demo';       // Demo wizard (/demo page)
 
 // ---- Base Reset ----
 *, *::before, *::after {

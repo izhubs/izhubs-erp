@@ -1,5 +1,5 @@
 # Track Status Board
-_Last updated: 2026-03-16 (Session 9 — Execution Blueprint & Micro-Sprints)_
+_Last updated: 2026-03-17 (Session 10 — Interactive Demo + Migration Squash)_
 
 > **Strategic Direction**: All-in-one ERP via Phased Platform Architecture. Focus on the Kernel first, then the Wedge (CRM/Import) to get users, then expand via Marketplace.
 
@@ -13,8 +13,8 @@ _Last updated: 2026-03-16 (Session 9 — Execution Blueprint & Micro-Sprints)_
 | 2026-03-16 | 2026-03-16-kernel-sprint-0 | ✅ done | Next.js Setup, DB Schema (User/Tenant), Auth JWT, Docker |
 | 2026-03-16 | 2026-03-16-core-entity-sprint-1 | ✅ done | Deals & Contacts CRUD API + Basic form |
 | 2026-03-16 | 2026-03-16-view-sprint-2 | ✅ done | Kanban Board UI and Drag-Drop Optimistic updates |
-| 2026-03-16 | 2026-03-16-interactive-demo | planning ⭐ ACTIVATION | Personalized Demo: Industry + Role selector → Auto-login → Full dashboard |
-| 2026-03-16 | 2026-03-16-wedge-sprint-3 | planning | AI CSV Import — The killer feature for launch |
+| 2026-03-17 | 2026-03-16-interactive-demo | ✅ done | Personalized Demo: Industry + Role selector → Auto-login → Full dashboard |
+| 2026-03-16 | 2026-03-16-wedge-sprint-3 | 🚧 NEXT | AI CSV Import — The killer feature for launch |
 
 ---
 
