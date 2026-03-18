@@ -4,6 +4,71 @@ All notable changes to izhubs ERP are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 Versioning: [Semantic Versioning](https://semver.org/)
 
+## [Unreleased] — 2026-03-18 (Session 15 — Virtual Office Template Full Stack)
+
+### ✨ Added
+
+**Phase 1 — Virtual Office Industry Template**
+- `templates/industry/virtual-office.ts` — complete industry template:
+  - 8 pipeline stages (`lead → proposal → negotiation → onboarding → active → renewal → won → lost`)
+  - 7 custom fields (all labels/options in English per project rule): `dia_chi_dang_ky`, `loai_doanh_nghiep`, `ma_so_thue`, `goi_dich_vu`, `thoi_han_hop_dong`, `ngay_ky_hop_dong`, `nguon_lead`
+  - 3 automations as SEED DATA only (inserted into `tenant_automations` DB on setup — users can edit)
+  - 9 sidebar nav items: dashboard / leads / contacts / deals / contracts / service-packages / tasks / reports / import
+  - CEO Dashboard widget layout: KPI × 4 + ARR chart + Revenue Donut + Top Customers + Activity Feed
+  - Indigo `#6366f1` theme defaults
+- `templates/index.ts` — registered `virtualOfficeTemplate` in TEMPLATES array
+
+**Phase 2 — Bilingual Seed Data**
+- `scripts/seeds/seed-virtual-office.js` — 15 contacts + 15 deals × EN & VI
+- `package.json` — `seed:virtual-office`, `seed:virtual-office:en`, `seed:virtual-office:vi` scripts
+- `scripts/seed.js` — `--lang=en|vi` flag + `resolveLocaleData()` helper
+
+**Phase 3 — Service Packages (DB + Engine + API)**
+- `database/migrations/008_service_packages.sql` — service_packages table with billing types ✅ applied
+- `database/migrations/009_tenant_automations.sql` — tenant_automations table ✅ applied
+- `core/engine/service-packages.ts` — full CRUD + soft-delete + `getPackageSubscriberCounts()`
+- `core/engine/automations.ts` — full CRUD + `seedAutomationsFromTemplate()` (idempotent)
+- `app/api/v1/service-packages/route.ts` — GET (list + subscriber counts) / POST
+- `app/api/v1/service-packages/[id]/route.ts` — PATCH / DELETE
+- `app/api/v1/automations/route.ts` — GET / POST
+- `app/api/v1/automations/[id]/route.ts` — PATCH / DELETE
+
+**Phase 4 — UI Screens**
+- `app/(dashboard)/service-packages/page.tsx` — master/detail layout, active/inactive tabs, create/edit modal — bilingual
+- `app/(dashboard)/page.tsx` — replaced generic dashboard with Virtual Office CEO dashboard:
+  - 4 KPI cards: MRR, Active Clients, Renewals Due, Open Deals — bilingual (reads `hz_locale` cookie)
+  - ARR Line Chart + Revenue Donut (by `goi_dich_vu`) via recharts — bilingual axes/tooltips
+  - Pipeline Breakdown — Virtual Office stages, bilingual stage labels
+  - Top 5 Customers table — sorted by deal value
+  - Activity Feed grid — 8 recent contacts
+- `components/dashboard/DashboardCharts.tsx` — Client component wrapping ARR + Revenue Donut recharts
+
+**Phase 3 Extra — Settings Automation UI**
+- `app/(dashboard)/settings/automation/page.tsx` — list rules, toggle on/off, create/edit modal — bilingual
+- `app/(dashboard)/settings/page.tsx` — Automation Rules card added (Zap icon)
+
+**Bilingual Infrastructure**
+- `components/providers/LanguageProvider.tsx` — context with `useLanguage()` hook, `t()` function, `localStorage` persistence
+- `components/ui/Header.tsx` — globe icon + EN/VI badge language toggle
+- `app/(dashboard)/settings/appearance/page.tsx` — Theme selector + Language selector (fully functional)
+- `app/styles/_layout.scss` — sticky header (`position: sticky; top: 0; backdrop-filter: blur(8px)`)
+- `messages/en.json` + `messages/vi.json` — translation bundles
+
+**Phase 6 — Tests**
+- `tests/contracts/service-packages-api.test.ts` — 16 new tests: schema parsing (price coercion, billing enum), input validation (defaults, edge cases), partial update, HTTP response shapes
+- Total: **74 tests, 74 passing**
+
+**Project Rules (`memory.md`)**
+- Custom field labels/options = English (keys may be Vietnamese)
+- Automations = DB-backed, not hardcoded in TS template files
+- PowerShell: use `;` not `&&` for command chaining
+
+### 🔧 Changed
+- `templates/index.ts` — `virtualOfficeTemplate` registered
+- `app/(dashboard)/settings/page.tsx` — Automation Rules card added
+
+---
+
 ## [Unreleased] — 2026-03-18 (Session 14 — UI Layer, Chart Widgets, Pipeline Views, BullMQ)
 
 ### ✨ Added
