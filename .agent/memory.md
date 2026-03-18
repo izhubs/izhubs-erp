@@ -2,11 +2,11 @@
 
 ## Current Status
 
-**Phase**: v0.1 Foundation MVP — **Phase 0 sprints done + Multi-Industry Theme Layer 2 shipped**
-**Last updated**: 2026-03-18 (Session 12 — Refactor & Audit Master Plan + Custom Skills + Framework Evaluation)
-**Health**: ✅ TypeScript clean | ✅ 58/58 contract tests passing | ✅ DB migrated + seeded
-**Last work**: Session 12 — Comprehensive refactor audit plan, 5 izhubs-native skills, framework evaluation docs (UI + Core), nextjs-v15 upgrade track
-**Remote**: `https://github.com/izhubs/izhubs-erp` (branch: master)
+**Phase**: v0.1 Foundation MVP — **Core foundation complete (RLS + TanStack Query + Radix UI + react-hook-form)**
+**Last updated**: 2026-03-18 (Session 13 — Security hardening, CI/tests, Command Palette, FTS search, Core foundation layers)
+**Health**: ✅ TypeScript clean | ✅ 92/92 unit tests passing | ✅ DB migrated (migrations 001-007) | ✅ RLS enabled
+**Last work**: Session 13 — Phase 1 security (RLS, rate limit, GDPR, headers), Phase 2 CI (GitHub Actions, 92 tests), Command Palette (Ctrl+K), Postgres FTS (unaccent + GIN), TanStack Query hooks, Radix Dialog, Docker OOM fix
+**Remote**: `https://github.com/izhubs/izhubs-erp` (branch: master, head: ~edbf7e3)
 
 ### 🎯 Target Persona (confirmed 2026-03-16)
 **Agency owner / Freelancer** — runs agency hoặc freelance, 1-5 người, tech-savvy vibe coder. Đang dùng **Airtable, Notion, hoặc Google Sheets** để track clients/deals nhưng đã outgrown. Found izhubs trên GitHub/Show HN. Phải self-serve hoàn toàn. Sẵn sàng trả $29 cho template tốt.
@@ -49,34 +49,62 @@ npm run test:contracts  # all must pass
 ---
 
 
-## ✅ What's Shipped (as of 2026-03-17)
+## ✅ What's Shipped (as of 2026-03-18 — Session 13)
 
 ### Infrastructure
 - Full Next.js 14 App Router scaffold at `D:\Project\izhubs-erp`
 - Docker Compose: postgres + redis (redis commented out for dev)
 - Auth: JWT (access 15m + refresh 7d), httpOnly cookies, `withPermission()` RBAC guard
-- DB: single `001_initial_schema.sql` (pure DDL) + `002_seed_data.sql` (system INSERTs)
+- DB: `001_initial_schema.sql` (DDL) + `002_seed_data.sql` (system INSERTs)
+- Migrations 001–007 applied (latest: 007_rls.sql — Postgres RLS)
 - Migration runner: `scripts/migrate.js` (sequential, tracked in `schema_migrations`)
 - API contract tests: 58 tests across auth, contacts, deals, RBAC, modules
+- Unit tests: **92/92 passing** (rbac 31 + api-response 16 + components 45)
+- GitHub Actions CI: `.github/workflows/ci.yml`
+- Docker OOM fix: `NODE_OPTIONS=--max-old-space-size=4096` in Dockerfile
+- Backup script: `scripts/backup.sh` + `npm run backup`
+
+### Security & Compliance
+- Rate limiter: Redis-backed, fallback to memory (login 10/min, register 5/min, import 20/min)
+- Security headers: X-Frame-Options, X-Content-Type, Referrer, Permissions-Policy
+- **Postgres RLS** (`migration 007`): tenant isolation at DB level on 6 tables
+- **GDPR Erasure**: `core/engine/gdpr.ts` + `DELETE /api/v1/user/:id` + migration 005
+
+### Database Layer
+- `core/engine/db.ts`: `queryAsTenant(tenantId, sql)` + `withTenantTransaction(tenantId, fn)`
+- `migration 006_fts.sql`: FTS on contacts (name/email/title) + deals (name/stage)
+  - immutable_unaccent wrapper for Vietnamese diacritics
+  - GIN index + BEFORE INSERT/UPDATE trigger maintenance
+
+### Data Fetching (TanStack Query)
+- `@tanstack/react-query` + devtools installed
+- `components/providers/QueryProvider.tsx`: staleTime 60s, gcTime 5min, retry 1
+- `hooks/useContacts.ts`: useContacts, useCreateContact, useUpdateContact, useArchiveContact, usePrefetchContact
+- `hooks/useDeals.ts`: useDeals, useCreateDeal, useMoveDeal (optimistic + rollback), useArchiveDeal
+- `hooks/index.ts`: barrel export — `import { useContacts } from '@/hooks'`
+- `AppLayout.tsx` wrapped in `QueryProvider`
+
+### UI Primitives
+- `react-hook-form` + `@hookform/resolvers` installed
+- `@radix-ui/react-dialog` + `select` + `popover` + `toast` installed
+- `components/ui/Dialog.tsx`: Radix Dialog abstraction (title, footer slot, locked mode)
+- `components/ui/Dialog.module.scss`: dark overlay, slide-in animation
+- `components/ui/CommandPalette.tsx` + `.module.scss`: Ctrl+K global palette
+- `/api/v1/search`: ranked FTS + ILIKE fallback, prefix tsquery
 
 ### Features
 - **CRM Pipeline**: Contacts + Deals CRUD, Kanban drag-drop, soft delete
 - **Module Registry**: modules table, tenant_modules activation, `withModule()` guard, App Store UI
 - **Multi-tenant**: all tables have `tenant_id`, default tenant = `00000000-...-0001`
 - **Interactive Demo** (`/demo`): industry + role wizard → auto-login JWT → full dashboard, no signup
-  - `core/types/demo.ts`: centralized `INDUSTRIES`, `ROLES`, `IndustryId`, `RoleId`
-  - `core/engine/demo.ts`: demo tenant creation + programmatic seeding
-  - `POST /api/v1/demo-login`: 30-min JWT, no password
-  - Dashboard banner for demo sessions
 - **AI CSV Import** (`/import`): drag-drop wizard → AI column mapping → bulk ingest contacts/deals
-  - `core/engine/import-ai.ts`: GPT-4o-mini primary + fuzzy fallback (no API key needed)
-  - `core/engine/import.ts`: job lifecycle, bulk ingest
-  - `POST /api/v1/import` → `POST /api/v1/import/[id]/confirm` → `GET /api/v1/import/[id]`
+- **Command Palette** (Ctrl+K): search contacts/deals, keyboard nav ↑↓ Enter Esc
 
-### Seed Data
+### Seed Data & Templates
 - 5 industries: `seed-agency.js`, `seed-freelancer.js`, `seed-coworking.js`, `seed-restaurant.js`, `seed-cafe.js`
-- `scripts/seeds/_base.js`: all seed fns accept `tenantId` for isolation
-- `npm run seed:agency` / `npm run seed:demo` etc.
+- 5 Gumroad template packages: `dist/gumroad/{agency,restaurant,coworking,ecommerce,spa}-template.zip`
+  - Listing copy: `docs/gumroad/agency-listing.md`, `docs/gumroad/coworking-listing.md`
+  - Export script: `npm run export:gumroad:all`
 
 ### AI / Agent Layer
 - `.agent/memory.md`, `STATUS.md`, 3 sprints of tracks (SPEC.md per track)

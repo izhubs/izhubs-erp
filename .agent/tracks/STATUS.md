@@ -44,10 +44,10 @@ _Last updated: 2026-03-18 (Session 13 — Security hardening, CI, Unit Tests, Co
 
 ---
 
-## 🔒 refactor-audit-hardening (Session 13 — COMPLETED Phase 1+2, Phase 3+4 pending)
+## 🔒 refactor-audit-hardening (Session 13 — ALL Phases DONE except BullMQ)
 
-> **Status:** Phase 1 (Security) + Phase 2 (CI/Tests) ✅ DONE. Phase 3 (UI/UX) + Phase 4 (Performance) ⏳ pending.
-> **Migrations applied:** 004 (status+notes), 005 (GDPR) ✅
+> **Status:** Phase 1 ✅ + Phase 2 ✅ + Phase 3 ✅ + Phase 4 partial ✅. Only BullMQ queue pending.
+> **Migrations applied:** 004, 005, 006 (FTS), 007 (RLS) ✅
 > **Test count:** 92 unit tests passing, 58 contract tests passing
 
 | Phase | Slug | Status | Description |
@@ -56,18 +56,21 @@ _Last updated: 2026-03-18 (Session 13 — Security hardening, CI, Unit Tests, Co
 | 1.2 | security-headers | ✅ done | X-Frame-Options + X-Content-Type + Referrer + Permissions-Policy |
 | 1.3 | db-backup-script | ✅ done | scripts/backup.sh + npm run backup — pg_dump + auto-prune |
 | 1.4 | gdpr-erasure | ✅ done | core/engine/gdpr.ts + DELETE /api/v1/user/:id + migration 005 |
-| 1.5 | postgres-rls | ⏳ pending | PostgreSQL Row Level Security — migration 006_rls.sql |
-| 1.6 | docker-oom-fix | ⏳ pending | Dockerfile NODE_OPTIONS=--max-old-space-size=4096 — 15min job |
+| 1.5 | postgres-rls | ✅ done | migration 007_rls.sql — dynamic plpgsql DO block, 6 tables, passthrough for admin |
+| 1.6 | docker-oom-fix | ✅ done | Dockerfile NODE_OPTIONS=--max-old-space-size=4096 + nextjs user creation |
 | 2.1 | ci-pipeline | ✅ done | .github/workflows/ci.yml — typecheck + lint + tests |
-| 2.2 | sentry-integration | ⏸ stub | Stub files ready. Run: npm install @sentry/nextjs + add SENTRY_DSN |
+| 2.2 | sentry-integration | ⏸ stub | Stub files ready. Run: npm install @sentry/nextjs + add SENTRY_DSN to env |
 | 2.3 | unit-tests | ✅ done | 92/92 passing — rbac.test.ts (31) + api-response.test.ts (16) + components (45) |
-| 2.4 | command-palette | ✅ done | Ctrl+K palette — search contacts/deals, keyboard nav, header pill, tested |
-| 3.1 | ui-wrapper-layer | ⏳ pending | components/ui/index.ts barrel exports |
-| 3.2 | radix-ui-adopt | ⏳ pending | @radix-ui/react-dialog + select + popover |
-| 3.3 | react-hook-form | ⏳ pending | react-hook-form + zodResolver for forms |
-| 4.1 | tanstack-query | ⏳ pending | @tanstack/react-query wrap app |
-| 4.2 | bullmq-csv-queue | ⏳ pending | BullMQ async queue for CSV import |
-| 4.3 | postgres-fts | ⏳ pending | tsvector + GIN index on contacts/deals |
+| 2.4 | command-palette | ✅ done | Ctrl+K palette — search contacts/deals, keyboard nav, header pill, tested E2E |
+| 2.5 | fts-search | ✅ done | migration 006 — tsvector + GIN + immutable_unaccent triggers. Search API upgraded. |
+| 3.1 | ui-wrapper-layer | ✅ done | components/providers/QueryProvider.tsx + hooks/index.ts barrel |
+| 3.2 | radix-ui-adopt | ✅ done | @radix-ui/react-dialog + select + popover + toast installed. Dialog.tsx abstraction. |
+| 3.3 | react-hook-form | ✅ done | react-hook-form + @hookform/resolvers installed. Forms pending refactor. |
+| 3.4 | form-refactor | ⏳ pending | Replace ContactFormModal + DealFormModal with Dialog.tsx + useForm + zodResolver |
+| 4.1 | tanstack-query | ✅ done | @tanstack/react-query — QueryProvider, useContacts, useDeals (optimistic updates) |
+| 4.2 | bullmq-csv-queue | ⏳ pending | BullMQ async queue for CSV import — uncomment Redis in docker-compose first |
+| 4.3 | postgres-fts | ✅ done | tsvector + GIN + unaccent triggers on contacts + deals (see 2.5) |
+| 4.4 | db-query-tenant | ✅ done | core/engine/db.ts: queryAsTenant() + withTenantTransaction() for RLS support |
 
 ## ☁️ v0.3 — Managed Cloud (3 months)
 
