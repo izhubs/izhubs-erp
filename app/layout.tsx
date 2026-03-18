@@ -1,5 +1,6 @@
 import '@/app/styles/globals.scss';
 import type { Metadata, Viewport } from 'next';
+import ReactQueryProvider from '@/components/providers/ReactQueryProvider';
 
 export const metadata: Metadata = {
   title: { default: 'izhubs ERP', template: '%s | izhubs ERP' },
@@ -21,7 +22,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body>{children}</body>
+      <body>
+        <ReactQueryProvider>{children}</ReactQueryProvider>
+      </body>
     </html>
   );
 }
