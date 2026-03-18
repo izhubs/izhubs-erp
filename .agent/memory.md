@@ -3,9 +3,9 @@
 ## Current Status
 
 **Phase**: v0.1 Foundation MVP — **Phase 0 sprints done + Multi-Industry Theme Layer 2 shipped**
-**Last updated**: 2026-03-17 (session 11 — Multi-Industry Theme Architecture + DB migrations fix)
+**Last updated**: 2026-03-18 (Session 12 — Refactor & Audit Master Plan + Custom Skills + Framework Evaluation)
 **Health**: ✅ TypeScript clean | ✅ 58/58 contract tests passing | ✅ DB migrated + seeded
-**Last work**: Multi-Industry Theme Layer 2 (Layout Engine) + DB bootstrap fix + MIGRATIONS.md guide
+**Last work**: Session 12 — Comprehensive refactor audit plan, 5 izhubs-native skills, framework evaluation docs (UI + Core), nextjs-v15 upgrade track
 **Remote**: `https://github.com/izhubs/izhubs-erp` (branch: master)
 
 ### 🎯 Target Persona (confirmed 2026-03-16)
@@ -18,7 +18,7 @@
 - **Native Import**: Airtable / Notion / Google Sheets import là GO-TO-MARKET, không phải optional
 - **Monetize NOW**: Templates trên Gumroad ($29 each) TRƯỚC community launch
 - **MCP Server sớm**: Move từ v0.3 lên v0.2 — demo "chat với ERP data" = viral moment
-- **Bỏ Redis cho dev**: Remove Redis dependency khỏi docker-compose.yml dev (chỉ giữ cho prod khi cần BullMQ)
+- **Redis strategy**: Commented out trong docker-compose dev để đơn giản setup lần đầu. Package `redis` đã install. Uncomment khi cần BullMQ (CSV import lớn) hoặc Rate Limiting (Phase 1.1 refactor track).
 
 ---
 
@@ -91,9 +91,33 @@ npm run test:contracts  # all must pass
 - Auth: JWT login / register / refresh with `jose` (v0.1)
 - Core API: Contacts and Deals CRUD endpoints with Zod validation (v0.1)
 - RBAC: Permission matrix (superadmin/admin/member/viewer), `withPermission()` route guard (v0.1)
-- Soft-delete: All entities use `deleted_at` flag — nothing is physically removed from DB (migration 006)
+- Soft-delete: All entities use `deleted_at` flag — nothing is physically removed from DB (migration 004)
 - Core engine layer: `core/engine/contacts.ts`, `core/engine/deals.ts` — only these may query the DB directly
 - `ApiResponse` factory: `core/engine/response.ts` — ALL API routes must use this, never `NextResponse.json()` directly
+
+### Session 12 — 2026-03-18 (Refactor & Audit Master Plan)
+- **Master Plan doc**: `brain/.../refactor_audit_master_plan.md` — 5 phases (Security, CI/CD, UI, Data Layer, Core Libs)
+- **Conductor track**: `.agent/tracks/2026-03-18-refactor-audit-hardening/SPEC.md` — 6 phases với full acceptance criteria
+- **5 izhubs-native skills** created (replace generic catalog):
+  - `izhubs-api-route` — replace `api-design-principles`
+  - `izhubs-database-engine` — replace `database-safety` + `postgres-best-practices`
+  - `izhubs-module-development` — replace `create-module`
+  - `izhubs-security` — replace `api-security-best-practices` + `security-auditor`
+  - `izhubs-testing` — replace `test-driven-development`
+- **AGENTS.md updated**: `⭐ izhubs-native Skills` section, skills count now 30+
+- **Framework evaluations**: 10 UI components + 10 Core components evaluated (framework vs code-by-hand)
+- **nextjs-v15-upgrade track**: `.agent/tracks/2026-03-18-nextjs-v15-upgrade/SPEC.md` — depends on Phase 2.3 tests
+- **PostgreSQL RLS** added to Phase 1.5 — backstop tầng DB cho tenant isolation
+- **Docker OOM fix** added to Phase 1.6 — `NODE_OPTIONS=--max-old-space-size=4096`
+- **`redis` package installed** — awaiting activation in Phase 1.1
+- **Key new decisions**:
+  - Adopt `resend` for email (not nodemailer)
+  - Adopt `pino` for structured logging (not console.log)
+  - Adopt `sonner` for toast notifications
+  - Adopt `@radix-ui/react-dialog` for modals (focus trap a11y)
+  - Adopt `react-hook-form` + zodResolver for all forms
+  - Keep raw SQL + Zod (no ORM)
+  - Keep `jose` JWT (no NextAuth)
 
 ### Session 9 — 2026-03-17 (Module Registry + Modularization Architecture)
 - **Module Registry system**: DB migrations 009+010 (modules + tenant_modules tables), 7 official modules seeded

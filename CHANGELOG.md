@@ -4,6 +4,18 @@ All notable changes to izhubs ERP are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 Versioning: [Semantic Versioning](https://semver.org/)
 
+## [Unreleased] — 2026-03-18 (Session 12)
+
+### 🤖 Agent Layer
+- **5 izhubs-native SKILL.md files** — tailored skills replacing generic catalog: `izhubs-api-route`, `izhubs-database-engine`, `izhubs-module-development`, `izhubs-security`, `izhubs-testing`
+- **AGENTS.md** — added `⭐ izhubs-native Skills` section with "replaces" mapping to generic skills
+- **refactor-audit-hardening track** — `.agent/tracks/2026-03-18-refactor-audit-hardening/SPEC.md` (6 phases: Security, CI/CD, UI, Data Layer, Core, +2 new: PostgreSQL RLS, Docker OOM)
+- **nextjs-v15-upgrade track** — `.agent/tracks/2026-03-18-nextjs-v15-upgrade/SPEC.md` (plan for v0.3)
+- **Framework evaluation docs** — `component_framework_evaluation.md` (10 UI), `core_framework_evaluation.md` (10 core)
+- **`redis` package installed** — awaiting activation (Phase 1.1 of refactor track)
+
+---
+
 ## [Unreleased] — 2026-03-17 (Session 11)
 
 ### ✨ Added
@@ -58,7 +70,7 @@ Versioning: [Semantic Versioning](https://semver.org/)
 - Docker: dev/staging/prod compose files + bridge network
 - Git workflow: master → production (Coolify auto-deploy)
 - Docs: product-vision, data-layer-architecture, ui-design-language, knowledge-search, public-api
-- 18 AI skills installed in `.agent/skills/`
+- 30+ AI skills installed in `.agent/skills/` (18 from antigravity catalog + 5 izhubs-native added session 12)
 
 ### 🔧 Changed
 - Port changed from 3000 → **1303**

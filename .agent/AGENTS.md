@@ -78,18 +78,30 @@ Every session:
 
 ### ERP-Specific Skills (`.agent/skills/`)
 
+> ⭐ = Native izhubs skills — ưu tiên dùng trước các generic skills.
+
 | Skill | When to use |
 |-------|-------------|
 | `erp-architecture` | Understand the full system before ANY change |
 | `add-entity` | Add a new core entity to the system |
 | `migration-guide` | Write a DB migration correctly |
 | `add-custom-field` | Add a user-defined field to an entity |
-| `create-module` | Scaffold a new business module |
+| `create-module` | Scaffold a new business module (old format) |
 | `create-extension` | Build a guardrailed extension/plugin |
 | `mcp-tool-design` | Add a new tool to the MCP server |
 | `event-bus-patterns` | Publish or subscribe to system events |
 | `clean-code-and-modularity` | Before writing ANY UI or logic — Uncle Bob + GoF |
 | `database-safety` | Zod enforcement, soft-delete, immutable migrations |
+
+#### ⭐ izhubs-native Skills (2026-03-18) — Dùng thay cho generic catalog
+
+| Skill | Thay thế | When to use |
+|-------|---------|-------------|
+| `izhubs-api-route` | `api-design-principles` | Tạo hoặc review bất kỳ route nào trong `app/api/v1/` |
+| `izhubs-database-engine` | `database-safety` + `postgres-best-practices` | Thêm entity mới hoặc sửa truy vấn DB |
+| `izhubs-module-development` | `create-module` | Implement tính năng nghiệp vụ mới (invoices, HR, inventory) |
+| `izhubs-security` | `api-security-best-practices` + `security-auditor` | Review security, implement auth, expose API public |
+| `izhubs-testing` | `test-driven-development` | Viết tests cho bất kỳ loại code nào trong hệ thống |
 
 ### Project Management & Memory Skills
 
