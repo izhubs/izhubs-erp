@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Sidebar from '@/components/ui/Sidebar';
 import Header from '@/components/ui/Header';
 import CommandPalette from '@/components/ui/CommandPalette';
+import QueryProvider from '@/components/providers/QueryProvider';
 import { Menu } from 'lucide-react';
 import { ToastProvider } from '@/lib/toast';
 import type { NavItem } from '@/templates/engine/template.schema';
@@ -104,6 +105,7 @@ export default function AppLayout({ children, navItems, bottomItems, themeDefaul
 
 
   return (
+    <QueryProvider>
     <ToastProvider>
     <div className={`app-layout${collapsed ? ' sidebar-collapsed' : ''}`}>
       {/* Command Palette — global Ctrl+K / ⌘K */}
@@ -152,6 +154,7 @@ export default function AppLayout({ children, navItems, bottomItems, themeDefaul
       </main>
     </div>
     </ToastProvider>
+    </QueryProvider>
   );
 }
 
