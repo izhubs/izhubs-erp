@@ -9,14 +9,51 @@
 //
 // Data flow:
 //   DB (industry_templates.nav_config.dashboardLayout) → layout.tsx → DashboardGrid props
+//
+// To add a new widget:
+//   1. Create a Server Component in components/modules/*/widgets/
+//   2. Import it below
+//   3. Add entry to WIDGET_MAP — done.
 // =============================================================
 
 import type { DashboardWidgetRow } from '@/templates/engine/template.schema';
 
+// ---- CEO Dashboard Widgets ----------------------------------
+import {
+  MrrWidget,
+  CustomersWidget,
+  ChurnWidget,
+  ContractsExpiringWidget,
+} from '@/components/modules/reports/widgets/CeoKpiWidgets';
+
+// ---- Sales Dashboard Widgets --------------------------------
+import {
+  MyPipelineWidget,
+  QuotaProgressWidget,
+  DealsStuckWidget,
+  TasksTodayWidget,
+} from '@/components/modules/reports/widgets/SalesKpiWidgets';
+
+// ---- Chart Widgets (Phase 2b) — recharts lazy-loaded Server Components --
+import {
+  ArrTrendWidget,
+  RevenueByPackageWidget,
+  PipelineFunnelWidget,
+} from '@/components/modules/reports/widgets/ChartWidgets';
+import { TopCustomersWidget } from '@/components/modules/reports/widgets/TopCustomersWidget';
+import { ActivityFeedWidget } from '@/components/modules/reports/widgets/ActivityFeedWidget';
+
+// ---- Marketing Dashboard Widgets ----------------------------
+import {
+  LeadsMonthWidget,
+  ConversionRateWidget,
+  CacWidget,
+} from '@/components/modules/reports/widgets/MarketingKpiWidgets';
+
 // =============================================================
-// WIDGET_MAP — maps widgetId string → React component.
-// Add new widget components here as modules are built.
-// Each widget is a self-contained card that fetches its own data.
+// WIDGET_MAP
+// Key = widgetId string from navConfig.dashboardLayout.rows[].widgetId
+// Value = self-fetching Server Component
 // =============================================================
 
 function PlaceholderWidget({ widgetId }: { widgetId: string }) {
@@ -28,12 +65,31 @@ function PlaceholderWidget({ widgetId }: { widgetId: string }) {
   );
 }
 
-// Import real widgets here as they are built:
-//   import RevenueTodayWidget from '@/modules/reports/widgets/RevenueTodayWidget';
-//   ...
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const WIDGET_MAP: Record<string, React.ComponentType<any>> = {
+  // ---- CEO ----
+  'kpi.mrr':                  MrrWidget,
+  'kpi.customers':            CustomersWidget,
+  'kpi.churn':                ChurnWidget,
+  'kpi.contracts_expiring':   ContractsExpiringWidget,
 
-const WIDGET_MAP: Record<string, React.ComponentType<{ widgetId: string }>> = {
-  // Populated as modules are built — all fall back to PlaceholderWidget
+  // ---- Sales ----
+  'kpi.my_pipeline':          MyPipelineWidget,
+  'kpi.quota_progress':       QuotaProgressWidget,
+  'kpi.deals_stuck':          DealsStuckWidget,
+  'kpi.tasks_today':          TasksTodayWidget,
+
+  // ---- Marketing ----
+  'kpi.leads_month':          LeadsMonthWidget,
+  'kpi.conversion_rate':      ConversionRateWidget,
+  'kpi.cac':                  CacWidget,
+
+  // Charts & tables — Phase 2b ✅
+  'chart.arr_trend':          ArrTrendWidget,
+  'chart.revenue_by_pkg':     RevenueByPackageWidget,
+  'chart.pipeline_funnel':    PipelineFunnelWidget,
+  'table.top_customers':      TopCustomersWidget,
+  'feed.recent_activity':     ActivityFeedWidget,
 };
 
 function resolveWidget(widgetId: string) {
