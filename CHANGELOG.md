@@ -4,6 +4,65 @@ All notable changes to izhubs ERP are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 Versioning: [Semantic Versioning](https://semver.org/)
 
+## [Unreleased] — 2026-03-18 (Session 14 — UI Layer, Chart Widgets, Pipeline Views, BullMQ)
+
+### ✨ Added
+
+**Phase 1 — Shared Component Library**
+- `components/shared/` — 8 reusable components, all use CSS variables (no hardcoded colors):  
+  `KpiCard`, `Badge`, `PageHeader`, `AvatarGroup`, `EmptyState`, `DataTable<T>`, `SidePanel`, `Modal`
+- `components/shared/index.ts` — barrel export
+
+**Phase 2 — Dashboard Widget System**
+- 11 self-fetching Server Component KPI widgets across 3 roles:
+  - CEO: `kpi.mrr`, `kpi.customers`, `kpi.churn`, `kpi.contracts_expiring`
+  - Sales: `kpi.my_pipeline`, `kpi.quota_progress`, `kpi.deals_stuck`, `kpi.tasks_today`
+  - Marketing: `kpi.leads_month`, `kpi.conversion_rate`, `kpi.cac`
+- `core/engine/auth/server-context.ts` — `getTenantId`, `getCurrentUserId` helpers
+
+**Phase 2b — Chart Widgets (recharts, lazy-loaded)**
+- `components/modules/reports/widgets/ChartWidgets.tsx` — Server wrappers:
+  `ArrTrendWidget`, `RevenueByPackageWidget`, `PipelineFunnelWidget`
+- `components/modules/reports/widgets/charts/` — 3 recharts components (AreaChart, horizontal BarChart, BarChart)
+- `components/modules/reports/widgets/TopCustomersWidget.tsx` — top 8 by total deal value + expiry warning
+- `components/modules/reports/widgets/ActivityFeedWidget.tsx` — last 15 activities with type icon + time ago
+- WIDGET_MAP in `DashboardGrid.tsx` now has 16 entries (11 KPI + 5 chart/table)
+
+**Phase 3 — Core Screens**
+- `core/engine/activities.ts` — listActivities, completeActivity, createActivity (Zod validated)
+- `app/(dashboard)/tasks/page.tsx` + `TasksClient` — grouped tasks, SidePanel, optimistic complete
+- `app/(dashboard)/companies/[id]/page.tsx` — 3-column, custom_fields JSONB auto-render by type
+- `app/(dashboard)/settings/packages/page.tsx` — service packages admin with subscriber count + revenue
+- `app/api/v1/activities/[id]/complete/route.ts` — PATCH endpoint
+- `core/engine/rbac.ts` — `activities:read/write` added to all role matrices
+
+**Phase 4 — Virtual Office Pages**
+- `app/(dashboard)/leads/page.tsx` + `LeadsClient` — channel badges, SidePanel, Create Deal CTA
+- `app/(dashboard)/contracts/page.tsx` — KPI bar + DataTable highlighting expiring ≤30d/≤0d
+- `app/(dashboard)/reports/page.tsx` — 5 KPIs + pipeline stage table + revenue trend + top deals
+
+**Phase 5 — Theme Config System**
+- `app/(dashboard)/layout.tsx` — fetches `theme_defaults` from `industry_templates` in parallel with navConfig
+- `components/ui/AppLayout.tsx` — `themeDefaults` prop + `useEffect` injects CSS vars on `document.root`
+
+**Pipeline Multi-View**
+- `components/deals/PipelineViews.tsx` — Kanban / Table (sortable) / Funnel view switcher
+- View preference persisted in `localStorage`. Funnel bars decrease proportionally by stage order (100%→40%)
+
+**Infrastructure**
+- `database/migrations/008_service_packages.sql` — service_packages table, billing types, FK on deals.package_id
+- `components/providers/ReactQueryProvider.tsx` — TanStack Query v5, 60s stale, devtools in dev
+- `app/layout.tsx` — wrapped with ReactQueryProvider
+- `core/engine/import-queue.ts` — BullMQ Queue + `addImportJob()` + `createImportWorker()` factory
+- `scripts/workers/import-worker.ts` — standalone worker (upsert contacts/deals, progress every 50 rows, SIGTERM shutdown)
+
+### 🔧 Changed
+- `components/ui/DashboardGrid.tsx` — WIDGET_MAP fully populated (was all stubs)
+- `app/(dashboard)/deals/page.tsx` — replaced direct `<KanbanBoard>` with `<PipelineViews>`
+- `package.json` — added `bullmq` dependency
+
+---
+
 ## [Unreleased] — 2026-03-18 (Session 12)
 
 ### 🤖 Agent Layer

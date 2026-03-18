@@ -1,5 +1,5 @@
 # Track Status Board
-_Last updated: 2026-03-18 (Session 13 — Security hardening, CI, Unit Tests, Command Palette, Gumroad packages)_
+_Last updated: 2026-03-18 (Session 14 — UI Layer, Chart Widgets, Pipeline Multi-View, BullMQ queue)_
 
 > **Strategic Direction**: All-in-one ERP via Phased Platform Architecture. Focus on the Kernel first, then the Wedge (CRM/Import) to get users, then expand via Marketplace.
 
@@ -37,7 +37,7 @@ _Last updated: 2026-03-18 (Session 13 — Security hardening, CI, Unit Tests, Co
 | 2026-03-16 | mcp-server | planning 🔼 MOVED UP | MCP Server — moved from v0.3, viral demo potential |
 | 2026-03-16 | json-template-format | planning 🏗️ STRUCTURAL | JSON templates for Gumroad distribution |
 | 2026-03-16 | agency-vertical-polish | planning | Stage names, project tracking fields, retainer deal type |
-| 2026-03-17 | pipeline-views | planning | Multi-view: Kanban / Funnel / Table + industry-specific stage presets |
+| 2026-03-17 | pipeline-views | ✅ done | Multi-view: Kanban / Table (sortable) / Funnel (stage-order bars) + localStorage persistence |
 | 2026-03-17 | sales-frameworks | planning | AIDA, BANT, MEDDIC, SPIN framework templates per industry |
 
 ---
@@ -66,7 +66,7 @@ _Last updated: 2026-03-18 (Session 13 — Security hardening, CI, Unit Tests, Co
 | 3.3 | react-hook-form | ✅ done | react-hook-form + @hookform/resolvers installed. Forms pending refactor. |
 | 3.4 | form-refactor | ⏳ pending | Replace ContactFormModal + DealFormModal with Dialog.tsx + useForm + zodResolver |
 | 4.1 | tanstack-query | ✅ done | @tanstack/react-query — QueryProvider, useContacts, useDeals (optimistic updates) |
-| 4.2 | bullmq-csv-queue | ⏳ pending | BullMQ async queue for CSV import — uncomment Redis in docker-compose first |
+| 4.2 | bullmq-csv-queue | ✅ done | BullMQ queue (import-queue.ts) + standalone worker (scripts/workers/import-worker.ts). Start: tsx scripts/workers/import-worker.ts |
 | 4.3 | postgres-fts | ✅ done | tsvector + GIN + unaccent triggers on contacts + deals (see 2.5) |
 | 4.4 | db-query-tenant | ✅ done | core/engine/db.ts: queryAsTenant() + withTenantTransaction() for RLS support |
 
