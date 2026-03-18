@@ -1,15 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Sidebar from '@/components/ui/Sidebar';
 import Header from '@/components/ui/Header';
+import CommandPalette from '@/components/ui/CommandPalette';
 import { Menu } from 'lucide-react';
+import { ToastProvider } from '@/lib/toast';
 import type { NavItem } from '@/templates/engine/template.schema';
 
 interface Props {
   children: React.ReactNode;
   navItems: NavItem[];
   bottomItems?: NavItem[];
+  /** CSS variable overrides from industry_templates.theme_defaults */
+  themeDefaults?: Record<string, string>;
 }
 
 function DemoBanner() {
@@ -65,12 +69,49 @@ function DemoBanner() {
   );
 }
 
-export default function AppLayout({ children, navItems, bottomItems }: Props) {
+export default function AppLayout({ children, navItems, bottomItems, themeDefaults }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+
+  // Apply industry-specific CSS variables from themeDefaults
+  // e.g. { "--color-primary": "#10b981", "--color-accent": "#0ea5e9" }
+  useEffect(() => {
+    if (!themeDefaults || Object.keys(themeDefaults).length === 0) return;
+    const root = document.documentElement;
+    for (const [key, value] of Object.entries(themeDefaults)) {
+      root.style.setProperty(key, value);
+    }
+    return () => {
+      for (const key of Object.keys(themeDefaults)) {
+        root.style.removeProperty(key);
+      }
+    };
+  }, [themeDefaults]);
+
+  // Global Ctrl+K / ⌘+K → open command palette
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      setPaletteOpen(prev => !prev);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
 
   return (
+    <ToastProvider>
     <div className={`app-layout${collapsed ? ' sidebar-collapsed' : ''}`}>
+      {/* Command Palette — global Ctrl+K / ⌘K */}
+      <CommandPalette
+        navItems={[...navItems, ...(bottomItems ?? [])].filter(i => i.href)}
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+      />
       {/* Demo session banner — only visible to demo users */}
       <DemoBanner />
 
@@ -93,6 +134,7 @@ export default function AppLayout({ children, navItems, bottomItems }: Props) {
       />
 
       <Header
+        onSearchClick={() => setPaletteOpen(true)}
         mobileMenuButton={
           <button
             className="btn btn-ghost mobile-menu-btn"
@@ -109,6 +151,7 @@ export default function AppLayout({ children, navItems, bottomItems }: Props) {
         <div className="page">{children}</div>
       </main>
     </div>
+    </ToastProvider>
   );
 }
 
