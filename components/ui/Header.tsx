@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Palette, LogOut, User, ChevronDown } from 'lucide-react';
+import { Palette, LogOut, User, ChevronDown, Globe } from 'lucide-react';
+import { useLanguage } from '@/components/providers/LanguageProvider';
 
 const THEMES = [
   { id: 'default', label: 'Indigo Dark', color: '#6366f1' },
@@ -24,6 +25,8 @@ export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenu
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [themeMenuOpen, setThemeMenuOpen] = useState(false);
   const [currentTheme, setCurrentTheme] = useState('default');
+
+  const { locale, setLocale, t } = useLanguage();
 
   const userMenuRef = useRef<HTMLDivElement>(null);
   const themeMenuRef = useRef<HTMLDivElement>(null);
@@ -54,14 +57,14 @@ export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenu
   };
 
   const handleLogout = () => {
-    // Clear all auth tokens from localStorage
     localStorage.removeItem('hz_access');
-    // Expire both cookies — refresh (httpOnly) and access (readable by JS)
     document.cookie = 'hz_refresh=; Max-Age=0; path=/; SameSite=Lax';
     document.cookie = 'hz_access=; Max-Age=0; path=/; SameSite=Lax';
-    // Use replace() not href= so the dashboard page is removed from history.
-    // Pressing the browser back button after logout will NOT return here.
     window.location.replace('/login');
+  };
+
+  const toggleLocale = () => {
+    setLocale(locale === 'en' ? 'vi' : 'en');
   };
 
   return (
@@ -78,11 +81,36 @@ export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenu
         aria-label="Open command palette"
       >
         <span style={{ opacity: 0.5, fontSize: 15, lineHeight: 1 }}>⌕</span>
-        <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)', flex: 1, textAlign: 'left' }}>Search…</span>
+        <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)', flex: 1, textAlign: 'left' }}>
+          {t('common.search')}…
+        </span>
         <kbd style={{ fontSize: 10, background: 'var(--color-bg-base)', border: '1px solid var(--color-border)', borderRadius: 4, padding: '1px 5px', fontFamily: 'monospace', color: 'var(--color-text-muted)', flexShrink: 0 }}>⌘K</kbd>
       </button>
 
       <div className="header-controls">
+
+        {/* Language Toggle */}
+        <button
+          id="lang-toggle-btn"
+          onClick={toggleLocale}
+          className="btn btn-ghost"
+          title={locale === 'en' ? 'Switch to Tiếng Việt' : 'Switch to English'}
+          aria-label="Toggle language"
+          style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', fontWeight: 600, fontSize: 'var(--font-size-xs)', letterSpacing: '0.05em' }}
+        >
+          <Globe size={14} style={{ opacity: 0.7 }} />
+          <span style={{
+            background: 'var(--color-primary)',
+            color: '#fff',
+            borderRadius: 'var(--radius-sm, 4px)',
+            padding: '1px 5px',
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+          }}>
+            {locale.toUpperCase()}
+          </span>
+        </button>
 
         {/* Theme Switcher */}
         <div ref={themeMenuRef} className="dropdown">
@@ -97,22 +125,22 @@ export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenu
 
           {themeMenuOpen && (
             <div className="dropdown-panel">
-              <p className="dropdown-panel__label">Theme</p>
-              {THEMES.map((t) => (
+              <p className="dropdown-panel__label">{t('settings.theme', 'Theme')}</p>
+              {THEMES.map((t_item) => (
                 <button
-                  key={t.id}
-                  onClick={() => handleThemeSelect(t.id)}
-                  className={`dropdown-item${currentTheme === t.id ? ' dropdown-item--active' : ''}`}
+                  key={t_item.id}
+                  onClick={() => handleThemeSelect(t_item.id)}
+                  className={`dropdown-item${currentTheme === t_item.id ? ' dropdown-item--active' : ''}`}
                 >
                   <span
                     className="theme-swatch"
                     style={{
-                      background: t.color,
-                      border: t.isLight ? '2px solid var(--color-border)' : 'none',
+                      background: t_item.color,
+                      border: t_item.isLight ? '2px solid var(--color-border)' : 'none',
                     }}
                   />
-                  {t.label}
-                  {currentTheme === t.id && (
+                  {t_item.label}
+                  {currentTheme === t_item.id && (
                     <span style={{ marginLeft: 'auto', color: 'var(--color-primary)', fontSize: 10 }}>✓</span>
                   )}
                 </button>
@@ -134,12 +162,12 @@ export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenu
 
           {userMenuOpen && (
             <div className="dropdown-panel dropdown-panel--wide">
-              <div className="dropdown-panel__label">Signed in</div>
+              <div className="dropdown-panel__label">{locale === 'en' ? 'Signed in' : 'Đang đăng nhập'}</div>
               <hr className="dropdown-panel__divider" />
 
               <a href="/settings" className="dropdown-item">
                 <User size={14} />
-                Profile &amp; Settings
+                {locale === 'en' ? 'Profile & Settings' : 'Hồ sơ & Cài đặt'}
               </a>
 
               <button
@@ -148,7 +176,7 @@ export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenu
                 className="dropdown-item dropdown-item--danger"
               >
                 <LogOut size={14} />
-                Log out
+                {locale === 'en' ? 'Log out' : 'Đăng xuất'}
               </button>
             </div>
           )}

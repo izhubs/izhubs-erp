@@ -5,9 +5,11 @@ import Sidebar from '@/components/ui/Sidebar';
 import Header from '@/components/ui/Header';
 import CommandPalette from '@/components/ui/CommandPalette';
 import QueryProvider from '@/components/providers/QueryProvider';
+import { LanguageProvider } from '@/components/providers/LanguageProvider';
 import { Menu } from 'lucide-react';
 import { ToastProvider } from '@/lib/toast';
 import type { NavItem } from '@/templates/engine/template.schema';
+
 
 interface Props {
   children: React.ReactNode;
@@ -105,6 +107,7 @@ export default function AppLayout({ children, navItems, bottomItems, themeDefaul
 
 
   return (
+    <LanguageProvider>
     <QueryProvider>
     <ToastProvider>
     <div className={`app-layout${collapsed ? ' sidebar-collapsed' : ''}`}>
@@ -155,6 +158,7 @@ export default function AppLayout({ children, navItems, bottomItems, themeDefaul
     </div>
     </ToastProvider>
     </QueryProvider>
+    </LanguageProvider>
   );
 }
 
