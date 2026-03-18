@@ -48,6 +48,7 @@
     "@types/papaparse": "^5.5.2",
     "@types/redis": "^4.0.10",
     "bcrypt": "^6.0.0",
+    "bullmq": "^5.71.0",
     "jose": "^6.2.1",
     "lucide-react": "^0.577.0",
     "next": "14.2.29",
