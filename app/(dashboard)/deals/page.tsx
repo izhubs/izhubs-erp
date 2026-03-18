@@ -1,5 +1,11 @@
+// =============================================================
+// izhubs ERP — /deals page (Pipeline)
+// Server Component: fetch all deals → pass to PipelineViews.
+// PipelineViews supports Kanban / Table / Funnel views.
+// =============================================================
+
 import { listDeals } from '@/core/engine/deals';
-import KanbanBoard from '@/components/kanban/KanbanBoard';
+import PipelineViews from '@/components/deals/PipelineViews';
 
 export const metadata = { title: 'Pipeline — izhubs ERP' };
 
@@ -7,13 +13,8 @@ export default async function DealsPage() {
   const { data: deals } = await listDeals({ limit: 500 });
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div className="page-header" style={{ flexShrink: 0 }}>
-        <h1>Pipeline</h1>
-      </div>
-      <div style={{ flex: 1, minHeight: 0 }}>
-        <KanbanBoard initialDeals={deals} />
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', margin: 'calc(var(--space-5) * -1)' }}>
+      <PipelineViews initialDeals={deals} />
     </div>
   );
 }
