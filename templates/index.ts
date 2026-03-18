@@ -9,6 +9,7 @@ import restaurantTemplate from './industry/restaurant';
 import coworkingTemplate from './industry/coworking';
 import ecommerceTemplate from './industry/ecommerce';
 import spaTemplate from './industry/spa';
+import virtualOfficeTemplate from './industry/virtual-office';
 import type { IndustryTemplate } from './engine/template.schema';
 
 export const TEMPLATES: IndustryTemplate[] = [
@@ -17,6 +18,7 @@ export const TEMPLATES: IndustryTemplate[] = [
   coworkingTemplate,
   ecommerceTemplate,
   spaTemplate,
+  virtualOfficeTemplate,
 ];
 
 export const TEMPLATE_MAP = Object.fromEntries(
