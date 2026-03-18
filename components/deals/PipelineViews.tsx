@@ -103,20 +103,20 @@ function TableView({ deals, onDealClick }: { deals: Deal[]; onDealClick: (d: Dea
 function FunnelView({ deals }: { deals: Deal[] }) {
   const openDeals = deals.filter(d => d.stage !== 'won' && d.stage !== 'lost');
   const stages = PIPELINE_STAGES.filter(s => !s.closed);
-  const maxCount = Math.max(1, ...stages.map(s => openDeals.filter(d => d.stage === s.id).length));
+  const totalStages = stages.length;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', maxWidth: 640, margin: '0 auto' }}>
-      {stages.map(stage => {
+      {stages.map((stage, idx) => {
         const stageDeals = openDeals.filter(d => d.stage === stage.id);
         const count = stageDeals.length;
         const value = stageDeals.reduce((s, d) => s + d.value, 0);
-        const pct = Math.max(20, Math.round((count / maxCount) * 100));
+        // Funnel shape: top stage = 100%, each step narrows by equal amount
+        const pct = Math.max(25, 100 - (idx / Math.max(1, totalStages - 1)) * 60);
 
         return (
           <div key={stage.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-            {/* Funnel bar */}
-            <div style={{ width: `${pct}%`, minWidth: 180, transition: 'width 0.4s ease' }}>
+            <div style={{ width: `${pct}%`, minWidth: 200, transition: 'width 0.4s ease' }}>
               <div style={{
                 background: stage.color ?? 'var(--color-primary)',
                 borderRadius: 'var(--radius-md)',
@@ -124,13 +124,13 @@ function FunnelView({ deals }: { deals: Deal[] }) {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                opacity: count === 0 ? 0.3 : 1,
+                opacity: count === 0 ? 0.35 : 1,
               }}>
                 <span style={{ color: '#fff', fontWeight: 600, fontSize: 'var(--font-size-sm)' }}>
                   {stage.label}
                 </span>
                 <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: 'var(--font-size-xs)', textAlign: 'right' }}>
-                  {count} deals · {formatVnd(value)}
+                  {count} deals{value > 0 ? ` · ${formatVnd(value)}` : ''}
                 </span>
               </div>
             </div>
