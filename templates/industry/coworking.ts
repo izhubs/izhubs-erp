@@ -55,8 +55,7 @@ const coworkingTemplate: IndustryTemplate = {
       { id: 'dashboard',  label: 'Dashboard',    href: '/dashboard',  icon: 'LayoutDashboard', roles: ['admin', 'member', 'viewer'] },
       { id: 'contacts',   label: 'Khách hàng',   href: '/contacts',   icon: 'Users',           roles: ['admin', 'member'] },
       { id: 'deals',      label: 'Cơ hội',       href: '/deals',      icon: 'Building2',       roles: ['admin', 'member'] },
-      { id: 'contracts',  label: 'Hợp đồng',     href: '/contracts',  icon: 'FileText',        roles: ['admin', 'member'] },
-      { id: 'reports',    label: 'Báo cáo',      href: '/reports',    icon: 'BarChart2',       roles: ['admin'] },
+      { id: 'import',     label: 'Import',       href: '/import',     icon: 'Upload',          roles: ['admin', 'member'] },
     ],
     bottomItems: [
       { id: 'settings',   label: 'Cài đặt',      href: '/settings',   icon: 'Settings',        roles: ['admin'] },

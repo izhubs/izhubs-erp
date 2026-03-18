@@ -11,7 +11,7 @@ import { eventBus } from '@/core/engine/event-bus';
 // =============================================================
 
 const COLUMNS = `
-  id, name, email, phone, title,
+  id, name, email, phone, title, status,
   company_id as "companyId",
   owner_id   as "ownerId",
   custom_fields as "customFields",
@@ -22,6 +22,10 @@ const COLUMNS = `
 export interface ListOptions {
   page?: number;
   limit?: number;
+  search?: string;
+  status?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
 export interface ListResult<T> {
@@ -29,17 +33,51 @@ export interface ListResult<T> {
   meta: { total: number; page: number; limit: number; totalPages: number };
 }
 
-export async function listContacts({ page = 1, limit = 50 }: ListOptions = {}): Promise<ListResult<Contact>> {
+export async function listContacts({ page = 1, limit = 50, search, status, sortBy = 'created_at', sortOrder = 'desc' }: ListOptions = {}): Promise<ListResult<Contact>> {
   const offset = (page - 1) * limit;
+  const conditions: string[] = ['deleted_at IS NULL'];
+  const values: unknown[] = [];
+  let idx = 1;
+
+  if (search) {
+    conditions.push(`(name ILIKE $${idx} OR email ILIKE $${idx} OR phone ILIKE $${idx} OR title ILIKE $${idx})`);
+    values.push(`%${search}%`);
+    idx++;
+  }
+  if (status && status !== 'all') {
+    conditions.push(`status = $${idx}`);
+    values.push(status);
+    idx++;
+  }
+
+  const where = conditions.join(' AND ');
+  // Whitelist allowed sort columns to prevent injection
+  const allowedSorts: Record<string, string> = { name: 'name', email: 'email', created_at: 'created_at', updated_at: 'updated_at', status: 'status' };
+  const sortCol = allowedSorts[sortBy] ?? 'created_at';
+  const order = sortOrder === 'asc' ? 'ASC' : 'DESC';
+
   const [rows, count] = await Promise.all([
-    db.query(`SELECT ${COLUMNS} FROM contacts WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT $1 OFFSET $2`, [limit, offset]),
-    db.query(`SELECT COUNT(*) FROM contacts WHERE deleted_at IS NULL`),
+    db.query(`SELECT ${COLUMNS} FROM contacts WHERE ${where} ORDER BY ${sortCol} ${order} LIMIT $${idx} OFFSET $${idx + 1}`, [...values, limit, offset]),
+    db.query(`SELECT COUNT(*) FROM contacts WHERE ${where}`, values),
   ]);
   const total = parseInt(count.rows[0].count);
   return {
     data: rows.rows.map(row => ContactSchema.parse(row)),
     meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
   };
+}
+
+/** Get counts per status for tab badges */
+export async function countByStatus(): Promise<Record<string, number>> {
+  const result = await db.query(
+    `SELECT COALESCE(status, 'lead') AS status, COUNT(*)::int AS count FROM contacts WHERE deleted_at IS NULL GROUP BY status`
+  );
+  const counts: Record<string, number> = { all: 0 };
+  for (const row of result.rows) {
+    counts[row.status] = row.count;
+    counts.all += row.count;
+  }
+  return counts;
 }
 
 export async function getContact(id: string): Promise<Contact | null> {

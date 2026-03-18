@@ -28,6 +28,10 @@ const config: Config = {
         '^@/(.*)$': '<rootDir>/$1',
         '^jose$': require.resolve('jose'),
         '\\.(css|scss|sass)$': '<rootDir>/tests/__mocks__/styleMock.js',
+        '^next/server$': '<rootDir>/tests/__mocks__/next-server.ts',
+        // Mock jwt to isolate hasPermission() from transitive jwt/jose imports
+        '^@/core/engine/auth/jwt$': '<rootDir>/tests/__mocks__/jwt.ts',
+        '^.*/engine/auth/jwt$': '<rootDir>/tests/__mocks__/jwt.ts',
       },
       testMatch: ['**/tests/unit/**/*.test.{ts,tsx}'],
       setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],

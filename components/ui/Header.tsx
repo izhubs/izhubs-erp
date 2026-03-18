@@ -20,7 +20,7 @@ function applyTheme(themeId: string) {
   localStorage.setItem('hz_theme', themeId);
 }
 
-export default function Header({ mobileMenuButton }: { mobileMenuButton?: React.ReactNode }) {
+export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenuButton?: React.ReactNode; onSearchClick?: () => void }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [themeMenuOpen, setThemeMenuOpen] = useState(false);
   const [currentTheme, setCurrentTheme] = useState('default');
@@ -68,6 +68,20 @@ export default function Header({ mobileMenuButton }: { mobileMenuButton?: React.
     <header className="header">
       {/* Hamburger — only visible on mobile via CSS */}
       {mobileMenuButton}
+
+      {/* Search bar affordance — clicks open Command Palette */}
+      <button
+        id="global-search-btn"
+        className="header-search-btn"
+        onClick={onSearchClick}
+        title="Search (Ctrl+K)"
+        aria-label="Open command palette"
+      >
+        <span style={{ opacity: 0.5, fontSize: 15, lineHeight: 1 }}>⌕</span>
+        <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)', flex: 1, textAlign: 'left' }}>Search…</span>
+        <kbd style={{ fontSize: 10, background: 'var(--color-bg-base)', border: '1px solid var(--color-border)', borderRadius: 4, padding: '1px 5px', fontFamily: 'monospace', color: 'var(--color-text-muted)', flexShrink: 0 }}>⌘K</kbd>
+      </button>
+
       <div className="header-controls">
 
         {/* Theme Switcher */}

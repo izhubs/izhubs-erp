@@ -53,7 +53,7 @@ const ecommerceTemplate: IndustryTemplate = {
       { id: 'dashboard',  label: 'Dashboard',    href: '/dashboard',  icon: 'LayoutDashboard', roles: ['admin', 'member', 'viewer'] },
       { id: 'contacts',   label: 'Khách mua',    href: '/contacts',   icon: 'Users',           roles: ['admin', 'member'] },
       { id: 'deals',      label: 'Đơn hàng',     href: '/deals',      icon: 'ShoppingCart',    roles: ['admin', 'member'] },
-      { id: 'reports',    label: 'Báo cáo',      href: '/reports',    icon: 'BarChart2',       roles: ['admin'] },
+      { id: 'import',     label: 'Import',       href: '/import',     icon: 'Upload',          roles: ['admin', 'member'] },
     ],
     bottomItems: [
       { id: 'settings',   label: 'Cài đặt',      href: '/settings',   icon: 'Settings',        roles: ['admin'] },

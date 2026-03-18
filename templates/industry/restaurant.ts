@@ -52,7 +52,7 @@ const restaurantTemplate: IndustryTemplate = {
       { id: 'dashboard',  label: 'Tổng quan',    href: '/dashboard',  icon: 'LayoutDashboard', roles: ['admin', 'member', 'viewer'] },
       { id: 'contacts',   label: 'Khách hàng',   href: '/contacts',   icon: 'Users',           roles: ['admin', 'member'] },
       { id: 'deals',      label: 'Đặt bàn',      href: '/deals',      icon: 'UtensilsCrossed', roles: ['admin', 'member'] },
-      { id: 'reports',    label: 'Báo cáo',      href: '/reports',    icon: 'BarChart2',       roles: ['admin'] },
+      { id: 'import',     label: 'Import',       href: '/import',     icon: 'Upload',          roles: ['admin', 'member'] },
     ],
     bottomItems: [
       { id: 'settings',   label: 'Cài đặt',      href: '/settings',   icon: 'Settings',        roles: ['admin'] },

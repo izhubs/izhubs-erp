@@ -39,7 +39,7 @@ export const ApiResponse = {
    */
   error(
     message: string,
-    status: 400 | 401 | 403 | 404 | 409 | 422 | 500 = 500,
+    status: 400 | 401 | 403 | 404 | 409 | 422 | 429 | 500 = 500,
     details?: object,
     code?: ErrorCode
   ): NextResponse {

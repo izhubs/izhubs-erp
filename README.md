@@ -2,72 +2,59 @@
 
 # izhubs ERP
 
-**The CRM for agencies and freelancers who migrated from Airtable, Notion, or Google Sheets — and want AI to help them grow.**
+**Open-source CRM for agencies and freelancers — self-hosted, AI-native, import from Airtable/Notion in minutes.**
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-6366f1.svg)](https://opensource.org/licenses/AGPL-3.0)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178c6.svg)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)](https://nextjs.org/)
+[![Tests](https://img.shields.io/badge/tests-58%20passing-22c55e.svg)](#)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![v0.1 Foundation MVP](https://img.shields.io/badge/status-foundation_mvp-6366f1.svg)](#roadmap)
 
-[Website](https://izhubs.com) · [Templates on Gumroad](#templates) · [Docs](#getting-started) · [Roadmap](#roadmap)
+[Live Demo](#interactive-demo) · [Quick Start](#getting-started) · [Roadmap](#roadmap)
 
 </div>
 
 ---
 
-## Why izhubs ERP?
+## Why izhubs?
 
-Agencies and freelancers outgrow Airtable, Notion, and Google Sheets fast.
-But moving to Salesforce or HubSpot means paying $100+/user/month for tools built for enterprise sales teams — not solo builders.
+Agencies and freelancers outgrow Airtable and Notion fast. HubSpot starts at $100+/user/month and was built for enterprise sales teams, not solo builders.
 
-**izhubs ERP** fills the gap: a beautiful, self-hosted CRM built for agencies and freelancers, that imports your existing data from Airtable/Notion/Sheets in minutes, and lets AI tools extend it — without writing code.
+**izhubs ERP** fills the gap.
 
-| | HubSpot | Airtable | izhubs ERP |
+| | HubSpot | Airtable | **izhubs ERP** |
 |--|--|--|--|
-| **Target** | Marketing teams | Spreadsheet users | **Agency / Freelancer** |
-| **Self-host** | ❌ | ❌ | ✅ Free forever |
-| **Import from Airtable/Notion** | Manual CSV | N/A | ✅ **AI-mapped** |
-| **Vibe coding** | ❌ | ❌ | ✅ **Built-in** |
-| **License** | Paid | Freemium | **AGPL-3.0 — truly open source** |
+| Target | Marketing teams | Spreadsheet users | **Agency / Freelancer** |
+| Self-host | ❌ | ❌ | ✅ Free forever |
+| Import from Airtable/Notion | Manual | N/A | ✅ **AI-mapped in 2 min** |
+| AI coding workflows | ❌ | ❌ | ✅ **Built-in** |
+| License | Paid | Freemium | **AGPL-3.0** |
 
 ---
 
-## Key Features
+## What's Shipped (v0.1)
 
-### 📥 Import from Airtable · Notion · Google Sheets *(v0.2)*
-Upload your existing client list → AI maps the columns → your data is organized in 2 minutes. No manual re-entry.
+### 📥 AI CSV Import
+Drag-drop your Airtable/Notion/Sheets export → AI maps columns → contacts and deals appear in your pipeline. GPT-4o-mini with offline fuzzy fallback — no API key required.
 
-### 🎯 Agency & Freelancer Vertical First
-Pipeline pre-configured for agencies: Lead → Proposal → Active → Retainer → Renewal.  
-Custom fields ready for project type, retainer value, renewal date.
+### 🎯 Pipeline Kanban Board
+Drag-drop across 7 stages with optimistic updates. Board stats: total pipeline value, won revenue, deal count.
 
-### 🤖 AI-Native from Day One
-- **`.agent/` context layer** — Cursor, Claude, Antigravity understand the project instantly
-- **MCP Server** *(v0.2)* — query your CRM data with natural language from any AI tool
-- **Vibe workflows** — `@morning-start`, `@feature-cycle`, `@commit-push`
+### 🎪 Interactive Demo — Try Without Signing Up
+Pick your industry + role → auto-login with a 30-min demo JWT → explore a full dashboard pre-loaded with realistic data.
 
-### 🎨 Theme System
-5 built-in themes switchable without rebuild. User preference saved per account.
+```
+Available industries: Agency · Freelancer · Coworking · Restaurant · Café
+```
 
-<table>
-<tr>
-<td>⚫ Indigo Dark (default)</td>
-<td>🟢 Emerald</td>
-<td>🔴 Rose</td>
-<td>🟡 Amber</td>
-<td>⚪ Light</td>
-</tr>
-</table>
+### 🧩 Module Registry
+App Store UI for activating ERP modules. Feature toggle stored in DB — flip `is_active`, no re-deploy needed.
 
-### 🧩 Guardrailed Extensions
-Extensions communicate only via EventBus + Core API — never direct database access.  
-Community can build plugins safely because they run inside a strict V8 Isolate Sandbox. The core never breaks.
-→ [Read the Extension Architecture](docs/architecture.md)
-
-### 🌐 Internationalization
-Built-in i18n with `next-intl`. Missing translations automatically fall back to English.  
-Currently: 🇬🇧 English · 🇻🇳 Vietnamese
+### 🤖 AI-Native Agent Layer
+The `.agent/` directory gives any AI IDE (Cursor, Antigravity, Claude) instant context:
+- `memory.md` — project rules, what's shipped, what's next
+- `tracks/` — per-feature specs (SPEC.md) + STATUS.md board
+- `workflows/` — `/morning-start`, `/feature-cycle`, `/commit-push`
 
 ---
 
@@ -80,102 +67,94 @@ cd izhubs-erp
 
 # 2. Configure environment
 cp .env.example .env.local
-# Edit .env.local — set DATABASE_URL, REDIS_URL, JWT_SECRET
+# Set DATABASE_URL and JWT_SECRET
 
-# 3. Start services
-docker compose up -d
+# 3. Postgres up
+docker compose up -d postgres
 
-# 4. Run database migrations
+# 4. Migrate + seed
 npm run db:migrate
+npm run seed:agency      # 15 contacts + 15 deals, agency pipeline
 
-# 5. Load sample data (recommended for first run)
-npm run seed:demo
-# → Creates demo@izhubs.com / Demo@12345 with 20 contacts + 15 deals
-
-# 6. Start the app (local dev)
-npm run dev
-
-# 7. Open
-open http://localhost:1303
+# 5. Run
+npm run dev              # → http://localhost:1303
 ```
+
+**Or try the interactive demo** at [localhost:1303/demo](http://localhost:1303/demo) — no signup needed.
 
 ### Requirements
 - Docker & Docker Compose
-- Node.js 20+ (for local development)
+- Node.js 20+
 
 ---
 
-## Daily AI Workflow
+## AI Development Workflow
 
-Every feature is built through a structured cycle — no sprint planning, no standups.
-If your AI tool supports slash commands or file mentions (like Antigravity or Cursor), reference the workflow files directly:
+Designed for solo builders who use AI IDEs. Every feature follows a structured cycle:
 
 ```bash
-# Morning: AI reads context, summarizes what's done, asks what's next
-"hi" / "good morning" / "chào buổi sáng" (or "Read .agent/workflows/morning-start.md")
-
-# Build a feature
-"Read .agent/workflows/feature-cycle.md and build CSV import for contacts"
-→ AI reads workflow → implements → tests → commits
-
-# Ship
-"Run .agent/workflows/commit-push.md"
-→ contract tests → typecheck → commit → push
-
-# Rollback if needed
-"Run .agent/workflows/rollback.md"
+/morning-start   # AI reads context, summarizes what's done, proposes today's task
+/feature-cycle   # AI clarifies spec → implements → tests → commits
+/commit-push     # typecheck + contract tests → commit → push
+/rollback        # revert to last clean state
 ```
+
+Drop into Cursor or Antigravity and start building. The `.agent/` layer prevents AI from going off-spec.
 
 ---
 
 ## Architecture
 
 ```
-┌─────────────────────────────────┐
-│         EXTENSIONS              │  ← Community plugins (SDK guardrailed)
-├─────────────────────────────────┤
-│         MODULES                 │  ← CRM, contracts, invoices, automation
-├─────────────────────────────────┤
-│         CORE ENGINE             │  ← Immutable entities, events, versioned API
-└─────────────────────────────────┘
+EXTENSIONS  ← Community plugins (SDK guardrailed, V8 isolate sandbox)
+MODULES     ← CRM, contracts, invoices, automation (fat module pattern)
+CORE ENGINE ← Immutable entities, events, versioned API
 ```
 
-**Rules that never break:**
-- `core/schema/` is the source of truth — no breaking changes
-- All DB changes → numbered migration files
-- Extensions → EventBus + API only, no direct DB access
+**Hard rules:**
+- Only `core/engine/*.ts` may call `db.query()` — routes import from engine
+- All routes use `ApiResponse` factory — never `NextResponse.json()` directly
+- All DB changes → sequential numbered migration files (`database/migrations/`)
+- Never `DELETE FROM` — soft-delete with `deleted_at`
 - Custom fields → JSONB, never add columns
 
-**Tech stack:** Next.js 14 · PostgreSQL · Redis · Zod · SCSS · next-intl · Docker
+**Stack:** Next.js 14 App Router · PostgreSQL · Zod · SCSS · next-intl · Docker
 
 ---
 
 ## Roadmap
 
-### 🔥 NOW — v0.1 Ship (March 2026)
-- [x] JWT auth (login, register, refresh)
-- [x] Core API: contacts + deals CRUD
-- [x] Pipeline Kanban view (drag-drop, optimistic, 7 stages)
-- [x] Custom Fields UI
-- [x] RBAC — roles and permissions
-- [ ] **Demo data seed** (`npm run seed:demo`) ← BLOCKER
-- [ ] **Gumroad templates** — Agency Starter Pack $29 · Freelancer OS $29 ← REVENUE FIRST
-- [ ] Community launch (Show HN, GitHub)
+### ✅ v0.1 — Foundation MVP (March 2026)
+- [x] JWT auth (access 15m + refresh 7d, httpOnly cookies)
+- [x] Contacts + Deals CRUD API with Zod validation
+- [x] Pipeline Kanban — drag-drop, optimistic updates, 7 stages
+- [x] RBAC — `withPermission()` guard, 4 roles
+- [x] Soft-delete — no hard deletes, ever
+- [x] AI CSV Import — GPT-4o-mini + fuzzy fallback, wizard UI
+- [x] Interactive Demo — industry + role selector, auto-login
+- [x] Module Registry — App Store UI, `withModule()` guard
+- [x] 58 contract tests passing
+- [x] 5 industry seeds (agency, freelancer, coworking, restaurant, café)
+- [x] Multi-tenant schema — `tenant_id` on all tables
+- [ ] **Gumroad templates** — Agency Starter $29 · Freelancer OS $29 ← **NEXT**
+- [ ] README GIF demo
+- [ ] Community launch (Show HN + GitHub release)
 
 ### 📥 v0.2 — Import + MCP (1 month)
-- [ ] **Airtable import** — AI column mapping → contacts + deals
-- [ ] **Notion import** — same AI mapper
-- [ ] **Google Sheets import** — CSV or API
-- [ ] **MCP Server** — `ask Claude about my deals` (moved up from v0.3)
-- [ ] Agency vertical polish (retainer deal type, project tracking fields)
+- [ ] Airtable import — native API + CSV, AI mapper
+- [ ] Notion import — CSV export, same mapper
+- [ ] Google Sheets import — Sheets API or CSV
+- [ ] **MCP Server** — `ask Claude about my deals`
+- [ ] Agency vertical polish (retainer type, project tracking fields)
+- [ ] JSON template format — portable for Gumroad distribution
 
 ### ☁️ v0.3 — Managed Cloud (3 months)
-- [ ] **$19/mo hosted** — multi-tenant via tenant_id (schema ready since v0.1)
-- [ ] Automation rules engine
+- [ ] $19/mo hosted — multi-tenant (schema already ready)
+- [ ] Automation rules engine (Trigger → Condition → Action)
 - [ ] E2E Playwright tests
 
 ### 🚀 v0.4+ — Scale
-- [ ] 2nd vertical (Restaurant F&B) — after Agency $5K MRR
+- [ ] 2nd vertical (Restaurant) — after Agency hits $5K MRR
 - [ ] Extension Marketplace
 - [ ] AI chatbot on your ERP data
 
@@ -183,59 +162,47 @@ If your AI tool supports slash commands or file mentions (like Antigravity or Cu
 
 ## Contributing
 
-We welcome contributions in these areas:
-
-### 🏭 Industry Templates *(easiest to start)*
-Add a pre-configured template for your industry. No deep code knowledge needed.
-→ [Read the guide](templates/CONTRIBUTING_TEMPLATES.md)
+### 🏭 Industry Templates *(easiest entry point)*
+Copy `scripts/seeds/seed-agency.js`, add your industry data, add a `npm run seed:yourname` script.  
+No deep code knowledge required.
 
 ### 🌐 Translations
-Help translate izhubs ERP to your language.
-→ Add a file to `messages/[locale].json` — missing keys auto-fallback to English.
+Add `messages/[locale].json`. Missing keys auto-fallback to English.
 
 ### 🧩 Core Features
-Pick an item from the [v0.1 roadmap](#roadmap) and open a PR.  
-Read `.agent/AGENTS.md` first — the AI context layer explains the architecture.
+Pick a v0.2 roadmap item, open a PR against `master`.  
+Read `.agent/AGENTS.md` first — full architecture explained for AI and humans.
 
-### 🐛 Bug Reports
-Open a GitHub Issue with steps to reproduce.
-
-### 🔀 Branching Strategy
-- Open all Pull Requests against the **`master`** branch.
-- The `production` branch is strictly reserved for automated Coolify deployments.
+### 🔀 Branching
+- PRs → `master`
+- `production` → Coolify auto-deploy only
 
 ---
 
 ## Self-Hosting
 
-izhubs ERP is **self-host first**. Your data stays yours.
-
 ```bash
-# Full setup (copy & paste)
 git clone https://github.com/izhubs/izhubs-erp.git && cd izhubs-erp
-cp .env.example .env.local   # fill in secrets
-docker compose up -d          # start Postgres + Redis
-npm run db:migrate            # apply schema
-npm run seed:demo             # optional: load sample data
-npm run dev                   # http://localhost:1303
+cp .env.example .env.local && nano .env.local   # set DATABASE_URL + JWT_SECRET
+docker compose up -d postgres
+npm run db:migrate && npm run seed:agency
+npm run dev                                      # http://localhost:1303
 ```
 
-See [docs/self-host.md](docs/self-host.md) for detailed instructions, environment variables, and Coolify deployment guide.
-
-Cloud hosting (managed, backups, updates) coming in v0.2.
+Detailed guide: [docs/self-host.md](docs/self-host.md) · Managed cloud hosting coming in v0.3.
 
 ---
 
 ## License
 
-AGPL-3.0 © [izhubs](https://izhubs.com) — free to use, modify, and distribute under the terms of the GNU Affero General Public License v3.0.
+AGPL-3.0 © [izhubs](https://izhubs.com)
 
 ---
 
 <div align="center">
 
-**Built with ❤️ for business owners who want AI-powered tools without vendor lock-in.**
+**Built for business owners who want powerful tools without vendor lock-in.**
 
-[⭐ Star this repo](https://github.com/izhubs/izhubs-erp) · [🐛 Report a bug](https://github.com/izhubs/izhubs-erp/issues) · [💬 Discussions](https://github.com/izhubs/izhubs-erp/discussions)
+[⭐ Star this repo](https://github.com/izhubs/izhubs-erp) · [🐛 Issues](https://github.com/izhubs/izhubs-erp/issues) · [💬 Discussions](https://github.com/izhubs/izhubs-erp/discussions)
 
 </div>

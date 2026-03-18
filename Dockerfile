@@ -7,11 +7,17 @@ RUN npm ci --only=production
 FROM base AS builder
 RUN npm ci
 COPY . .
+# Increase Node.js heap to prevent OOM during Next.js build
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build
 
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
 # Set the correct permission for prerender cache
 RUN mkdir .next

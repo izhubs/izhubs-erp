@@ -1,0 +1,97 @@
+// =============================================================
+// Shared utility styles — used by NotesList, Pagination, etc.
+// Rule: No inline style={{}}. All visual tokens must come from here.
+// =============================================================
+
+// ---- NotesList ----
+.notesSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.notesSectionLabel {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.notesAddRow {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.notesTextarea {
+  resize: vertical;
+  font-size: var(--font-size-sm);
+}
+
+.notesAddBtn {
+  align-self: flex-end;
+  flex-shrink: 0;
+}
+
+.notesEmpty {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-style: italic;
+}
+
+.notesList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.noteItem {
+  padding: var(--space-3);
+  background: var(--color-bg-hover);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  position: relative;
+}
+
+.noteItemMeta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.noteDeleteBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  opacity: 0.5;
+  padding: 0;
+  line-height: 1;
+
+  &:hover { opacity: 1; }
+}
+
+.noteContent {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+// ---- Pagination ----
+.paginationBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  flex-shrink: 0;
+}
+
+.paginationInfo {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-weight: 500;
+}

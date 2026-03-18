@@ -1,10 +1,14 @@
-import { listContacts } from '@/core/engine/contacts';
+import { listContacts, countByStatus } from '@/core/engine/contacts';
 import ContactsTable from '@/components/contacts/ContactsTable';
 
 export const metadata = { title: 'Contacts — izhubs ERP' };
 
 export default async function ContactsPage() {
-  const { data: contacts } = await listContacts({ limit: 200 });
+  // Server-side: fetch first page + tab counts
+  const [{ data: contacts, meta }, counts] = await Promise.all([
+    listContacts({ limit: 25, page: 1 }),
+    countByStatus(),
+  ]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -12,7 +16,11 @@ export default async function ContactsPage() {
         <h1>Contacts</h1>
       </div>
       <div style={{ flex: 1, overflow: 'hidden' }}>
-        <ContactsTable initialContacts={contacts} />
+        <ContactsTable
+          initialContacts={contacts}
+          initialMeta={meta}
+          initialCounts={counts}
+        />
       </div>
     </div>
   );

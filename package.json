@@ -30,7 +30,9 @@
     "seed:cafe": "node scripts/seed.js --industry=cafe",
     "seed:all": "node scripts/seed.js --industry=all",
     "seed:industry-templates": "npx tsx scripts/seed-industry-templates.ts",
-    "seed:industry-templates-dry": "npx tsx scripts/seed-industry-templates.ts --dry-run"
+    "seed:industry-templates-dry": "npx tsx scripts/seed-industry-templates.ts --dry-run",
+    "export:gumroad": "npx tsx scripts/export-gumroad-template.ts --template=agency",
+    "export:gumroad:all": "npx tsx scripts/export-gumroad-template.ts --all"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

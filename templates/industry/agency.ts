@@ -53,9 +53,7 @@ const agencyTemplate: IndustryTemplate = {
       { id: 'dashboard',  label: 'Dashboard',    href: '/dashboard',  icon: 'LayoutDashboard', roles: ['admin', 'member', 'viewer'] },
       { id: 'contacts',   label: 'Contacts',     href: '/contacts',   icon: 'Users',           roles: ['admin', 'member'] },
       { id: 'deals',      label: 'Deals',        href: '/deals',      icon: 'Briefcase',       roles: ['admin', 'member'] },
-      { id: 'contracts',  label: 'Contracts',    href: '/contracts',  icon: 'FileText',        roles: ['admin', 'member'] },
-      { id: 'automation', label: 'Automation',   href: '/automation', icon: 'Zap',             roles: ['admin'] },
-      { id: 'reports',    label: 'Reports',      href: '/reports',    icon: 'BarChart2',       roles: ['admin'] },
+      { id: 'import',     label: 'Import',       href: '/import',     icon: 'Upload',          roles: ['admin', 'member'] },
     ],
     bottomItems: [
       { id: 'settings',   label: 'Settings',     href: '/settings',   icon: 'Settings',        roles: ['admin'] },

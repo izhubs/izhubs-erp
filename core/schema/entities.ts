@@ -38,12 +38,16 @@ export const CompanySchema = z.object({
 export type Company = z.infer<typeof CompanySchema>;
 
 // ---- Contact ----
+export const ContactStatusSchema = z.enum(['lead', 'customer', 'prospect', 'churned']);
+export type ContactStatus = z.infer<typeof ContactStatusSchema>;
+
 export const ContactSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1),
   email: z.string().email().optional().nullable(),
   phone: z.string().optional().nullable(),
   title: z.string().optional().nullable(),
+  status: ContactStatusSchema.default('lead').optional().nullable(),
   companyId: z.string().uuid().optional().nullable(),
   ownerId: z.string().uuid().optional().nullable(),
   customFields: z.record(z.unknown()).default({}),

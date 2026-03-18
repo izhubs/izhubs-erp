@@ -9,6 +9,7 @@ import Papa from 'papaparse';
 import { z } from 'zod';
 import { createImportJob } from '@/core/engine/import';
 import { ApiResponse } from '@/core/engine/response';
+import { checkRateLimit } from '@/lib/rate-limiter';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const SAMPLE_ROWS = 5;
@@ -19,6 +20,11 @@ const QuerySchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 20 imports per minute per IP
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+    const rl = await checkRateLimit(`import:${ip}`, 20, 60);
+    if (!rl.allowed) return ApiResponse.error('Too many requests. Please wait.', 429);
+
     // Read multipart form
     const formData = await req.formData();
     const file = formData.get('file') as File | null;

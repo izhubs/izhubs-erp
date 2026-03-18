@@ -1,12 +1,10 @@
 // =============================================================
-// izhubs ERP — Rate Limiter
-// Sliding window rate limiter using Redis INCR + EXPIRE.
-// Protects API routes from abuse on self-hosted instances.
-//
-// STATUS: Ready to activate — requires `redis` package:
-//   npm install redis @types/redis
-// Then uncomment the Redis implementation below.
+// izhubs ERP — Rate Limiter (Redis sliding window)
+// Applied to: POST /auth/login, /auth/register, /api/v1/import
+// Graceful no-op when REDIS_URL is not set (dev without Redis).
 // =============================================================
+
+import { createClient } from 'redis';
 
 export interface RateLimitResult {
   allowed: boolean;
@@ -14,24 +12,40 @@ export interface RateLimitResult {
   resetAt: Date;
 }
 
+let _client: ReturnType<typeof createClient> | null = null;
+
+async function getRedis() {
+  if (!process.env.REDIS_URL) return null;
+  if (!_client) {
+    _client = createClient({ url: process.env.REDIS_URL });
+    _client.on('error', () => { /* silent — Redis optional */ });
+    await _client.connect();
+  }
+  return _client;
+}
+
 export async function checkRateLimit(
-  identifier: string,   // IP address or user ID
-  limit: number = 100,  // requests per window
+  identifier: string,
+  limit: number = 100,
   windowSeconds: number = 60
 ): Promise<RateLimitResult> {
   const resetAt = new Date(Date.now() + windowSeconds * 1000);
+  const redis = await getRedis().catch(() => null);
 
-  // TODO (SEC-1): Uncomment after `npm install redis`
-  // const redis = await import('redis').then(m => m.createClient({ url: process.env.REDIS_URL }))
-  // await redis.connect()
-  // const key = `rl:${identifier}`
-  // const count = await redis.incr(key)
-  // if (count === 1) await redis.expire(key, windowSeconds)
-  // await redis.disconnect()
-  // return { allowed: count <= limit, remaining: Math.max(0, limit - count), resetAt }
+  if (!redis) {
+    // No Redis configured — graceful passthrough
+    return { allowed: true, remaining: limit, resetAt };
+  }
 
-  // Graceful no-op until Redis is installed
-  return { allowed: true, remaining: limit, resetAt };
+  const key = `rl:${identifier}`;
+  const count = await redis.incr(key);
+  if (count === 1) await redis.expire(key, windowSeconds);
+
+  return {
+    allowed: count <= limit,
+    remaining: Math.max(0, limit - count),
+    resetAt,
+  };
 }
 
 export function rateLimitHeaders(result: RateLimitResult): Record<string, string> {

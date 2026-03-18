@@ -1,5 +1,5 @@
 # Track Status Board
-_Last updated: 2026-03-18 (Session 12 — Refactor & Audit Master Plan drafted)_
+_Last updated: 2026-03-18 (Session 13 — Security hardening, CI, Unit Tests, Command Palette, Gumroad packages)_
 
 > **Strategic Direction**: All-in-one ERP via Phased Platform Architecture. Focus on the Kernel first, then the Wedge (CRM/Import) to get users, then expand via Marketplace.
 
@@ -27,7 +27,7 @@ _Last updated: 2026-03-18 (Session 12 — Refactor & Audit Master Plan drafted)_
 | 2026-03-16 | tenant-id-migration | ✅ done | migration 008 — tenant_id on all tables, default=1 |
 | 2026-03-16 | docker-dev-simplify | ✅ done | Redis commented out dev compose — uncomment when BullMQ needed |
 | 2026-03-16 | multi-role-perspective | ✅ done | docs/multi-role-perspective.md — CEO/Manager/Rep/Ops views |
-| 2026-03-18 | gumroad-templates | 🔴 BLOCKER | Package Agency+Freelancer seed as $29 Gumroad templates — revenue BLOCKER |
+| 2026-03-18 | gumroad-templates | ⏸ PAUSED | Packages built in `dist/gumroad/` (5 ZIPs ready). Needs: screenshots + Gumroad listing upload. Listing copy in `docs/gumroad/`. Resume when ready to publish. |
 
 ## 🏗️ v0.2 — Import + MCP (1 month)
 
@@ -44,30 +44,30 @@ _Last updated: 2026-03-18 (Session 12 — Refactor & Audit Master Plan drafted)_
 
 ---
 
-## 🔒 refactor-audit-hardening (Parallel Track — DO NOT block v0.2)
+## 🔒 refactor-audit-hardening (Session 13 — COMPLETED Phase 1+2, Phase 3+4 pending)
 
-> **Note:** Một agent khác đang làm UI refactor song song. Track này chỉ thực hiện sau khi UI refactor done.
-> **Tài liệu gốc:** `brain/c44d8e62.../refactor_audit_master_plan.md`
-> **`redis` package đã cài sẵn** — chờ activate khi sẵn sàng.
+> **Status:** Phase 1 (Security) + Phase 2 (CI/Tests) ✅ DONE. Phase 3 (UI/UX) + Phase 4 (Performance) ⏳ pending.
+> **Migrations applied:** 004 (status+notes), 005 (GDPR) ✅
+> **Test count:** 92 unit tests passing, 58 contract tests passing
 
 | Phase | Slug | Status | Description |
 |-------|------|--------|--------------|
-| 1.1 | redis-rate-limiter | ⏳ pending | Activate Redis + uncomment rate-limiter.ts — `redis` package đã install |
-| 1.2 | security-headers | ⏳ pending | CSP, HSTS, X-Frame-Options vào next.config.mjs |
-| 1.3 | db-backup-script | ⏳ pending | scripts/backup.sh + pg_dump cron |
-| 1.4 | gdpr-erasure | ⏳ pending | core/engine/gdpr.ts + DELETE /api/v1/user/:id + migration 005_gdpr.sql |
-| 1.5 | postgres-rls | ⏳ pending | PostgreSQL Row Level Security — migration 006_rls.sql, backstop tenant isolation |
-| 1.6 | docker-oom-fix | ⏳ pending | Dockerfile NODE_OPTIONS=--max-old-space-size=4096 |
-| 2.1 | ci-pipeline | ⏳ pending | .github/workflows/ci.yml — lint + typecheck + test:contracts |
-| 2.2 | sentry-integration | ⏳ pending | @sentry/nextjs error tracking cho production |
-| 2.3 | unit-tests | ⏳ pending | tests/unit/rbac.test.ts + tests/unit/api-response.test.ts (20+ tests) |
-| 3.1 | ui-wrapper-layer | ⏳ pending | components/ui/index.ts — internal wrapper cho tất cả UI primitives |
-| 3.2 | radix-ui-adopt | ⏳ pending | @radix-ui/react-dialog, select, popover thay thế custom modals |
-| 3.3 | react-hook-form | ⏳ pending | react-hook-form + zodResolver cho ContactFormModal + DealFormModal |
-| 3.4 | keyboard-shortcuts | ⏳ pending | Ctrl+K (search), N (new contact), Escape (close modal) |
-| 4.1 | tanstack-query | ⏳ pending | @tanstack/react-query wrap app + refactor useModules hook |
-| 4.2 | bullmq-csv-queue | ⏳ pending | BullMQ async queue cho CSV import (sau Redis active) |
-| 4.3 | postgres-fts | ⏳ pending | Full-text search tsvector + GIN index cho contacts/deals |
+| 1.1 | redis-rate-limiter | ✅ done | Login 10/min, register 5/min, import 20/min — graceful fallback if no Redis |
+| 1.2 | security-headers | ✅ done | X-Frame-Options + X-Content-Type + Referrer + Permissions-Policy |
+| 1.3 | db-backup-script | ✅ done | scripts/backup.sh + npm run backup — pg_dump + auto-prune |
+| 1.4 | gdpr-erasure | ✅ done | core/engine/gdpr.ts + DELETE /api/v1/user/:id + migration 005 |
+| 1.5 | postgres-rls | ⏳ pending | PostgreSQL Row Level Security — migration 006_rls.sql |
+| 1.6 | docker-oom-fix | ⏳ pending | Dockerfile NODE_OPTIONS=--max-old-space-size=4096 — 15min job |
+| 2.1 | ci-pipeline | ✅ done | .github/workflows/ci.yml — typecheck + lint + tests |
+| 2.2 | sentry-integration | ⏸ stub | Stub files ready. Run: npm install @sentry/nextjs + add SENTRY_DSN |
+| 2.3 | unit-tests | ✅ done | 92/92 passing — rbac.test.ts (31) + api-response.test.ts (16) + components (45) |
+| 2.4 | command-palette | ✅ done | Ctrl+K palette — search contacts/deals, keyboard nav, header pill, tested |
+| 3.1 | ui-wrapper-layer | ⏳ pending | components/ui/index.ts barrel exports |
+| 3.2 | radix-ui-adopt | ⏳ pending | @radix-ui/react-dialog + select + popover |
+| 3.3 | react-hook-form | ⏳ pending | react-hook-form + zodResolver for forms |
+| 4.1 | tanstack-query | ⏳ pending | @tanstack/react-query wrap app |
+| 4.2 | bullmq-csv-queue | ⏳ pending | BullMQ async queue for CSV import |
+| 4.3 | postgres-fts | ⏳ pending | tsvector + GIN index on contacts/deals |
 
 ## ☁️ v0.3 — Managed Cloud (3 months)
 

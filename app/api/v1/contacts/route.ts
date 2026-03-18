@@ -12,6 +12,10 @@ export const GET = withPermission('contacts:read', async (req) => {
     const result = await ContactsEngine.listContacts({
       page: parseInt(searchParams.get('page') || '1'),
       limit: parseInt(searchParams.get('limit') || '50'),
+      search: searchParams.get('search') || undefined,
+      status: searchParams.get('status') || undefined,
+      sortBy: searchParams.get('sort_by') || undefined,
+      sortOrder: (searchParams.get('sort_order') as 'asc' | 'desc') || undefined,
     });
     return ApiResponse.success(result.data, 200, result.meta);
   } catch (e) {
