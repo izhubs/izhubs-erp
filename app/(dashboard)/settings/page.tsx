@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Palette, Sliders, Puzzle, Link2, Shield, ChevronRight } from 'lucide-react';
+import { Palette, Sliders, Puzzle, Link2, Shield, Zap, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 
 const SETTINGS_SECTIONS = [
@@ -12,6 +12,15 @@ const SETTINGS_SECTIONS = [
     titleVi: 'Giao diện & Ngôn ngữ',
     descEn: 'Theme colors and display language',
     descVi: 'Màu sắc giao diện và ngôn ngữ hiển thị',
+    badge: null,
+  },
+  {
+    href: '/settings/automation',
+    icon: Zap,
+    titleEn: 'Automation Rules',
+    titleVi: 'Automation Rules',
+    descEn: 'Configure auto-task triggers (renewal, follow-up…)',
+    descVi: 'Cấu hình rule tự động tạo task (gia hạn, follow-up…)',
     badge: null,
   },
   {
