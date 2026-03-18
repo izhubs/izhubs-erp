@@ -33,9 +33,7 @@ _Last updated: 2026-03-18 (Session 13 — Security hardening, CI, Unit Tests, Co
 
 | Date | Slug | Status | Description |
 |------|------|--------|-------------|
-| 2026-03-16 | airtable-import | planning | CSV/API → AI column mapper → contacts+deals (Covered by Wedge Sprint 3) |
-| 2026-03-16 | notion-import | planning | Notion CSV export → same AI mapper |
-| 2026-03-16 | sheets-import | planning | Google Sheets CSV or API |
+| 2026-03-16 | sheets-import | planning | Google Sheets CSV or API — maps via AI column mapper |
 | 2026-03-16 | mcp-server | planning 🔼 MOVED UP | MCP Server — moved from v0.3, viral demo potential |
 | 2026-03-16 | json-template-format | planning 🏗️ STRUCTURAL | JSON templates for Gumroad distribution |
 | 2026-03-16 | agency-vertical-polish | planning | Stage names, project tracking fields, retainer deal type |
@@ -80,7 +78,9 @@ _Last updated: 2026-03-18 (Session 13 — Security hardening, CI, Unit Tests, Co
 | 2026-03-16 | automation-schema | planning 🏗️ STRUCTURAL | Trigger→Condition→Action DB schema |
 | 2026-03-16 | e2e-playwright | planning | Core flows tested before managed launch |
 | 2026-03-16 | second-vertical | planning | Restaurant OR Coworking — only after Agency = $5K MRR |
-| 2026-03-18 | nextjs-v15-upgrade | planning ⏳ | Upgrade Next.js 14→15: webpackMemoryOptimizations, React 19, fetch cache fix. Depends on: refactor-audit Phase 2.3 (tests done) |
+| 2026-03-18 | nextjs-v15-upgrade | planning ⏳ | Upgrade Next.js 14→15: webpackMemoryOptimizations, React 19, fetch cache fix |
+| 2026-03-18 | airtable-import | deferred ⬇️ | Moved from v0.2 — API integration after MCP Server ships |
+| 2026-03-18 | notion-import | deferred ⬇️ | Moved from v0.2 — Notion API/CSV after MCP Server ships |
 
 ## 🚀 v0.4+ — Scale (6 months)
 
