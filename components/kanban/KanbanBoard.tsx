@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -34,6 +34,51 @@ export default function KanbanBoard({ initialDeals }: Props) {
   const [activeDeal, setActiveDeal] = useState<Deal | null>(null);
   const columnsRef = useRef<HTMLDivElement>(null);
 
+  // Custom auto-scroll: track drag state and rAF loop
+  const isDraggingRef = useRef(false);
+  const rafRef = useRef<number | null>(null);
+  const scrollSpeedRef = useRef(0);
+
+  // pointermove listener: compute scroll speed from cursor position relative to .columns rect
+  useEffect(() => {
+    const EDGE_SIZE = 80;   // px zone near each edge where scrolling activates
+    const MAX_SPEED = 18;   // max px-per-frame at the very edge
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!isDraggingRef.current || !columnsRef.current) {
+        scrollSpeedRef.current = 0;
+        return;
+      }
+      const rect = columnsRef.current.getBoundingClientRect();
+      const distRight = rect.right - e.clientX;
+      const distLeft  = e.clientX - rect.left;
+
+      if (distRight < EDGE_SIZE && distRight >= 0) {
+        // Approaching right edge — proportional speed
+        scrollSpeedRef.current = ((EDGE_SIZE - distRight) / EDGE_SIZE) * MAX_SPEED;
+      } else if (distLeft < EDGE_SIZE && distLeft >= 0) {
+        // Approaching left edge — negative (scroll left)
+        scrollSpeedRef.current = -((EDGE_SIZE - distLeft) / EDGE_SIZE) * MAX_SPEED;
+      } else {
+        scrollSpeedRef.current = 0;
+      }
+    };
+
+    const loop = () => {
+      if (columnsRef.current && scrollSpeedRef.current !== 0) {
+        columnsRef.current.scrollLeft += scrollSpeedRef.current;
+      }
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    rafRef.current = requestAnimationFrame(loop);
+
+    window.addEventListener('pointermove', onPointerMove);
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
   const [showModal, setShowModal] = useState(false);
   const [defaultStage, setDefaultStage] = useState<DealStage>('new');
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
@@ -61,6 +106,7 @@ export default function KanbanBoard({ initialDeals }: Props) {
     const { active } = event;
     if (active.data.current?.type === 'Deal') {
       setActiveDeal(active.data.current.deal);
+      isDraggingRef.current = true;
     }
   };
 
@@ -70,6 +116,8 @@ export default function KanbanBoard({ initialDeals }: Props) {
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
+    isDraggingRef.current = false;
+    scrollSpeedRef.current = 0;
     setActiveDeal(null);
     const { active, over } = event;
     if (!over) return;
@@ -193,14 +241,7 @@ export default function KanbanBoard({ initialDeals }: Props) {
           onDragStart={handleDragStart}
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
-          autoScroll={{
-            // Wider zone → scroll kicks in earlier
-            threshold: { x: 0.2, y: 0.05 },
-            // 15 = faster (default 10). dnd-kit scales speed proportionally
-            // to how close cursor is to edge → naturally fast/slow based on user
-            acceleration: 15,
-            interval: 5,
-          }}
+          autoScroll={false}   // disabled: using custom pointermove-based scroll (see useEffect)
         >
           <div className={styles.columns} ref={columnsRef}>
             {visibleStages.map(stage => (
