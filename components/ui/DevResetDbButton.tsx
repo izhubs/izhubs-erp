@@ -28,8 +28,10 @@ export default function DevResetDbButton() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to reset DB');
 
-      toast.success('✅ Reset DB Thành Công! Đang chuyển hướng...');
-      setTimeout(() => { window.location.href = '/login'; }, 1500);
+      toast.success('✅ Reset DB Thành Công! Đang đăng xuất...');
+      // Clear session cookies so middleware doesn't bounce back to dashboard
+      await fetch('/api/v1/auth/logout', { method: 'POST' }).catch(() => {});
+      setTimeout(() => { window.location.href = '/demo'; }, 1500);
     } catch (err: any) {
       toast.error('❌ Lỗi reset DB: ' + err.message);
       setLoading(false);
