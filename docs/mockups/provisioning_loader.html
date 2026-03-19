@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-slow-spin {
+            animation: spin 2s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased">
+<div class="relative flex min-h-screen w-full flex-col items-center justify-center overflow-x-hidden p-6">
+<div class="layout-content-container flex flex-col max-w-[480px] w-full bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-8 md:p-12">
+<!-- Spinner Section -->
+<div class="flex flex-col items-center justify-center gap-6 mb-8">
+<div class="relative flex items-center justify-center">
+<!-- Background Ring -->
+<div class="w-20 h-20 rounded-full border-4 border-primary/10"></div>
+<!-- Animated Ring -->
+<div class="absolute w-20 h-20 rounded-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-slow-spin"></div>
+<!-- Icon in Center -->
+<div class="absolute flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl">auto_awesome</span>
+</div>
+</div>
+<div class="text-center">
+<h1 class="text-slate-900 dark:text-slate-100 text-2xl font-bold tracking-tight mb-2">Setting up your workspace...</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm">This usually takes less than a minute</p>
+</div>
+</div>
+<!-- Checklist Section -->
+<div class="flex flex-col gap-1">
+<!-- Completed Item -->
+<div class="flex items-center gap-4 py-3 px-4 rounded-lg bg-primary/5 border border-primary/10">
+<div class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white">
+<span class="material-symbols-outlined text-[18px] font-bold">check</span>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-base font-medium">Provisioning server resources</p>
+</div>
+<!-- Current Item -->
+<div class="flex items-center gap-4 py-3 px-4">
+<div class="flex h-6 w-6 items-center justify-center rounded-full border-2 border-primary">
+<div class="h-2 w-2 rounded-full bg-primary animate-pulse"></div>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-base font-medium">Creating database schemas...</p>
+</div>
+<!-- Pending Items -->
+<div class="flex items-center gap-4 py-3 px-4 opacity-50">
+<div class="flex h-6 w-6 items-center justify-center rounded-full border-2 border-slate-300 dark:border-slate-600"></div>
+<p class="text-slate-600 dark:text-slate-400 text-base font-normal">Activating CRM module</p>
+</div>
+<div class="flex items-center gap-4 py-3 px-4 opacity-50">
+<div class="flex h-6 w-6 items-center justify-center rounded-full border-2 border-slate-300 dark:border-slate-600"></div>
+<p class="text-slate-600 dark:text-slate-400 text-base font-normal">Injecting demo data</p>
+</div>
+<div class="flex items-center gap-4 py-3 px-4 opacity-50">
+<div class="flex h-6 w-6 items-center justify-center rounded-full border-2 border-slate-300 dark:border-slate-600"></div>
+<p class="text-slate-600 dark:text-slate-400 text-base font-normal">Finalizing configuration</p>
+</div>
+</div>
+<!-- Footer progress indicator (subtle) -->
+<div class="mt-10">
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[35%] rounded-full"></div>
+</div>
+<div class="flex justify-between mt-2">
+<span class="text-[10px] uppercase tracking-widest font-semibold text-slate-400">Step 2 of 5</span>
+<span class="text-[10px] uppercase tracking-widest font-semibold text-primary">35% Complete</span>
+</div>
+</div>
+</div>
+<!-- Illustration/Background elements -->
+<div class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none overflow-hidden">
+<div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[100px]"></div>
+<div class="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[100px]"></div>
+</div>
+</div>
+</body></html>

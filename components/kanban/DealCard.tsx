@@ -12,61 +12,60 @@ interface Props {
   onClick?: () => void;
 }
 
-// Color based on deal value tier (like Trello's cover color)
-function valueTierColor(value: number): string {
-  if (value >= 50_000)  return '#4bce97'; // green — big deal
-  if (value >= 10_000)  return '#f5cd47'; // yellow — medium
-  if (value >= 1_000)   return '#579dff'; // blue — small
-  return '#8590a2';                        // gray — micro/zero
+// Cover color based on package tier
+const PKG_COLORS: Record<string, string> = {
+  Enterprise: '#6366f1',
+  Pro:        '#0ea5e9',
+  Basic:      '#10b981',
+};
+
+function valueTierColor(deal: Deal): string {
+  const pkg = (deal.customFields as Record<string, string>)?.goi_dich_vu;
+  if (pkg && PKG_COLORS[pkg]) return PKG_COLORS[pkg];
+  if (deal.value >= 10_000_000) return '#6366f1';
+  if (deal.value >= 3_000_000)  return '#0ea5e9';
+  return '#10b981';
 }
 
-function formatValue(v: number): string {
-  if (!v) return '$0';
-  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`;
-  if (v >= 1_000) return `$${(v / 1_000).toFixed(0)}K`;
-  return `$${v.toLocaleString()}`;
+function formatVND(v: number): string {
+  if (!v) return '0đ';
+  if (v >= 1_000_000_000) return `${(v / 1_000_000_000).toFixed(1)}Bđ`;
+  if (v >= 1_000_000)     return `${(v / 1_000_000).toFixed(v % 1_000_000 === 0 ? 0 : 1)}Mđ`;
+  if (v >= 1_000)         return `${(v / 1_000).toFixed(0)}Kđ`;
+  return `${v}đ`;
 }
 
 function relativeAge(date: Date | string): string {
   const ms = Date.now() - new Date(date).getTime();
   const days = Math.floor(ms / 86_400_000);
-  if (days === 0) return 'today';
+  if (days === 0) return 'hôm nay';
   if (days === 1) return '1d';
-  if (days < 7) return `${days}d`;
+  if (days < 7)  return `${days}d`;
   const weeks = Math.floor(days / 7);
   if (weeks < 5) return `${weeks}w`;
-  const months = Math.floor(days / 30);
-  return `${months}mo`;
+  return `${Math.floor(days / 30)}mo`;
 }
 
-function ownerInitials(ownerId: string | null | undefined): string {
-  if (!ownerId) return '?';
-  return ownerId.slice(0, 2).toUpperCase();
+function ownerInitials(name: string | null | undefined): string {
+  if (!name) return '?';
+  return name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
 }
 
 export default function DealCard({ deal, isOverlay, onClick }: Props) {
   const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: deal.id,
-    data: { type: 'Deal', deal },
-  });
+    attributes, listeners, setNodeRef,
+    transform, transition, isDragging,
+  } = useSortable({ id: deal.id, data: { type: 'Deal', deal } });
 
-  const style = {
-    transition,
-    transform: CSS.Transform.toString(transform),
-  };
+  const style = { transition, transform: CSS.Transform.toString(transform) };
 
   const isOverdue = deal.updatedAt
     ? Date.now() - new Date(deal.updatedAt).getTime() > 14 * 86_400_000
     : false;
 
   const stageConfig = PIPELINE_STAGES.find(s => s.id === deal.stage);
+  const coverColor  = valueTierColor(deal);
+  const pkg = (deal.customFields as Record<string, string>)?.goi_dich_vu;
 
   return (
     <div
@@ -82,37 +81,58 @@ export default function DealCard({ deal, isOverlay, onClick }: Props) {
       {...listeners}
     >
       {/* Trello-style color cover bar */}
-      <div className={styles.cardCover} style={{ background: valueTierColor(deal.value) }} />
+      <div className={styles.cardCover} style={{ background: coverColor }} />
 
       <div className={styles.cardBody}>
-        {/* Small label pills (stage color) */}
+        {/* Stage label pill */}
         <div className={styles.cardLabels}>
           <span
             className={styles.cardLabel}
             style={{ background: stageConfig?.color || '#8590a2' }}
             title={stageConfig?.label}
           />
+          {/* Package badge */}
+          {pkg && (
+            <span style={{
+              fontSize: 10, fontWeight: 700,
+              padding: '1px 6px', borderRadius: 4,
+              background: (PKG_COLORS[pkg] ?? '#64748b') + '22',
+              color: PKG_COLORS[pkg] ?? '#94a3b8',
+              letterSpacing: '0.02em',
+            }}>
+              {pkg}
+            </span>
+          )}
         </div>
 
         {/* Card title */}
         <div className={styles.cardName}>{deal.name}</div>
 
-        {/* Bottom metadata row — Trello badge style */}
+        {/* Bottom metadata row */}
         <div className={styles.cardMeta}>
-          {/* Date badge */}
+          {/* Days-in-stage badge */}
           {deal.updatedAt && (
-            <span className={`${styles.cardBadge} ${isOverdue ? styles.cardBadgeOverdue : ''}`}>
-              <span className={styles.cardBadgeIcon}>📅</span>
-              {relativeAge(deal.updatedAt)}
+            <span className={`${styles.cardBadge} ${isOverdue ? styles.cardBadgeOverdue : ''}`}
+              title={isOverdue ? 'Quá 14 ngày không cập nhật' : ''}>
+              📅 {relativeAge(deal.updatedAt)}
             </span>
           )}
 
-          {/* Value badge */}
-          <span className={styles.cardValue}>{formatValue(deal.value)}</span>
+          {/* Value in VND */}
+          <span className={styles.cardValue}>{formatVND(deal.value)}</span>
 
-          {/* Owner avatar (far right, Trello-style) */}
+          {/* Owner avatar */}
           <div className={styles.cardAvatars}>
-            <span className={styles.cardAvatar} title={deal.ownerId ?? 'Unassigned'}>
+            <span
+              className={styles.cardAvatar}
+              title={deal.ownerId ?? 'Chưa phân công'}
+              style={{
+                background: deal.ownerId
+                  ? '#6366f1'
+                  : 'var(--color-bg-elevated)',
+                color: deal.ownerId ? '#fff' : 'var(--color-text-muted)',
+              }}
+            >
               {ownerInitials(deal.ownerId)}
             </span>
           </div>

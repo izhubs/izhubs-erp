@@ -9,6 +9,7 @@ import { LanguageProvider } from '@/components/providers/LanguageProvider';
 import { Menu } from 'lucide-react';
 import { ToastProvider } from '@/lib/toast';
 import type { NavItem } from '@/templates/engine/template.schema';
+import DevResetDbButton from './DevResetDbButton';
 
 
 interface Props {
@@ -111,6 +112,8 @@ export default function AppLayout({ children, navItems, bottomItems, themeDefaul
     <QueryProvider>
     <ToastProvider>
     <div className={`app-layout${collapsed ? ' sidebar-collapsed' : ''}`}>
+      {/* Dev only specific floating controls */}
+      <DevResetDbButton />
       {/* Command Palette — global Ctrl+K / ⌘K */}
       <CommandPalette
         navItems={[...navItems, ...(bottomItems ?? [])].filter(i => i.href)}

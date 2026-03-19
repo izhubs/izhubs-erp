@@ -1,0 +1,111 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.inputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  position: relative;
+  
+  // Design system tokens (fallback if invalid environment)
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #94a3b8); /* Increased contrast */
+  color: var(--color-text-primary, #0f172a);
+  border-radius: var(--radius-base, 0.5rem);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0.625rem 0.75rem; // Default padding restored
+  transition: all 0.2s ease-in-out;
+  outline: none; // Handled by focus-visible or custom box-shadow
+
+  &:focus-visible {
+    outline: none !important; // Prevent global rectangular outline
+  }
+
+  // Sizes adjustments
+  &.sm { padding: 0.5rem 0.6rem; font-size: 0.8125rem; }
+  &.md { padding: 0.625rem 0.75rem; }
+  &.lg { padding: 0.875rem 1rem; font-size: 1rem; }
+
+  // Hover & Focus (when not disabled/error)
+  &:hover:not(:disabled):not(.hasError) {
+    border-color: var(--color-primary, #3b82f6);
+  }
+
+  &:focus:not(:disabled):not(.hasError) {
+    border-color: var(--color-primary, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); // Ring focus primary
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    background-color: var(--color-muted, #f8fafc);
+  }
+  /* Removed nested state classes to root to ensure CSS Modules exports them correctly */
+}
+
+/* Modifiers decoupled for reliable CSS Modules export */
+.hasError {
+  border-color: var(--color-destructive, #ef4444) !important;
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+  }
+}
+
+.hasLeftIcon {
+  padding-left: 2.5rem !important;
+}
+
+.hasRightIcon {
+  padding-right: 2.5rem !important;
+}
+
+.iconOverlay {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-muted-foreground, #64748b);
+  pointer-events: none;
+  width: 2.5rem;
+  height: 100%;
+  z-index: 10;
+}
+
+.left {
+  left: 0;
+}
+
+.right {
+  right: 0;
+  pointer-events: auto; /* Usually an interactive button like Show Password */
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-foreground, #1e293b);
+  display: flex;
+  align-items: center;
+  
+  &.required::after {
+    content: "*";
+    color: var(--color-destructive, #ef4444);
+    margin-left: 0.25rem;
+  }
+}
+
+.errorText {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-destructive, #ef4444);
+  margin-top: 0.125rem;
+}

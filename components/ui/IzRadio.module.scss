@@ -1,0 +1,97 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mainRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.radio {
+  appearance: none;
+  background-color: var(--color-surface, #ffffff);
+  margin: 0;
+  font: inherit;
+  color: currentColor;
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 1px solid var(--color-border, #94a3b8);
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    background-color: var(--color-primary, #3b82f6);
+  }
+
+  &:hover:not(:disabled):not(.hasError) {
+    border-color: var(--color-primary, #3b82f6);
+  }
+
+  &:checked {
+    border-color: var(--color-primary, #3b82f6);
+    &::before {
+      transform: scale(1);
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    background-color: var(--color-muted, #f8fafc);
+    &::before {
+      background-color: var(--color-muted-foreground, #94a3b8);
+    }
+  }
+}
+
+.hasError {
+  border-color: var(--color-destructive, #ef4444) !important;
+  &:focus-visible {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+  }
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-foreground, #1e293b);
+  cursor: pointer;
+  user-select: none;
+  line-height: 1.125rem;
+}
+
+.disabledLabel {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.description {
+  font-size: 0.8125rem;
+  color: var(--color-muted-foreground, #64748b);
+  margin-left: 1.625rem; /* Indent to match radio width + gap */
+}
+
+.errorText {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-destructive, #ef4444);
+  margin-top: 0.125rem;
+}

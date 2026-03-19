@@ -1,0 +1,35 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-foreground, #1e293b);
+  
+  &.required::after {
+    content: "*";
+    color: var(--color-destructive, #ef4444);
+    margin-left: 0.25rem;
+  }
+}
+
+.optionsContainer {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  &.vertical {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+.errorText {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-destructive, #ef4444);
+  margin-top: 0.125rem;
+}

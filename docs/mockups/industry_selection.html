@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display">
+<div class="layout-container flex h-full grow flex-col items-center justify-center p-6 md:p-12">
+<div class="w-full max-w-[800px] flex flex-col">
+<header class="flex items-center justify-between w-full mb-12">
+<div class="flex items-center gap-2">
+<div class="flex items-center justify-center size-10 rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined text-2xl">grid_view</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold tracking-tight">SaaS ERP</h2>
+</div>
+<div class="flex items-center gap-2 text-slate-400">
+<span class="text-sm font-medium">Step 1 of 4</span>
+<div class="w-24 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="w-1/4 h-full bg-primary"></div>
+</div>
+</div>
+</header>
+<div class="mb-10 text-center md:text-left">
+<h1 class="text-slate-900 dark:text-slate-100 text-3xl md:text-4xl font-bold leading-tight mb-3">What is your business model?</h1>
+<p class="text-slate-500 dark:text-slate-400 text-lg">Select the industry that best describes your operations to personalize your experience.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+<div class="group relative flex flex-col gap-4 p-6 rounded-xl border-2 border-slate-200 dark:border-slate-800 hover:border-primary dark:hover:border-primary transition-all cursor-pointer bg-white dark:bg-slate-900 shadow-sm hover:shadow-md">
+<div class="flex items-center justify-between">
+<div class="size-12 flex items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-3xl">campaign</span>
+</div>
+<div class="size-5 rounded-full border-2 border-slate-300 dark:border-slate-700 group-hover:border-primary flex items-center justify-center">
+<div class="size-2.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+</div>
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-lg font-bold">Digital Agency</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mt-1">Full-service digital solutions, marketing, and creative production.</p>
+</div>
+</div>
+<div class="group relative flex flex-col gap-4 p-6 rounded-xl border-2 border-slate-200 dark:border-slate-800 hover:border-primary dark:hover:border-primary transition-all cursor-pointer bg-white dark:bg-slate-900 shadow-sm hover:shadow-md">
+<div class="flex items-center justify-between">
+<div class="size-12 flex items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-3xl">person_pin</span>
+</div>
+<div class="size-5 rounded-full border-2 border-slate-300 dark:border-slate-700 group-hover:border-primary flex items-center justify-center">
+<div class="size-2.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+</div>
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-lg font-bold">Freelancer</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mt-1">Independent professional services and solo consultants.</p>
+</div>
+</div>
+<div class="group relative flex flex-col gap-4 p-6 rounded-xl border-2 border-slate-200 dark:border-slate-800 hover:border-primary dark:hover:border-primary transition-all cursor-pointer bg-white dark:bg-slate-900 shadow-sm hover:shadow-md">
+<div class="flex items-center justify-between">
+<div class="size-12 flex items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-3xl">restaurant</span>
+</div>
+<div class="size-5 rounded-full border-2 border-slate-300 dark:border-slate-700 group-hover:border-primary flex items-center justify-center">
+<div class="size-2.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+</div>
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-lg font-bold">F&amp;B / Restaurant</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mt-1">Dining, hospitality, and food service management.</p>
+</div>
+</div>
+<div class="group relative flex flex-col gap-4 p-6 rounded-xl border-2 border-slate-200 dark:border-slate-800 hover:border-primary dark:hover:border-primary transition-all cursor-pointer bg-white dark:bg-slate-900 shadow-sm hover:shadow-md">
+<div class="flex items-center justify-between">
+<div class="size-12 flex items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-3xl">corporate_fare</span>
+</div>
+<div class="size-5 rounded-full border-2 border-slate-300 dark:border-slate-700 group-hover:border-primary flex items-center justify-center">
+<div class="size-2.5 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+</div>
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-lg font-bold">Coworking Space</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mt-1">Shared office environments and community management.</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<button class="flex items-center gap-2 px-6 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors">
+<span class="material-symbols-outlined text-xl">arrow_back</span>
+                    Back
+                </button>
+<button class="bg-primary text-white px-10 py-3 rounded-lg font-bold text-lg hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+                    Continue
+                    <span class="material-symbols-outlined text-xl">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<footer class="mt-auto py-8 text-center text-slate-400 dark:text-slate-500 text-sm">
+<p>© 2024 SaaS ERP. All rights reserved.</p>
+</footer>
+</body></html>

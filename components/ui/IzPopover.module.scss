@@ -1,0 +1,42 @@
+/* Popover Animations */
+@keyframes slideUpAndFade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideRightAndFade {
+  from { opacity: 0; transform: translateX(-4px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideDownAndFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideLeftAndFade {
+  from { opacity: 0; transform: translateX(4px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.content {
+  z-index: 50;
+  width: 18rem;
+  background-color: var(--color-surface, #ffffff);
+  border-radius: var(--radius-md, 0.5rem);
+  padding: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-border, #e2e8f0);
+  color: var(--color-foreground, #0f172a);
+  outline: none;
+  animation-duration: 300ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+
+  &[data-state='open'] {
+    &[data-side='top'] { animation-name: slideDownAndFade; }
+    &[data-side='right'] { animation-name: slideLeftAndFade; }
+    &[data-side='bottom'] { animation-name: slideUpAndFade; }
+    &[data-side='left'] { animation-name: slideRightAndFade; }
+  }
+}

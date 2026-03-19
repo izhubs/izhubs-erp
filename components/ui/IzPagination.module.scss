@@ -1,0 +1,60 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  width: 100%;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.text {
+  font-size: 0.875rem;
+  color: var(--color-muted-foreground, #64748b);
+  
+  strong {
+    color: var(--color-foreground, #0f172a);
+    font-weight: 500;
+  }
+}
+
+.pageSizeSelect {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.select {
+  padding: 0.375rem 0.5rem;
+  border-radius: var(--radius-sm, 0.25rem);
+  border: 1px solid var(--color-border, #e2e8f0);
+  background-color: var(--color-surface, #ffffff);
+  font-size: 0.875rem;
+  color: var(--color-foreground, #0f172a);
+  outline: none;
+  cursor: pointer;
+
+  &:focus {
+    border-color: var(--color-primary, #3b82f6);
+  }
+}
+
+.pageInfo {
+  display: flex;
+  align-items: center;
+}
+
+.btnGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
