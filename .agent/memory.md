@@ -3,9 +3,9 @@
 ## Current Status
 
 **Phase**: v0.1 Foundation MVP — **Core foundation complete (RLS + TanStack Query + Radix UI + react-hook-form)**
-**Last updated**: 2026-03-19 (Session 15b — UI Polish, DB Refactor checks, Currency Fix)
+**Last updated**: 2026-03-19 (Session 16 — IzUI Component Library Complete)
 **Health**: ✅ TypeScript clean | ✅ 74/74 contract tests passing | ✅ DB migrated (migrations squash 001) | ✅ RLS enabled
-**Last work**: Session 15b — Virtual Office UI Polish, DealCard enhancements (package badges + VND formatting), Pipeline multi-view currency fixes, demo data setup script, DB refactor impact check (100% safe, no regressions).
+**Last work**: Session 16 — Finalized the IzUI Component Library (Phases 1-13). Added Recharts (Pie/Line/Bar), MetricCards, Accordion, ActivityTimeline, FileUpload, and Kanban presentational layout. Wrote `docs/IzUI_Usage_Guide.md` enforcing SCSS Modules + Radix UI (no Tailwind).
 **Remote**: `https://github.com/izhubs/izhubs-erp` (branch: master, head: ~3e0f8a2)
 
 ### 🎯 Target Persona (confirmed 2026-03-16)
@@ -127,6 +127,13 @@ npm run typecheck; npm run test:contracts
 - Soft-delete: All entities use `deleted_at` flag — nothing is physically removed from DB (migration 004)
 - Core engine layer: `core/engine/contacts.ts`, `core/engine/deals.ts` — only these may query the DB directly
 - `ApiResponse` factory: `core/engine/response.ts` — ALL API routes must use this, never `NextResponse.json()` directly
+
+### Session 16 — 2026-03-19 (IzUI Component Library Finalization)
+- **IzUI Master Roadmap Completed**: All 13 phases of the component library are done natively with SCSS Modules and Radix UI primitives.
+- **Data Visualization**: `IzLineChart`, `IzBarChart`, `IzPieChart`, `IzMetricCard` built on `recharts`.
+- **ERP Widgets**: `IzAccordion` (FAQ), `IzActivityTimeline` (Audit logs), `IzFileUpload` (DND capacity check).
+- **Kanban Layout**: `IzKanbanBoard` CSS structure provided for future `@dnd-kit` usage.
+- **Documentation**: Established `docs/IzUI_Usage_Guide.md` (Strict encapsulation, no Tailwind permitted inside core components).
 
 ### Session 14 — 2026-03-19 (Core Foundation Hardening & Universal DB Architecture)
 - **Database Squashing**: Thu gọn toàn bộ tệp migration từ 001 đến 010 vào `001_initial_schema.sql` và `002_seed_data.sql`
