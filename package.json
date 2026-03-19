@@ -55,6 +55,7 @@
     "@tanstack/react-query": "^5.90.21",
     "@tanstack/react-query-devtools": "^5.91.3",
     "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.13.23",
     "@types/papaparse": "^5.5.2",
     "@types/redis": "^4.0.10",
     "bcrypt": "^6.0.0",

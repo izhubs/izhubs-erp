@@ -1,0 +1,92 @@
+// components/ui/SmartGrid/SmartGrid.module.scss
+.gridContainer {
+  flex: 1;
+  width: 100%;
+  height: 100%; // Container must have explicit height for virtualization to work
+  overflow: auto;
+  position: relative;
+  background-color: #ffffff; // Enforce light theme spreadsheet look
+  border: 1px solid #c0c0c0;
+  color: #000000;
+}
+
+.table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  display: grid; // Use grid layout for the table to support flex rows
+}
+
+.thead {
+  display: grid;
+  position: sticky;
+  top: 0;
+  z-index: 2; // Above body AND frozen columns
+  background-color: #f8f9fa;
+  box-shadow: 0 1px 0 0 #c0c0c0;
+}
+
+.tbody {
+  display: grid;
+  position: relative;
+}
+
+.tr {
+  display: flex;
+  width: fit-content; // Allow horizontal scrolling if columns are wider than viewport
+  min-width: 100%;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.th, .td {
+  border-right: 1px solid #e0e0e0;
+  padding: 0 6px;
+  font-size: 13px;
+  line-height: 24px; // Compact row height
+  height: 24px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background-color: #ffffff; // default td
+}
+
+.th {
+  background-color: #f8f9fa; // Gray header
+  text-align: center;
+  font-weight: 500;
+  color: #333333;
+  user-select: none;
+  border-bottom: 1px solid #c0c0c0;
+  
+  &:hover {
+    background-color: #e8eaed;
+  }
+}
+
+// Ensure frozen columns (like checkboxes or row numbers) stay visible when scrolling horizontally
+.frozenColumn {
+  position: sticky;
+  left: 0;
+  background-color: #f8f9fa; // Matches header
+  z-index: 1;
+  border-right: 2px solid #c0c0c0; // Thicker border to indicate freeze
+}
+.td.frozenColumn {
+  background-color: #f8f9fa;
+  text-align: center;
+  color: #666666;
+}
+
+.activeCell {
+  outline: 2px solid #1a73e8; // Google Sheets blue
+  outline-offset: -2px;
+  z-index: 1; // Show border over adjacent cells
+}
+
+.selectedRow {
+  background-color: #e8f0fe !important; // Light blue row
+  
+  .td {
+    background-color: #e8f0fe;
+  }
+}

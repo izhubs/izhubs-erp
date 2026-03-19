@@ -130,3 +130,17 @@ export async function softDeleteDeal(id: string): Promise<string | null> {
   await eventBus.emit('deal.deleted', { dealId });
   return dealId;
 }
+
+export async function bulkDeleteDeals(ids: string[]): Promise<string[]> {
+  if (ids.length === 0) return [];
+  const placeholders = ids.map((_, i) => `$${i + 1}`).join(', ');
+  const result = await db.query(
+    `UPDATE deals SET deleted_at = NOW(), updated_at = NOW() WHERE id IN (${placeholders}) AND deleted_at IS NULL RETURNING id`,
+    ids
+  );
+  const deletedIds = result.rows.map(r => r.id as string);
+  for (const id of deletedIds) {
+    await eventBus.emit('deal.deleted', { dealId: id });
+  }
+  return deletedIds;
+}

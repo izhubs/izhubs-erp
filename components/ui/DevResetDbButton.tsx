@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { Database, RefreshCw } from 'lucide-react';
+import { useToast } from '@/lib/toast';
 
 export default function DevResetDbButton() {
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
   
   // Only render in development environment
   if (process.env.NODE_ENV !== 'development') return null;
@@ -13,16 +15,21 @@ export default function DevResetDbButton() {
     if (!confirm('🚨 NGUY HIỂM (Chỉ hiện ở Dev): Hành động này sẽ XÓA TOÀN BỘ SCHEMA PUBLIC và chạy lại seed! Toàn bộ Data sẽ mất hết. Bạn có chắc không?')) return;
     
     setLoading(true);
+    toast.info('Đang tiến hành Reset Database...');
+
     try {
       const res = await fetch('/api/v1/dev/reset-db', { method: 'POST' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to reset DB');
       
-      alert('✅ Database đã được reset thành công! Hệ thống sẽ reload tải lại trang.');
-      // Force reload ignoring cache to fetch the new seed data
-      window.location.href = '/login';
+      toast.success('✅ Reset DB Thành Công! Hệ thống sẽ reload trang...');
+      
+      // Force reload after short delay so toast is visible
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 1500);
     } catch (err: any) {
-      alert('❌ Lỗi reset DB: ' + err.message);
+      toast.error('❌ Lỗi reset DB: ' + err.message);
     } finally {
       setLoading(false);
     }

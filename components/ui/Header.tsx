@@ -56,10 +56,11 @@ export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenu
     setThemeMenuOpen(false);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem('hz_access');
-    document.cookie = 'hz_refresh=; Max-Age=0; path=/; SameSite=Lax';
-    document.cookie = 'hz_access=; Max-Age=0; path=/; SameSite=Lax';
+    try {
+      await fetch('/api/v1/auth/logout', { method: 'POST' });
+    } catch {}
     window.location.replace('/login');
   };
 
