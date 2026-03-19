@@ -119,3 +119,44 @@ export function useArchiveDeal() {
     onSuccess: () => qc.invalidateQueries({ queryKey: dealKeys.all }),
   });
 }
+
+// ---- Update mutation ----
+export function useUpdateDeal() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...data }: Partial<Deal> & { id: string }) => {
+      const res = await apiFetch(`/api/v1/deals/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? 'Failed to update deal');
+      return json.data ?? json;
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: dealKeys.all });
+      qc.invalidateQueries({ queryKey: dealKeys.detail(vars.id) });
+    },
+  });
+}
+
+// ---- Bulk Delete mutation ----
+export function useBulkDeleteDeals() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      const res = await apiFetch(`/api/v1/deals/bulk-delete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? 'Failed to delete deals');
+      return json;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: dealKeys.all });
+    },
+  });
+}

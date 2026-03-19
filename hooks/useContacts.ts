@@ -147,3 +147,23 @@ export function usePrefetchContact() {
     });
   }, [qc]);
 }
+
+// ---- Bulk Delete mutation ----
+export function useBulkDeleteContacts() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      const res = await apiFetch(`/api/v1/contacts/bulk-delete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? 'Failed to delete contacts');
+      return json;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: contactKeys.all });
+    },
+  });
+}
