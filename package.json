@@ -78,6 +78,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",
+    "@swc/helpers": "^0.5.19",
     "@testing-library/jest-dom": "^6",
     "@testing-library/react": "^16",
     "@types/jest": "^30.0.0",
