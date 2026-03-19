@@ -277,6 +277,11 @@ Before writing any UI component:
 
 ---
 
+##3. **Themed via Variables**: The entire visual weight (paddings, border-radiuses, spacing) is controlled by `app/styles/_tokens.scss`. Adding a new "Theme" (like Compact or Spaced) completely reorganizes the workspace without touching a single React component (similar to WordPress Themes).
+   👉 *See [Theme & Template Architecture](./Theme_and_Template_Architecture.md) for a deep dive on how structural CSS Themes separate from business-logic Industry Templates.*
+
+---
+
 ## ⚠️ Known Visual Issues (To Fix — assigned to agent)
 
 Diagnosed 2026-03-16. These cause the "hơi kỳ" feeling.

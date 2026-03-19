@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 
 const THEMES = [
-  { id: 'default', label: 'Indigo Dark',  color: '#6366f1', isLight: false },
+  { id: 'default', label: 'Bản gốc (Theo Template)',  color: '#6366f1', isLight: false },
   { id: 'emerald', label: 'Emerald Dark', color: '#10b981', isLight: false },
   { id: 'rose',    label: 'Rose Dark',    color: '#f43f5e', isLight: false },
   { id: 'amber',   label: 'Amber Dark',   color: '#f59e0b', isLight: false },
   { id: 'light',   label: 'Light Mode',   color: '#6366f1', isLight: true },
+  { id: 'compact', label: 'Compact Layout (Vuông Vức)', color: '#312e81', isLight: false },
 ];
 
 const LOCALES = [
@@ -23,21 +24,57 @@ function applyTheme(themeId: string) {
     document.documentElement.setAttribute('data-theme', themeId);
   }
   localStorage.setItem('hz_theme', themeId);
+  window.dispatchEvent(new Event('hz_theme_changed'));
 }
 
 export default function AppearancePage() {
   const { locale, setLocale, t } = useLanguage();
-  // useState so active state re-renders when changed
   const [currentTheme, setCurrentTheme] = useState('default');
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [currentTemplateId, setCurrentTemplateId] = useState<string>('');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('hz_theme') || 'default';
     setCurrentTheme(saved);
   }, []);
 
+  useEffect(() => {
+    // Fetch available templates
+    fetch('/api/v1/tenants/industry')
+      .then(res => res.json())
+      .then(data => {
+        if (data.templates) setTemplates(data.templates);
+      })
+      .catch(console.error);
+      
+    // Ideally we should know the current tenant's template, but for now we rely on DB update visually.
+    // If the user hasn't switched, it defaults to what's in DB.
+  }, []);
+
   const handleTheme = (themeId: string) => {
     applyTheme(themeId);
     setCurrentTheme(themeId);
+  };
+
+  const handleTemplateSelect = async (templateId: string) => {
+    setIsSaving(true);
+    setCurrentTemplateId(templateId);
+    try {
+      const res = await fetch('/api/v1/tenants/industry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ industry: templateId })
+      });
+      if (res.ok) {
+        // Reload to apply new nav-config and themeDefaults variables from layout.tsx
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const isVi = locale === 'vi';
@@ -48,8 +85,82 @@ export default function AppearancePage() {
         <h1>{isVi ? 'Giao diện & Ngôn ngữ' : 'Appearance & Language'}</h1>
       </div>
 
+      {/* ── Industry Template ── */}
+      <div className="card" style={{ marginBottom: 'var(--space-5)' }}>
+        <h3 style={{ marginBottom: 'var(--space-1)', display: 'flex', alignItems: 'center', gap: 8 }}>
+          {isVi ? 'Mô hình kinh doanh (Industry Template)' : 'Industry Template'}
+          {isSaving && <span style={{ fontSize: 12, fontWeight: 'normal', color: 'var(--color-text-muted)' }}>(Saving & Applying...)</span>}
+        </h3>
+        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)', marginBottom: 'var(--space-4)' }}>
+          {isVi 
+            ? 'Thay đổi template kinh doanh. Thao tác này sẽ áp dụng ngay Sidebar, Pipeline, báo cáo và màu sắc đặc trưng của ngành đó.'
+            : 'Change your business template. This instantly applies the industry-specific Sidebar, Pipeline, dashboard, and theme colors.'}
+        </p>
+        
+        {templates.length === 0 ? (
+          <div style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>Loading templates...</div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 'var(--space-3)' }}>
+            {templates.map(tpl => {
+              // Parse primary color from theme_defaults if available to use as the swatch color
+              let color = '#94a3b8';
+              if (tpl.theme_defaults && typeof tpl.theme_defaults === 'object') {
+                color = tpl.theme_defaults['--color-primary'] || color;
+              }
+              const isSelected = currentTemplateId === tpl.id; // Just for visual click feedback during reload
+              
+              return (
+                <button
+                  key={tpl.id}
+                  onClick={() => handleTemplateSelect(tpl.id)}
+                  disabled={isSaving}
+                  className="btn btn-ghost"
+                  style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
+                    gap: 'var(--space-2)', padding: 'var(--space-3)',
+                    border: `1px solid ${isSelected ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                    borderRadius: 'var(--radius-lg)',
+                    background: isSelected ? 'var(--color-primary-muted)' : 'var(--color-bg-elevated)',
+                    textAlign: 'left',
+                    opacity: isSaving && !isSelected ? 0.5 : 1,
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (isSaving) return;
+                    (e.currentTarget as HTMLElement).style.borderColor = color;
+                    (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (isSaving) return;
+                    (e.currentTarget as HTMLElement).style.borderColor = isSelected ? 'var(--color-primary)' : 'var(--color-border)';
+                    (e.currentTarget as HTMLElement).style.transform = 'none';
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', width: '100%' }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 'var(--radius-md)',
+                      background: `${color}22`, color: color,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14
+                    }}>
+                      {tpl.icon}
+                    </div>
+                    <span style={{ fontWeight: 600, fontSize: 'var(--font-size-sm)', color: 'var(--color-text)' }}>
+                      {tpl.name}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', lineHeight: 1.4 }}>
+                    {tpl.description}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       {/* ── Theme ── */}
       <div className="card" style={{ marginBottom: 'var(--space-5)' }}>
+
         <h3 style={{ marginBottom: 'var(--space-1)' }}>
           {isVi ? 'Màu sắc giao diện' : 'Theme'}
         </h3>

@@ -116,18 +116,40 @@ export default function AppLayout({ children, navItems, bottomItems, themeDefaul
   // Apply industry-specific CSS variables from themeDefaults
   // e.g. { "--color-primary": "#10b981", "--color-accent": "#0ea5e9" }
   useEffect(() => {
-    if (!themeDefaults || Object.keys(themeDefaults).length === 0) return;
-    const root = document.documentElement;
-    for (const [key, value] of Object.entries(themeDefaults)) {
-      root.style.setProperty(key, value);
-    }
+    const applyOrClearDefaults = () => {
+      const activeTheme = localStorage.getItem('hz_theme') || 'default';
+      const root = document.documentElement;
+      
+      // If a custom CSS theme is selected (e.g. Amber Dark), it overrides the template's default colors.
+      // We clear the inline style vars so the data-theme CSS can take over.
+      if (activeTheme !== 'default' || !themeDefaults || Object.keys(themeDefaults).length === 0) {
+        if (themeDefaults) {
+          for (const key of Object.keys(themeDefaults)) {
+            root.style.removeProperty(key);
+          }
+        }
+        return;
+      }
+      
+      // Otherwise, we are on "Industry Standard" (default), so apply the template vars
+      for (const [key, value] of Object.entries(themeDefaults)) {
+        root.style.setProperty(key, value);
+      }
+    };
+
+    applyOrClearDefaults();
+    
+    // Listen for changes from the Appearance settings page
+    window.addEventListener('hz_theme_changed', applyOrClearDefaults);
     return () => {
-      for (const key of Object.keys(themeDefaults)) {
-        root.style.removeProperty(key);
+      window.removeEventListener('hz_theme_changed', applyOrClearDefaults);
+      if (themeDefaults) {
+        for (const key of Object.keys(themeDefaults)) {
+          document.documentElement.style.removeProperty(key);
+        }
       }
     };
   }, [themeDefaults]);
-
   // Global Ctrl+K / ⌘+K → open command palette
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
