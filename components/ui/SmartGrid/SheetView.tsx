@@ -1,17 +1,11 @@
 'use client';
 
 /**
- * SheetView — Generic spreadsheet-style editable grid page.
+ * SheetView — Generic reusable spreadsheet-style grid page.
  *
- * Usage:
- *   <SheetView
- *     title="Contacts"
- *     columns={contactColumns}
- *     data={contacts}
- *     onUpdateData={handleUpdate}
- *     onAddRow={handleAdd}         // triggers when phantom bottom row is clicked
- *     onDeleteRows={handleDelete}
- *   />
+ * Pass canCreate/canDelete based on the user's role/permissions.
+ * The trailing empty row only appears when canCreate=true.
+ * The bulk delete button only appears when canDelete=true.
  */
 
 import * as React from 'react';
@@ -19,20 +13,25 @@ import { ColumnDef, RowSelectionState } from '@tanstack/react-table';
 import { SmartGrid } from './SmartGrid';
 import { Trash2 } from 'lucide-react';
 
-export interface SheetViewProps<TData extends Record<string, any>> {
+export interface SheetViewProps<TData = any> {
   title: string;
   columns: ColumnDef<TData, any>[];
   data: TData[];
   isLoading?: boolean;
   onUpdateData: (rowIndex: number, columnId: string, value: unknown) => void;
-  /** Triggered by the phantom bottom row click */
-  onAddRow?: () => void;
+  /** Called when trailing empty row is committed. Requires canCreate=true to show. */
+  onAddRow?: (draft: Record<string, unknown>) => void;
   onDeleteRows?: (keys: string[]) => void;
-  rowKey?: keyof TData;
+  rowKey?: string;
   toolbarExtra?: React.ReactNode;
+  /** Show trailing draft row for creating new records (tie to 'create' permission) */
+  canCreate?: boolean;
+  /** Show bulk delete button (tie to 'delete' permission) */
+  canDelete?: boolean;
 }
 
-export function SheetView<TData extends Record<string, any>>({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function SheetView<TData = any>({
   title,
   columns,
   data,
@@ -42,12 +41,17 @@ export function SheetView<TData extends Record<string, any>>({
   onDeleteRows,
   rowKey = 'id',
   toolbarExtra,
+  canCreate = false,
+  canDelete = false,
 }: SheetViewProps<TData>) {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
   const selectedKeys = React.useMemo(() =>
-    Object.keys(rowSelection).map(Number).filter(i => i < data.length).map(i => data[i][rowKey] as string),
-    [rowSelection, data, rowKey]
+    Object.keys(rowSelection)
+      .map(Number)
+      .filter(i => i < data.length)
+      .map(i => (data[i] as Record<string, unknown>)[rowKey] as string),
+    [rowSelection, data, rowKey],
   );
 
   const handleDeleteSelected = () => {
@@ -62,14 +66,9 @@ export function SheetView<TData extends Record<string, any>>({
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* ── Compact toolbar ─────────────────────────────────── */}
       <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '6px 12px',           // compact: was var(--space-3) var(--space-4)
-        borderBottom: '1px solid var(--color-border)',
-        flexShrink: 0,
-        gap: 8,
-        minHeight: 40,
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '6px 12px', borderBottom: '1px solid var(--color-border)',
+        flexShrink: 0, gap: 8, minHeight: 40,
       }}>
         <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: 600, color: 'var(--color-text)' }}>
           {title}
@@ -81,7 +80,7 @@ export function SheetView<TData extends Record<string, any>>({
         </span>
 
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-          {selectedKeys.length > 0 && onDeleteRows && (
+          {canDelete && selectedKeys.length > 0 && onDeleteRows && (
             <button
               className="btn btn-ghost"
               onClick={handleDeleteSelected}
@@ -95,7 +94,7 @@ export function SheetView<TData extends Record<string, any>>({
         </div>
       </div>
 
-      {/* ── Grid ────────────────────────────────────────────── */}
+      {/* ── Grid (SmartGrid handles virtual scroll + editing) ── */}
       <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
         {isLoading ? (
           <div style={{ padding: 32, textAlign: 'center', color: 'var(--color-text-muted)' }}>Đang tải…</div>
@@ -106,7 +105,7 @@ export function SheetView<TData extends Record<string, any>>({
             updateData={onUpdateData}
             rowSelection={rowSelection}
             onRowSelectionChange={setRowSelection}
-            onAddRow={onAddRow}
+            onAddRow={canCreate ? onAddRow : undefined}
           />
         )}
       </div>

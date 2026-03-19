@@ -121,6 +121,7 @@ export function useArchiveDeal() {
 }
 
 // ---- Update mutation ----
+// Patches record in-place in cache — grid rows don't re-sort after edit.
 export function useUpdateDeal() {
   const qc = useQueryClient();
   return useMutation({
@@ -134,9 +135,15 @@ export function useUpdateDeal() {
       if (!res.ok) throw new Error(json.error ?? 'Failed to update deal');
       return json.data ?? json;
     },
-    onSuccess: (_, vars) => {
-      qc.invalidateQueries({ queryKey: dealKeys.all });
-      qc.invalidateQueries({ queryKey: dealKeys.detail(vars.id) });
+    onSuccess: (updated: Deal, vars) => {
+      qc.setQueriesData<{ data: Deal[]; total: number }>(
+        { queryKey: dealKeys.all },
+        (old) => {
+          if (!old) return old;
+          return { ...old, data: old.data.map((d) => d.id === updated.id ? { ...d, ...updated } : d) };
+        },
+      );
+      qc.setQueryData(dealKeys.detail(vars.id), updated);
     },
   });
 }

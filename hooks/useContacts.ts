@@ -100,6 +100,9 @@ export function useCreateContact() {
 }
 
 // ---- Update mutation ----
+// Uses setQueryData to patch the record in-place in every cached page.
+// This prevents the grid from re-sorting after an edit — rows stay where they are.
+// Only invalidate the detail cache (used by modals), NOT the list cache.
 export function useUpdateContact() {
   const qc = useQueryClient();
   return useMutation({
@@ -113,9 +116,20 @@ export function useUpdateContact() {
       if (!res.ok) throw new Error(json.error ?? 'Failed to update contact');
       return json.data ?? json;
     },
-    onSuccess: (_, vars) => {
-      qc.invalidateQueries({ queryKey: contactKeys.all });
-      qc.invalidateQueries({ queryKey: contactKeys.detail(vars.id) });
+    onSuccess: (updated: Contact, vars) => {
+      // Patch every list page in the cache — keeps row order stable
+      qc.setQueriesData<ContactsPage>(
+        { queryKey: contactKeys.all },
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            data: old.data.map((c) => c.id === updated.id ? { ...c, ...updated } : c),
+          };
+        },
+      );
+      // Still update the detail cache used by modals/detail views
+      qc.setQueryData(contactKeys.detail(vars.id), updated);
     },
   });
 }

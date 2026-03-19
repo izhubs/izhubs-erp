@@ -19,7 +19,8 @@ interface SmartGridProps<TData> {
   rowSelection?: RowSelectionState;
   onRowSelectionChange?: React.Dispatch<React.SetStateAction<RowSelectionState>>;
   updateData?: (rowIndex: number, columnId: string, value: unknown) => void;
-  onAddRow?: () => void;
+  /** Called when the trailing empty row is committed with data */
+  onAddRow?: (draft: Record<string, unknown>) => void;
 }
 
 export function SmartGrid<TData>({
@@ -30,14 +31,15 @@ export function SmartGrid<TData>({
   updateData,
   onAddRow,
 }: SmartGridProps<TData>) {
-  // Two separate refs:
-  // scrollRef  → the vertically scrolling body (rows)
-  // headerRef  → the horizontally-synced fixed header
-  const scrollRef    = React.useRef<HTMLDivElement>(null);
-  const headerRef    = React.useRef<HTMLDivElement>(null);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const headerRef = React.useRef<HTMLDivElement>(null);
 
   const { activeCell, setActiveCell, isEditing, setIsEditing, handleKeyDown } =
     useGridKeyboard(data.length, columns.length);
+
+  // Draft state for the trailing empty row
+  const [draftRow, setDraftRow] = React.useState<Record<string, unknown>>({});
+  const [draftEditing, setDraftEditing] = React.useState<string | null>(null);
 
   const isSelectionEnabled = onRowSelectionChange !== undefined || rowSelection !== undefined;
 
@@ -70,6 +72,8 @@ export function SmartGrid<TData>({
 
   const { rows } = table.getRowModel();
   const leafColumns = table.getVisibleLeafColumns();
+  // Data columns only (exclude _select for draft row)
+  const dataColumns = leafColumns.filter(c => c.id !== '_select');
 
   const ROW_NUM_W = 40;
   const totalWidth = ROW_NUM_W + leafColumns.reduce((sum, c) => sum + c.getSize(), 0);
@@ -80,6 +84,16 @@ export function SmartGrid<TData>({
     estimateSize: () => 25,
     overscan: 12,
   });
+
+  // Commit draft row when focus leaves and has data
+  const commitDraftRow = React.useCallback(() => {
+    setDraftEditing(null);
+    const hasData = Object.values(draftRow).some(v => v !== '' && v != null);
+    if (hasData && onAddRow) {
+      onAddRow(draftRow);
+      setDraftRow({});
+    }
+  }, [draftRow, onAddRow]);
 
   // Sync horizontal scroll: body → header
   const handleBodyScroll = React.useCallback(() => {
@@ -131,26 +145,24 @@ export function SmartGrid<TData>({
       onCopy={handleCopy}
       onPaste={handlePaste}
     >
-      {/* ── FIXED HEADER (does not scroll vertically) ─────── */}
-      <div
-        ref={headerRef}
-        className={styles.headerBlock}
-        style={{ overflowX: 'hidden', flexShrink: 0 }}
-      >
+      {/* ── FIXED HEADER ─────────────────────────────────── */}
+      <div ref={headerRef} className={styles.headerBlock} style={{ overflowX: 'hidden', flexShrink: 0 }}>
         <div style={{ width: totalWidth }}>
-          {/* Chrome row: A B C … */}
+          {/* chrome row: A B C … */}
           <div className={styles.headerRow}>
-            <div className={cn(styles.th, styles.frozenColumn)} style={{ width: ROW_NUM_W }} />
+            <div className={styles.frozenColumn}
+              style={{ width: ROW_NUM_W, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} />
             {leafColumns.map((col, i) => (
               <div key={`chr-${col.id}`} className={styles.th} style={{ width: col.getSize() }}>
                 {getColumnLetter(i)}
               </div>
             ))}
           </div>
-          {/* Field name row */}
+          {/* field name row */}
           {table.getHeaderGroups().map(hg => (
             <div key={hg.id} className={styles.headerRow}>
-              <div className={cn(styles.th, styles.frozenColumn)} style={{ width: ROW_NUM_W }} />
+              <div className={styles.frozenColumn}
+                style={{ width: ROW_NUM_W, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} />
               {hg.headers.map(header => (
                 <div key={header.id} className={styles.th} style={{ width: header.getSize() }}>
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
@@ -168,7 +180,7 @@ export function SmartGrid<TData>({
         onScroll={handleBodyScroll}
         style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'auto' }}
       >
-        {/* Virtual rows */}
+        {/* Virtual data rows */}
         <div style={{ height: rowVirtualizer.getTotalSize(), width: totalWidth, position: 'relative' }}>
           {rowVirtualizer.getVirtualItems().map(virtualRow => {
             const row = rows[virtualRow.index];
@@ -179,16 +191,19 @@ export function SmartGrid<TData>({
                 key={row.id}
                 className={cn(styles.bodyRow, isSelected && styles.selectedRow)}
                 style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
+                  position: 'absolute', top: 0, left: 0,
                   transform: `translateY(${virtualRow.start}px)`,
                   width: totalWidth,
                 }}
               >
-                <div className={cn(styles.td, styles.frozenColumn)} style={{ width: ROW_NUM_W }}>
+                {/* Row number — NOT clickable/editable */}
+                <div
+                  className={cn(styles.td, styles.frozenColumn)}
+                  style={{ width: ROW_NUM_W, pointerEvents: 'none', userSelect: 'none' }}
+                >
                   {virtualRow.index + 1}
                 </div>
+
                 {row.getVisibleCells().map((cell, colIndex) => {
                   const isActive = activeCell?.row === virtualRow.index && activeCell?.col === colIndex;
                   return (
@@ -196,8 +211,6 @@ export function SmartGrid<TData>({
                       key={cell.id}
                       className={cn(styles.td, isActive && styles.activeCell)}
                       style={{ width: cell.column.getSize() }}
-                      onClick={() => setActiveCell({ row: virtualRow.index, col: colIndex })}
-                      onDoubleClick={() => { setActiveCell({ row: virtualRow.index, col: colIndex }); setIsEditing(true); }}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </div>
@@ -208,15 +221,59 @@ export function SmartGrid<TData>({
           })}
         </div>
 
-        {/* Phantom add-row */}
-        <div
-          className={styles.addRowPhantom}
-          style={{ width: Math.max(totalWidth, 300) }}
-          onClick={onAddRow}
-        >
-          <span>+</span>
-          <span style={{ fontSize: 12 }}>Thêm dòng mới</span>
-        </div>
+        {/* ── Trailing empty row (real input row for new data) ── */}
+        {onAddRow && (
+          <div className={styles.bodyRow} style={{ width: totalWidth, position: 'relative' }}>
+            {/* Row number placeholder */}
+            <div
+              className={cn(styles.td, styles.frozenColumn)}
+              style={{ width: ROW_NUM_W, color: 'var(--color-text-muted)', opacity: 0.4, userSelect: 'none', pointerEvents: 'none', textAlign: 'center' }}
+            >
+              {data.length + 1}
+            </div>
+
+            {/* Selection placeholder (if enabled) */}
+            {isSelectionEnabled && (
+              <div className={styles.td} style={{ width: 32 }} />
+            )}
+
+            {/* Editable cells for data columns */}
+            {dataColumns.map(col => {
+              const colId = col.id;
+              const isEditingThis = draftEditing === colId;
+              const val = draftRow[colId] ?? '';
+
+              return (
+                <div
+                  key={colId}
+                  className={cn(styles.td, styles.draftCell)}
+                  style={{ width: col.getSize() }}
+                >
+                  <input
+                    style={{
+                      width: '100%', height: '100%',
+                      border: 'none', background: 'transparent', outline: 'none',
+                      padding: '0 6px', margin: 0,
+                      font: 'inherit', color: 'inherit',
+                      lineHeight: 'inherit', display: 'block', boxSizing: 'border-box',
+                      opacity: isEditingThis || (val !== '') ? 1 : 0.3,
+                    }}
+                    placeholder={isEditingThis ? '' : '…'}
+                    value={String(val)}
+                    onFocus={() => setDraftEditing(colId)}
+                    onChange={(e) => setDraftRow(prev => ({ ...prev, [colId]: e.target.value }))}
+                    onBlur={commitDraftRow}
+                    onKeyDown={(e) => {
+                      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.stopPropagation();
+                      if (e.key === 'Escape') { setDraftRow({}); setDraftEditing(null); }
+                      if (e.key === 'Enter') { commitDraftRow(); }
+                    }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,65 +1,71 @@
 'use client';
 
 import * as React from 'react';
-import { RowData, CellContext, Table } from '@tanstack/react-table';
+import { RowData, CellContext } from '@tanstack/react-table';
 import { CellCoordinates } from './useGridKeyboard';
-import { cn } from './utils';
-import styles from './SmartGrid.module.scss';
 
-// Extend TanStack Table Meta
 declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
     updateData?: (rowIndex: number, columnId: string, value: unknown) => void;
     activeCell?: CellCoordinates;
     setActiveCell?: (cell: CellCoordinates) => void;
     isEditing?: boolean;
-    setIsEditing?: (isEditing: boolean) => void;
+    setIsEditing?: (v: boolean) => void;
   }
 }
 
 interface EditableCellProps<TData> {
   context: CellContext<TData, unknown>;
-  type?: 'text' | 'number' | 'select' | 'date'; // future proofing
 }
 
-export function EditableCell<TData>({ context, type = 'text' }: EditableCellProps<TData>) {
+const INPUT_STYLE: React.CSSProperties = {
+  width: '100%', height: '100%',
+  border: 'none', background: 'transparent', outline: 'none',
+  padding: '0 6px', margin: 0,
+  font: 'inherit', color: 'inherit', lineHeight: 'inherit',
+  display: 'block', boxSizing: 'border-box',
+};
+
+const VIEW_STYLE: React.CSSProperties = {
+  width: '100%', height: '100%',
+  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+  cursor: 'cell', display: 'flex', alignItems: 'center',
+  padding: '0 6px', boxSizing: 'border-box',
+};
+
+export function EditableCell<TData>({ context }: EditableCellProps<TData>) {
   const { getValue, row, column, table } = context;
   const initialValue = getValue();
-  const [value, setValue] = React.useState<any>(initialValue);
+  const [value, setValue] = React.useState<unknown>(initialValue);
 
-  // Sync state if initialValue changes externally
-  React.useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
+  React.useEffect(() => { setValue(initialValue); }, [initialValue]);
 
   const meta = table.options.meta;
   const rowIndex = row.index;
-  // We need column index for coordinates. In TanStack table, column.getIndex() doesn't exist directly for all visible columns.
-  // We can find it via visible columns:
   const visibleColumns = table.getVisibleLeafColumns();
   const colIndex = visibleColumns.findIndex(c => c.id === column.id);
 
-  const isActive = meta?.activeCell?.row === rowIndex && meta?.activeCell?.col === colIndex;
+  const isActive  = meta?.activeCell?.row === rowIndex && meta?.activeCell?.col === colIndex;
   const isEditing = isActive && meta?.isEditing;
 
-  const onBlur = () => {
+  // Called by onBlur — which is guaranteed to fire before the grid moves to the next cell
+  // because useGridKeyboard now calls element.blur() explicitly before navigating.
+  const commit = () => {
     if (meta?.updateData && value !== initialValue) {
       meta.updateData(rowIndex, column.id, value);
     }
   };
 
-  const handleDoubleClick = () => {
+  const activate = (e: React.MouseEvent) => {
+    e.stopPropagation();
     meta?.setActiveCell?.({ row: rowIndex, col: colIndex });
-    meta?.setIsEditing?.(true);
+    if (meta?.isEditing && !isActive) meta?.setIsEditing?.(false);
   };
 
-  const handleClick = () => {
-    if (!meta?.isEditing || !isActive) {
-      meta?.setActiveCell?.({ row: rowIndex, col: colIndex });
-      if (meta?.isEditing && !isActive) {
-          meta?.setIsEditing?.(false);
-      }
-    }
+  const startEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    meta?.setActiveCell?.({ row: rowIndex, col: colIndex });
+    meta?.setIsEditing?.(true);
   };
 
   if (isEditing) {
@@ -67,34 +73,31 @@ export function EditableCell<TData>({ context, type = 'text' }: EditableCellProp
       <input
         // eslint-disable-next-line jsx-a11y/no-autofocus
         autoFocus
-        className="w-full h-full border-none bg-transparent outline-none px-1"
-        value={value as string}
+        style={INPUT_STYLE}
+        value={String(value ?? '')}
         onChange={(e) => setValue(e.target.value)}
-        onBlur={() => {
-          onBlur();
-        }}
-        // Keyboard events logic is mostly handled by the parent grid Container, 
-        // but we can stop propagation for left/right arrows if we want text-cursor movement to work
+        onBlur={commit}
         onKeyDown={(e) => {
-          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-            e.stopPropagation();
+          // IME (Unikey etc.) — let composition complete, don't handle navigation
+          if (e.nativeEvent.isComposing) return;
+          // Allow text cursor movement within the input
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.stopPropagation();
+          // Escape: restore original value before blur fires
+          if (e.key === 'Escape') {
+            setValue(initialValue);
+            // Override onBlur so it doesn't commit the discarded value
+            e.currentTarget.onblur = null;
           }
+          // Tab/Enter: let the event bubble to the grid — grid will blur() this input
+          // BEFORE moving to next cell, so onBlur → commit() fires at the right time.
         }}
       />
     );
   }
 
   return (
-    <div
-      className={cn(
-        "w-full h-full px-1 overflow-hidden text-ellipsis whitespace-nowrap cursor-cell",
-        // The blue border could be handled by the parent TD via className, but we can also do it here if we make this wrapper fill the TD
-        // Actually, Google Sheets highlights the cell itself.
-      )}
-      onClick={handleClick}
-      onDoubleClick={handleDoubleClick}
-    >
-      <span className="truncate">{value as React.ReactNode}</span>
+    <div style={VIEW_STYLE} onClick={activate} onDoubleClick={startEdit}>
+      {String(value ?? '')}
     </div>
   );
 }

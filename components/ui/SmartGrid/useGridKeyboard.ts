@@ -7,35 +7,49 @@ export function useGridKeyboard(rowCount: number, colCount: number) {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLDivElement>) => {
+    (e: KeyboardEvent<HTMLElement>) => {
       if (!activeCell) return;
+      // IME composition (e.g. Unikey Vietnamese) — let IME handle the keys
+      if (e.nativeEvent.isComposing) return;
 
       const { row, col } = activeCell;
 
-      // If actively editing, let the input handle most keys except special navigation commitments
       if (isEditing) {
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          setIsEditing(false); // Cancel edit
-        }
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          setIsEditing(false); // Commit and move down
-          setActiveCell({ row: Math.min(row + 1, rowCount - 1), col });
-        }
-        if (e.key === 'Tab') {
-          e.preventDefault();
-          setIsEditing(false); // Commit and move right (or left if Shift)
-          if (e.shiftKey) {
-            setActiveCell({ row, col: Math.max(col - 1, 0) });
-          } else {
-            setActiveCell({ row, col: Math.min(col + 1, colCount - 1) });
+        switch (e.key) {
+          case 'Escape':
+            e.preventDefault();
+            // Blur without committing — the active input's onKeyDown handles restoration
+            (document.activeElement as HTMLElement | null)?.blur();
+            setIsEditing(false);
+            break;
+
+          case 'Enter':
+          case 'Tab': {
+            e.preventDefault();
+            // 1. Blur active input first → triggers onBlur → commits value in EditableCell
+            (document.activeElement as HTMLElement | null)?.blur();
+            // 2. Exit editing
+            setIsEditing(false);
+            // 3. Navigate
+            if (e.key === 'Enter') {
+              setActiveCell({ row: Math.min(row + 1, rowCount - 1), col });
+            } else if (e.shiftKey) {
+              if (col > 0)       setActiveCell({ row, col: col - 1 });
+              else if (row > 0)  setActiveCell({ row: row - 1, col: colCount - 1 });
+            } else {
+              if (col < colCount - 1) setActiveCell({ row, col: col + 1 });
+              else setActiveCell({ row: Math.min(row + 1, rowCount - 1), col: 0 });
+            }
+            break;
           }
+          // Let arrow keys propagate normally (cursor in text)
+          default:
+            break;
         }
-        return; // Don't handle other arrow keys while editing text
+        return;
       }
 
-      // Navigation Mode (Not Editing)
+      // ── Navigation mode ──────────────────────────────────────────
       switch (e.key) {
         case 'ArrowUp':
           e.preventDefault();
@@ -56,39 +70,27 @@ export function useGridKeyboard(rowCount: number, colCount: number) {
         case 'Tab':
           e.preventDefault();
           if (e.shiftKey) {
-            setActiveCell({ row, col: Math.max(col - 1, 0) });
+            if (col > 0)       setActiveCell({ row, col: col - 1 });
+            else if (row > 0)  setActiveCell({ row: row - 1, col: colCount - 1 });
           } else {
-            setActiveCell({ row, col: Math.min(col + 1, colCount - 1) });
+            if (col < colCount - 1) setActiveCell({ row, col: col + 1 });
+            else setActiveCell({ row: Math.min(row + 1, rowCount - 1), col: 0 });
           }
           break;
         case 'Enter':
-          e.preventDefault();
-          // In Google Sheets, Enter moves down when NOT editing, or starts editing?
-          // Actually, Enter usually moves down. F2 or typing starts editing.
-          setActiveCell({ row: Math.min(row + 1, rowCount - 1), col });
-          break;
         case 'F2':
           e.preventDefault();
           setIsEditing(true);
           break;
         default:
-          // If typing a printable character, start editing
           if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
             setIsEditing(true);
-            // We let the keystroke propagate so it might be caught by the input
-            // But usually this requires careful focus management.
           }
           break;
       }
     },
-    [activeCell, isEditing, rowCount, colCount]
+    [activeCell, isEditing, rowCount, colCount],
   );
 
-  return {
-    activeCell,
-    setActiveCell,
-    isEditing,
-    setIsEditing,
-    handleKeyDown,
-  };
+  return { activeCell, setActiveCell, isEditing, setIsEditing, handleKeyDown };
 }

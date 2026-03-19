@@ -43,7 +43,7 @@ function DemoBanner() {
   return (
     <div style={{
       position: 'fixed',
-      bottom: '24px',
+      top: '8px',
       left: '50%',
       transform: 'translateX(-50%)',
       zIndex: 10000,

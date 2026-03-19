@@ -10,7 +10,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import type { Deal, DealStage } from '@/core/schema/entities';
-import { PIPELINE_STAGES } from '@/core/config/pipeline';
+import { PIPELINE_STAGES, type PipelineStageConfig } from '@/core/config/pipeline';
 import Badge from '@/components/shared/Badge';
 import { apiFetch } from '@/lib/apiFetch';
 
@@ -31,7 +31,7 @@ const VIEW_LABELS: Record<ViewMode, string> = {
 };
 
 // ---- Table View ------------------------------------------------
-function TableView({ deals, onDealClick }: { deals: Deal[]; onDealClick: (d: Deal) => void }) {
+function TableView({ deals, onDealClick, stages }: { deals: Deal[]; onDealClick: (d: Deal) => void; stages: PipelineStageConfig[] }) {
   const [sortKey, setSortKey] = useState<keyof Deal>('createdAt');
   const [sortAsc, setSortAsc] = useState(false);
 
@@ -57,7 +57,7 @@ function TableView({ deals, onDealClick }: { deals: Deal[]; onDealClick: (d: Dea
     </th>
   );
 
-  const stageMap = Object.fromEntries(PIPELINE_STAGES.map(s => [s.id, s]));
+  const stageMap = Object.fromEntries(stages.map(s => [s.id, s]));
   const STAGE_VARIANT: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = {
     won: 'success', lost: 'danger', active: 'info',
     renewal: 'warning', lead: 'neutral', proposal: 'primary' as 'info',
@@ -101,14 +101,14 @@ function TableView({ deals, onDealClick }: { deals: Deal[]; onDealClick: (d: Dea
 }
 
 // ---- Funnel View -----------------------------------------------
-function FunnelView({ deals }: { deals: Deal[] }) {
+function FunnelView({ deals, stages }: { deals: Deal[]; stages: PipelineStageConfig[] }) {
   const openDeals = deals.filter(d => d.stage !== 'won' && d.stage !== 'lost');
-  const stages = PIPELINE_STAGES.filter(s => !s.closed);
-  const totalStages = stages.length;
+  const openStages = stages.filter(s => !s.closed);
+  const totalStages = openStages.length;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', maxWidth: 640, margin: '0 auto' }}>
-      {stages.map((stage, idx) => {
+      {openStages.map((stage, idx) => {
         const stageDeals = openDeals.filter(d => d.stage === stage.id);
         const count = stageDeals.length;
         const value = stageDeals.reduce((s, d) => s + d.value, 0);
@@ -159,7 +159,8 @@ function Stat({ label, value, green }: { label: string; value: string; green?: b
 }
 
 // ---- Main PipelineViews component ------------------------------
-export default function PipelineViews({ initialDeals }: { initialDeals: Deal[] }) {
+export default function PipelineViews({ initialDeals, stages: stagesProp }: { initialDeals: Deal[]; stages?: PipelineStageConfig[] }) {
+  const stages = stagesProp ?? PIPELINE_STAGES;
   const [view, setView] = useState<ViewMode>('kanban');
   const [deals, setDeals] = useState<Deal[]>(initialDeals);
   const [totalValue, setTotalValue] = useState(0);
@@ -221,9 +222,9 @@ export default function PipelineViews({ initialDeals }: { initialDeals: Deal[] }
 
       {/* View content */}
       <div style={{ flex: 1, minHeight: 0, overflow: view === 'kanban' ? 'hidden' : 'auto', padding: view === 'kanban' ? 0 : 'var(--space-5)' }}>
-        {view === 'kanban' && <KanbanBoard initialDeals={deals} />}
-        {view === 'table'  && <TableView deals={deals} onDealClick={handleDealClick} />}
-        {view === 'funnel' && <FunnelView deals={deals} />}
+        {view === 'kanban' && <KanbanBoard initialDeals={deals} stages={stages} />}
+        {view === 'table'  && <TableView deals={deals} onDealClick={handleDealClick} stages={stages} />}
+        {view === 'funnel' && <FunnelView deals={deals} stages={stages} />}
       </div>
     </div>
   );

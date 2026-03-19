@@ -23,13 +23,16 @@ import DealFormModal from './DealFormModal';
 import DealSlideOver from '@/components/deals/DealSlideOver';
 import styles from './kanban.module.scss';
 import { apiFetch } from '@/lib/apiFetch';
-import { PIPELINE_STAGES } from '@/core/config/pipeline';
+import { PIPELINE_STAGES, type PipelineStageConfig } from '@/core/config/pipeline';
 
 interface Props {
   initialDeals: Deal[];
+  /** Pipeline stages from the tenant's industry template. Falls back to PIPELINE_STAGES. */
+  stages?: PipelineStageConfig[];
 }
 
-export default function KanbanBoard({ initialDeals }: Props) {
+export default function KanbanBoard({ initialDeals, stages: stagesProp }: Props) {
+  const allStages = stagesProp ?? PIPELINE_STAGES;
   const [deals, setDeals] = useState<Deal[]>(initialDeals);
   const [activeDeal, setActiveDeal] = useState<Deal | null>(null);
   const columnsRef = useRef<HTMLDivElement>(null);
@@ -86,8 +89,8 @@ export default function KanbanBoard({ initialDeals }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const visibleStages = useMemo(
-    () => PIPELINE_STAGES.filter(s => showClosed || !s.closed),
-    [showClosed]
+    () => allStages.filter(s => showClosed || !s.closed),
+    [showClosed, allStages]
   );
 
   const sensors = useSensors(
@@ -218,7 +221,7 @@ export default function KanbanBoard({ initialDeals }: Props) {
             />
             Show Won/Lost
           </label>
-          <button className="btn btn-primary" onClick={() => openAddDeal('new')}>
+          <button className="btn btn-primary" onClick={() => openAddDeal((allStages[0]?.id ?? 'new') as DealStage)}>
             + New Deal
           </button>
         </div>

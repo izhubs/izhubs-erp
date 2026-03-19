@@ -88,6 +88,14 @@
   max-width: var(--max-content-width);
   margin: 0 auto;
   width: 100%;
+
+  // When containing a full-height sheet view, fill the parent and remove default sizing
+  &:has(.page--sheet) {
+    max-width: none;
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+  }
 }
 
 // Full-height sheet variant — used by SmartGrid sheet views.

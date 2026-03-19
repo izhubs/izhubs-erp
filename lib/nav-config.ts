@@ -76,7 +76,7 @@ export async function getNavConfig(
     [`nav-config-${tenantId}`],
     {
       tags: [`nav-config-${tenantId}`],
-      // No revalidate — cache lives until explicitly busted via revalidateTag()
+      revalidate: 0, // Always fresh — invalidate via revalidateTag() on industry change
     }
   );
 

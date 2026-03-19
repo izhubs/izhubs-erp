@@ -91,22 +91,8 @@
   }
 }
 
-// ── Phantom add-row at the bottom ─────────────────────────────────
-.addRowPhantom {
-  display: flex;
-  height: 28px;
-  border-top: 1px dashed var(--color-border);
-  cursor: text;
-  color: var(--color-text-muted);
-  font-size: 13px;
-  align-items: center;
-  padding-left: 48px;
-  gap: 6px;
-  opacity: 0.45;
-  transition: opacity 0.15s, background 0.15s;
-
-  &:hover {
-    opacity: 1;
-    background-color: var(--color-bg-hover);
-  }
+// ── Trailing empty draft row ───────────────────────────────────────
+// Slightly tinted to hint it's a new-row area
+.draftCell {
+  background-color: color-mix(in srgb, var(--color-primary, #f97316) 4%, var(--color-bg-surface));
 }
