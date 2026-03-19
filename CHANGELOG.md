@@ -4,6 +4,40 @@ All notable changes to izhubs ERP are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 Versioning: [Semantic Versioning](https://semver.org/)
 
+## [Unreleased] — 2026-03-19 (Session 15b — UI Polish, DB Refactor Impact, Currency Fix)
+
+### ✨ Added
+
+**Demo Data Setup**
+- `scripts/setup-vo-demo.js` — one-shot script: sets `tenant.industry = 'virtual-office'`, seeds 15 Vietnamese contacts + 15 deals with VO stages (`active/renewal/onboarding/negotiation/proposal/lead/won/lost`) and `goi_dich_vu` custom field
+- `npm run seed:industry-templates` run → 6 templates seeded into `industry_templates` table (previously empty, causing sidebar to show DEFAULT_NAV)
+
+**VO Stage Support**
+- `core/schema/entities.ts` — `DealStageSchema` extended with 4 VO-specific stages: `lead`, `active`, `onboarding`, `renewal` (kept generic stages for backward compat)
+- `core/config/pipeline.ts` — `VIRTUAL_OFFICE_STAGES` (8 stages with `labelVi` bilingual), `GENERIC_STAGES`, merged into `PIPELINE_STAGES` (VO-first); all stage configs have `labelVi` field
+
+**DealCard Enhancement**
+- `components/kanban/DealCard.tsx` — rewrote cover color logic based on `goi_dich_vu` package (Enterprise=indigo, Pro=blue, Basic=green); added package badge pill; VND formatting (`formatVND`); Vietnamese age labels (`hôm nay`, `2w`)
+
+### 🔧 Fixed
+
+**Currency Formatting — USD → VND everywhere**
+- `components/kanban/KanbanBoard.tsx` — `formatCurrency()`: `$M/$K` → `Tỷđ/Mđ/Kđ`
+- `components/kanban/KanbanColumn.tsx` — `formatValue()`: `$M/$K` → `Tỷđ/Mđ/Kđ` (column header total)
+- `components/deals/PipelineViews.tsx` — `formatVnd()`: missing `đ` suffix → `Tỷđ/Mđ/Kđ` (pipeline summary stats + funnel)
+
+**DB Refactor Impact Check (`refactor(core): harden foundation`)**
+- Verified 0 TypeScript errors after refactor (cleared stale `.next/types` cache)
+- Confirmed all page + API imports already updated to `@/modules/crm/engine/contacts` and `@/modules/crm/engine/deals`
+- `core/engine/` still retains: `service-packages.ts`, `automations.ts`, `activities.ts`, `import.ts`, `rbac.ts` (not moved)
+- **74/74 contract tests still pass** after refactor
+
+**Root Cause — Sidebar showing only 4 items**
+- `tenant.industry` was `null` → `getNavConfig()` returned `null` → layout fell back to `DEFAULT_NAV` (4 items)
+- Fix: seed industry templates + set `tenant.industry = 'virtual-office'` via setup script
+
+---
+
 ## [Unreleased] — 2026-03-18 (Session 15 — Virtual Office Template Full Stack)
 
 ### ✨ Added

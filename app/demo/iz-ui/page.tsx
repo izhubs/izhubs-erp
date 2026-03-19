@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Settings, Trash, Plus, Save, Mail, Zap, ShieldAlert, Workflow, Briefcase, Lock, User, Code, Bell, Trash2, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Settings, Trash, Plus, Save, Mail, Zap, ShieldAlert, Workflow, Briefcase, Lock, User, Code, Bell, Trash2, CheckCircle, AlertTriangle, TrendingUp, DollarSign, Users, Package, BarChart2, HelpCircle, FileSearch, CheckCircle2 } from 'lucide-react';
 
 import {
   createColumnHelper,
@@ -48,6 +48,15 @@ import { IzTooltip, IzTooltipTrigger, IzTooltipContent, IzTooltipProvider } from
 import { IzPopover, IzPopoverTrigger, IzPopoverContent } from '@/components/ui/IzPopover';
 import { IzDrawer, IzDrawerTrigger, IzDrawerContent, IzDrawerHeader, IzDrawerTitle, IzDrawerDescription, IzDrawerFooter, IzDrawerClose, IzDrawerBody } from '@/components/ui/IzDrawer';
 import { IzBreadcrumb, IzBreadcrumbList, IzBreadcrumbItem, IzBreadcrumbLink, IzBreadcrumbPage, IzBreadcrumbSeparator } from '@/components/ui/IzBreadcrumb';
+import { IzAccordion, IzAccordionItem, IzAccordionTrigger, IzAccordionContent } from '@/components/ui/IzAccordion';
+import { IzMetricCard } from '@/components/ui/IzMetricCard';
+import { IzLineChart } from '@/components/ui/IzLineChart';
+import { IzBarChart } from '@/components/ui/IzBarChart';
+import { IzPieChart } from '@/components/ui/IzPieChart';
+import { IzActivityTimeline } from '@/components/ui/IzActivityTimeline';
+import { IzFileUpload } from '@/components/ui/IzFileUpload';
+import { IzKanbanBoard, IzKanbanColumn, IzKanbanCard } from '@/components/ui/IzKanbanBoard';
+import type { TimelineEvent } from '@/components/ui/IzActivityTimeline';
 import { useToast } from '@/hooks/use-toast';
 import styles from './Demo.module.scss'; 
 
@@ -832,6 +841,204 @@ const columns = [
               </div>
             </section>
           </IzTooltipProvider>
+        </div>
+
+        {/* --- PART 6: DATA VISUALIZATION --- */}
+        <div className={styles.partContainer}>
+          <h2 className={styles.partHeader}>F. Biểu Đồ & Thống Kê (Data Visualization)</h2>
+          
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2>1. Metric Cards (Tổng Quan Nhanh)</h2>
+              <span className={styles.badge}>CUSTOM SCSS</span>
+            </div>
+            <div className={`${styles.grid4}`}>
+              <IzMetricCard label="Doanh Thu Tháng" value="234.5M" trend={12.4} trendLabel="vs tháng trước" icon={<DollarSign size={18}/>} />
+              <IzMetricCard label="Khách Hàng Mới" value="1,293" trend={8.1} trendLabel="vs tháng trước" icon={<Users size={18}/>} />
+              <IzMetricCard label="Đơn Hàng" value="842" trend={-3.2} trendLabel="vs tháng trước" icon={<Package size={18}/>} />
+              <IzMetricCard label="Tỷ Lệ Thành Công" value="94.7%" trend={0} trendLabel="không đổi" icon={<BarChart2 size={18}/>} />
+            </div>
+          </section>
+
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2>2. Đường và Cột (Recharts)</h2>
+              <span className={styles.badge}>RECHARTS</span>
+            </div>
+            <div className={styles.grid}>
+              <div className={styles.smartCard}>
+                <h3 className={`${styles.textXl} ${styles.mb6}`}>Biểu đồ đường - Doanh thu 6 tháng</h3>
+                <IzLineChart
+                  data={[
+                    {name: 'T10', doanhThu: 120, chiPhi: 80},
+                    {name: 'T11', doanhThu: 145, chiPhi: 90},
+                    {name: 'T12', doanhThu: 200, chiPhi: 110},
+                    {name: 'T1', doanhThu: 178, chiPhi: 95},
+                    {name: 'T2', doanhThu: 190, chiPhi: 100},
+                    {name: 'T3', doanhThu: 235, chiPhi: 115},
+                  ]}
+                  dataKeys={[
+                    {key:'doanhThu', name:'Doanh thu', color:'#6366f1'},
+                    {key:'chiPhi', name:'Chi phí', color:'#10b981'}
+                  ]}
+                />
+              </div>
+              <div className={styles.smartCard}>
+                <h3 className={`${styles.textXl} ${styles.mb6}`}>Biểu đồ cột - Top sản phẩm</h3>
+                <IzBarChart
+                  data={[
+                    {name: 'CRM', doanhThu: 340},
+                    {name: 'ERP', doanhThu: 220},
+                    {name: 'HRM', doanhThu: 180},
+                    {name: 'Kho', doanhThu: 150},
+                    {name: 'Khai thuế', doanhThu: 90},
+                  ]}
+                  dataKeys={[
+                    {key:'doanhThu', name:'Doanh thu (Tr)', color:'#6366f1'}
+                  ]}
+                />
+              </div>
+            </div>
+          </section>
+
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2>3. Biểu Đồ Tròn (Pie & Donut)</h2>
+              <span className={styles.badge}>RECHARTS</span>
+            </div>
+            <div className={styles.grid}>
+              <div className={styles.smartCard}>
+                <h3 className={`${styles.textXl} ${styles.mb6}`}>Biểu đồ tròn dạng Phần (Pie)</h3>
+                <IzPieChart
+                  data={[
+                    {name:'CRM', value:35, color:'#6366f1'},
+                    {name:'ERP', value:25, color:'#10b981'},
+                    {name:'HRM', value:20, color:'#f59e0b'},
+                    {name:'Kho', value:20, color:'#ef4444'},
+                  ]}
+                />
+              </div>
+              <div className={styles.smartCard}>
+                <h3 className={`${styles.textXl} ${styles.mb6}`}>Biểu đồ Donut</h3>
+                <IzPieChart
+                  donut
+                  data={[
+                    {name:'Thành công', value:756, color:'#10b981'},
+                    {name:'Chờ xử lý', value:143, color:'#f59e0b'},
+                    {name:'Thất bại', value:48, color:'#ef4444'},
+                  ]}
+                />
+              </div>
+            </div>
+          </section>
+        </div>
+
+        {/* --- PART 7: ERP-SPECIFIC & MISC --- */}
+        <div className={styles.partContainer}>
+          <h2 className={styles.partHeader}>G. ERP đặc Thù & Tiện Ích</h2>
+          
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2>1. Accordion & Timeline</h2>
+              <span className={styles.badge}>RADIX + SCSS</span>
+            </div>
+            <div className={styles.grid}>
+              <div className={styles.smartCard}>
+                <h3 className={`${styles.textXl} ${styles.mb6} ${styles.flexRow} ${styles.gap2}`}><HelpCircle size={20}/> Hỏi Đáp (FAQ Accordion)</h3>
+                <IzAccordion type="single" collapsible>
+                  <IzAccordionItem value="q1">
+                    <IzAccordionTrigger>IzHub lưu trữ dữ liệu ở đâu?</IzAccordionTrigger>
+                    <IzAccordionContent>Dữ liệu được lưu trữ an toàn trên hả tầng đám mây AWS tại Singapore, tuân thủ GDPR và ISO 27001.</IzAccordionContent>
+                  </IzAccordionItem>
+                  <IzAccordionItem value="q2">
+                    <IzAccordionTrigger>Có thể xuất dữ liệu ra Excel không?</IzAccordionTrigger>
+                    <IzAccordionContent>Có, tất cả bảng dữ liệu đều hỗ trợ xuất Excel, CSV và PDF qua nút Export nhằm giúp tích hợp dễ dàng với hệ thống kế toán.</IzAccordionContent>
+                  </IzAccordionItem>
+                  <IzAccordionItem value="q3">
+                    <IzAccordionTrigger>Giới hạn số người dùng là bao nhiêu?</IzAccordionTrigger>
+                    <IzAccordionContent>Gói tiêu chuẩn hỗ trợ lên đến 50 người dùng. Gói Enterprise không giới hạn số người dùng và có tính năng SSO/SAML.</IzAccordionContent>
+                  </IzAccordionItem>
+                </IzAccordion>
+              </div>
+
+              <div className={styles.smartCard}>
+                <h3 className={`${styles.textXl} ${styles.mb6} ${styles.flexRow} ${styles.gap2}`}><FileSearch size={20}/> Lịch Sử Thao Tác (Activity Timeline)</h3>
+                <IzActivityTimeline
+                  events={[
+                    {id:'1', title:'Deal được tạo', description:'Bước 1 quy trình bán hàng', timestamp:'2 phút trước', variant:'success'},
+                    {id:'2', title:'Gửi email xuất giá', description:'Email gửi đến info@acme.com và 4 người khác', timestamp:'45 phút trước', variant:'default'},
+                    {id:'3', title:'Mử Hợp đồng tư vấn', description:'Doanh thu dự kiến 450tr VND', timestamp:'Hôm qua 14:30', variant:'warning'},
+                    {id:'4', title:'Khách hàng hủy', description:'Lý do: Chi phí vượt ngân sách năm', timestamp:'+30 ngày trước', variant:'destructive'},
+                  ]}
+                />
+              </div>
+            </div>
+          </section>
+
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2>2. Tải File (File Upload)</h2>
+              <span className={styles.badge}>DRAG & DROP</span>
+            </div>
+            <div className={styles.card}>
+              <IzFileUpload
+                accept=".pdf,.docx,.xlsx"
+                multiple
+                label="Kéo thả hợp đồng, báo cáo, hóa đơn vào đây"
+                maxSizeMB={20}
+              />
+            </div>
+          </section>
+
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2>3. Kanban Layout (Khung CSS)</h2>
+              <span className={styles.badge}>SCSS ONLY</span>
+            </div>
+            <IzKanbanBoard>
+              <IzKanbanColumn title="Khách Hàng Mới" count={3} headerAction={<Plus size={16} style={{ cursor: 'pointer', color: 'var(--color-muted-foreground)' }} />}>
+                <IzKanbanCard 
+                  title="Cty TNHH An Phát" 
+                  description="Yêu cầu báo giá hệ thống CRM & HRM."
+                  footerLeft={<span style={{ fontWeight: 600 }}>150.000.000₫</span>}
+                  footerRight={<span>2 giờ trước</span>}
+                />
+                <IzKanbanCard 
+                  title="Anh Tuấn Đại Lý Sắt Thép" 
+                  description="Cần demo app Quản lý Tồn kho đa chi nhánh."
+                  footerLeft={<span style={{ fontWeight: 600 }}>TBD</span>}
+                  footerRight={<span>Hôm qua</span>}
+                />
+              </IzKanbanColumn>
+              <IzKanbanColumn title="Đang Liên Hệ" count={1} headerAction={<Plus size={16} style={{ cursor: 'pointer', color: 'var(--color-muted-foreground)' }} />}>
+                <IzKanbanCard 
+                  title="Nhà hàng Biển Gọi" 
+                  description="Hẹn thứ 3 gặp mặt ký hợp đồng."
+                  footerLeft={<span style={{ fontWeight: 600 }}>45.000.000₫</span>}
+                  footerRight={<span>14:00 24/10</span>}
+                />
+              </IzKanbanColumn>
+              <IzKanbanColumn title="Đang Gửi Báo Giá" count={2} headerAction={<Plus size={16} style={{ cursor: 'pointer', color: 'var(--color-muted-foreground)' }} />}>
+                <IzKanbanCard 
+                  title="Tập đoàn FPT Telecom" 
+                  description="Chờ GĐ kỹ thuật quyết định phê duyệt."
+                  footerLeft={<span style={{ fontWeight: 600 }}>1.200.000.000₫</span>}
+                  footerRight={<span>5 ngày trước</span>}
+                />
+                <IzKanbanCard 
+                  title="Phòng khám Đa khoa Minh Anh" 
+                  description="Gửi lại bản chào giá đã chiết khấu 10%."
+                  footerLeft={<span style={{ fontWeight: 600 }}>80.000.000₫</span>}
+                  footerRight={<span>Sáng nay</span>}
+                />
+              </IzKanbanColumn>
+              <IzKanbanColumn title="Chốt Hợp Đồng / Thắng" count={0} headerAction={<Plus size={16} style={{ cursor: 'pointer', color: 'var(--color-muted-foreground)' }} />}>
+                {/* Trống */}
+                <p style={{ textAlign: 'center', fontSize: '0.875rem', color: 'var(--color-muted-foreground)', marginTop: '2rem' }}>Chưa có deal nào ở bước này</p>
+              </IzKanbanColumn>
+            </IzKanbanBoard>
+          </section>
+
         </div>
 
       </div>

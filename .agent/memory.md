@@ -3,10 +3,10 @@
 ## Current Status
 
 **Phase**: v0.1 Foundation MVP — **Core foundation complete (RLS + TanStack Query + Radix UI + react-hook-form)**
-**Last updated**: 2026-03-18 (Session 13 — Security hardening, CI/tests, Command Palette, FTS search, Core foundation layers)
-**Health**: ✅ TypeScript clean | ✅ 92/92 unit tests passing | ✅ DB migrated (migrations 001-007) | ✅ RLS enabled
-**Last work**: Session 13 — Phase 1 security (RLS, rate limit, GDPR, headers), Phase 2 CI (GitHub Actions, 92 tests), Command Palette (Ctrl+K), Postgres FTS (unaccent + GIN), TanStack Query hooks, Radix Dialog, Docker OOM fix
-**Remote**: `https://github.com/izhubs/izhubs-erp` (branch: master, head: ~edbf7e3)
+**Last updated**: 2026-03-19 (Session 15b — UI Polish, DB Refactor checks, Currency Fix)
+**Health**: ✅ TypeScript clean | ✅ 74/74 contract tests passing | ✅ DB migrated (migrations squash 001) | ✅ RLS enabled
+**Last work**: Session 15b — Virtual Office UI Polish, DealCard enhancements (package badges + VND formatting), Pipeline multi-view currency fixes, demo data setup script, DB refactor impact check (100% safe, no regressions).
+**Remote**: `https://github.com/izhubs/izhubs-erp` (branch: master, head: ~3e0f8a2)
 
 ### 🎯 Target Persona (confirmed 2026-03-16)
 **Agency owner / Freelancer** — runs agency hoặc freelance, 1-5 người, tech-savvy vibe coder. Đang dùng **Airtable, Notion, hoặc Google Sheets** để track clients/deals nhưng đã outgrown. Found izhubs trên GitHub/Show HN. Phải self-serve hoàn toàn. Sẵn sàng trả $29 cho template tốt.
