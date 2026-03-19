@@ -16,7 +16,9 @@ ALTER TABLE deals ADD CONSTRAINT deals_stage_check CHECK (
     'onboarding', 'active', 'revision', 'completed', 'cancelled', 'pending', 'renewal',
     -- Restaurant / F&B
     'inquiry', 'reservation', 'confirmed', 'seated',
-    -- Coworking / Space
-    'tour_scheduled', 'tour_completed', 'member_active'
+    -- Coworking stages
+    'tour_scheduled', 'tour_completed', 'member_active',
+    -- Coworking legacy / pipeline stages
+    'consulting', 'site_visit', 'closing', 'referred', 'quoted'
   )
 );

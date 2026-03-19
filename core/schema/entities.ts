@@ -68,6 +68,8 @@ export const DealStageSchema = z.enum([
   'inquiry', 'reservation', 'confirmed', 'seated',
   // Coworking stages
   'tour_scheduled', 'tour_completed', 'member_active',
+  // Coworking pipeline legacy stages
+  'consulting', 'site_visit', 'closing', 'referred', 'quoted',
 ]);
 
 export const DealSchema = z.object({

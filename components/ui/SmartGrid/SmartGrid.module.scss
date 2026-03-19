@@ -1,92 +1,112 @@
-// components/ui/SmartGrid/SmartGrid.module.scss
-.gridContainer {
-  flex: 1;
-  width: 100%;
-  height: 100%; // Container must have explicit height for virtualization to work
-  overflow: auto;
-  position: relative;
-  background-color: #ffffff; // Enforce light theme spreadsheet look
-  border: 1px solid #c0c0c0;
-  color: #000000;
+// SmartGrid.module.scss — izhubs CSS variables, two-panel layout (header + scrollable body)
+
+// ── Header block (never scrolls vertically) ──────────────────────
+.headerBlock {
+  background-color: var(--color-bg-hover);
+  border-bottom: 2px solid var(--color-border);
+  flex-shrink: 0;
 }
 
-.table {
-  border-collapse: collapse;
-  table-layout: fixed;
-  width: 100%;
-  display: grid; // Use grid layout for the table to support flex rows
-}
-
-.thead {
-  display: grid;
-  position: sticky;
-  top: 0;
-  z-index: 2; // Above body AND frozen columns
-  background-color: #f8f9fa;
-  box-shadow: 0 1px 0 0 #c0c0c0;
-}
-
-.tbody {
-  display: grid;
-  position: relative;
-}
-
-.tr {
+.headerRow {
   display: flex;
-  width: fit-content; // Allow horizontal scrolling if columns are wider than viewport
-  min-width: 100%;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.th, .td {
-  border-right: 1px solid #e0e0e0;
+.th {
+  border-right: 1px solid var(--color-border);
+  padding: 0 6px;
+  font-size: 11px;
+  line-height: 22px;
+  height: 22px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background-color: var(--color-bg-hover);
+  text-align: center;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  user-select: none;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+
+  &:hover {
+    background-color: var(--color-bg-card);
+    cursor: default;
+  }
+}
+
+// ── Scrollable body ───────────────────────────────────────────────
+.bodyScroll {
+  background-color: var(--color-bg-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  outline: none;
+}
+
+.bodyRow {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+
+  &:hover .td {
+    background-color: var(--color-bg-hover);
+  }
+}
+
+.td {
+  border-right: 1px solid var(--color-border);
   padding: 0 6px;
   font-size: 13px;
-  line-height: 24px; // Compact row height
+  line-height: 24px;
   height: 24px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  background-color: #ffffff; // default td
+  background-color: var(--color-bg-surface);
+  flex-shrink: 0;
 }
 
-.th {
-  background-color: #f8f9fa; // Gray header
-  text-align: center;
-  font-weight: 500;
-  color: #333333;
-  user-select: none;
-  border-bottom: 1px solid #c0c0c0;
-  
-  &:hover {
-    background-color: #e8eaed;
-  }
-}
-
-// Ensure frozen columns (like checkboxes or row numbers) stay visible when scrolling horizontally
+// ── Frozen left column (row numbers + checkboxes) ─────────────────
 .frozenColumn {
   position: sticky;
   left: 0;
-  background-color: #f8f9fa; // Matches header
-  z-index: 1;
-  border-right: 2px solid #c0c0c0; // Thicker border to indicate freeze
-}
-.td.frozenColumn {
-  background-color: #f8f9fa;
+  background-color: var(--color-bg-hover) !important;
+  z-index: 2;
+  border-right: 2px solid var(--color-border);
   text-align: center;
-  color: #666666;
+  color: var(--color-text-muted);
+  font-size: 11px;
 }
 
+// ── Active / focused cell ─────────────────────────────────────────
 .activeCell {
-  outline: 2px solid #1a73e8; // Google Sheets blue
+  outline: 2px solid var(--color-primary);
   outline-offset: -2px;
-  z-index: 1; // Show border over adjacent cells
+  z-index: 1;
 }
 
+// ── Row selected (checkbox) ───────────────────────────────────────
 .selectedRow {
-  background-color: #e8f0fe !important; // Light blue row
-  
   .td {
-    background-color: #e8f0fe;
+    background-color: color-mix(in srgb, var(--color-primary, #f97316) 10%, var(--color-bg-surface)) !important;
+  }
+}
+
+// ── Phantom add-row at the bottom ─────────────────────────────────
+.addRowPhantom {
+  display: flex;
+  height: 28px;
+  border-top: 1px dashed var(--color-border);
+  cursor: text;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  align-items: center;
+  padding-left: 48px;
+  gap: 6px;
+  opacity: 0.45;
+  transition: opacity 0.15s, background 0.15s;
+
+  &:hover {
+    opacity: 1;
+    background-color: var(--color-bg-hover);
   }
 }

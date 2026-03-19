@@ -1,5 +1,6 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Deal } from '@/core/schema/entities';
@@ -57,7 +58,14 @@ export default function DealCard({ deal, isOverlay, onClick }: Props) {
     transform, transition, isDragging,
   } = useSortable({ id: deal.id, data: { type: 'Deal', deal } });
 
-  const style = { transition, transform: CSS.Transform.toString(transform) };
+  // When using DragOverlay, the original card becomes a ghost placeholder.
+  // We must NOT apply transform to it — the overlay handles the visual drag.
+  // Using CSS.Translate.toString (translate-only, no scale) prevents layout shifts
+  // when dragging between columns or outside the board.
+  const style: CSSProperties = {
+    transition,
+    transform: isDragging ? undefined : CSS.Translate.toString(transform),
+  };
 
   const isOverdue = deal.updatedAt
     ? Date.now() - new Date(deal.updatedAt).getTime() > 14 * 86_400_000

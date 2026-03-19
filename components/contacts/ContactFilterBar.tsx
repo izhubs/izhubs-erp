@@ -4,6 +4,7 @@
 // A3: Filter Bar — extracted from ContactsTable (Rule #8: <150 lines)
 // =============================================================
 
+import Link from 'next/link';
 import styles from './contacts.module.scss';
 
 interface Props {
@@ -31,6 +32,9 @@ export default function ContactFilterBar({ search, onSearch, total, loading, onA
         <span className={styles.count}>
           {loading ? '…' : `${total} contact${total !== 1 ? 's' : ''}`}
         </span>
+        <Link href="/contacts/sheet" className="btn btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--font-size-sm)' }}>
+          📊 Sheet View
+        </Link>
         <button className="btn btn-primary" onClick={onAdd}>
           + Add Contact
         </button>

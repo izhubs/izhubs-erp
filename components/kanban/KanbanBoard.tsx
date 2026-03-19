@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -10,7 +10,6 @@ import {
   useSensor,
   useSensors,
   DragStartEvent,
-  DragOverEvent,
   DragEndEvent,
   defaultDropAnimationSideEffects,
 } from '@dnd-kit/core';
@@ -33,7 +32,8 @@ interface Props {
 export default function KanbanBoard({ initialDeals }: Props) {
   const [deals, setDeals] = useState<Deal[]>(initialDeals);
   const [activeDeal, setActiveDeal] = useState<Deal | null>(null);
-  
+  const columnsRef = useRef<HTMLDivElement>(null);
+
   const [showModal, setShowModal] = useState(false);
   const [defaultStage, setDefaultStage] = useState<DealStage>('new');
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
@@ -64,46 +64,9 @@ export default function KanbanBoard({ initialDeals }: Props) {
     }
   };
 
-  const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-    if (!over) return;
-
-    const activeId = active.id;
-    const overId = over.id;
-
-    if (activeId === overId) return;
-
-    // Moving a deal over another deal OR over an empty column
-    const isActiveADeal = active.data.current?.type === 'Deal';
-    const isOverADeal = over.data.current?.type === 'Deal';
-    const isOverAColumn = over.data.current?.type === 'Column';
-
-    if (!isActiveADeal) return;
-
-    if (isOverADeal) {
-      setDeals((currentDeals) => {
-        const activeIndex = currentDeals.findIndex(d => d.id === activeId);
-        const overIndex = currentDeals.findIndex(d => d.id === overId);
-        if (currentDeals[activeIndex].stage !== currentDeals[overIndex].stage) {
-          const newDeals = [...currentDeals];
-          newDeals[activeIndex] = { ...newDeals[activeIndex], stage: currentDeals[overIndex].stage };
-          return newDeals;
-        }
-        return currentDeals;
-      });
-    }
-
-    if (isOverAColumn) {
-      setDeals((currentDeals) => {
-        const activeIndex = currentDeals.findIndex(d => d.id === activeId);
-        if (currentDeals[activeIndex].stage !== overId) {
-          const newDeals = [...currentDeals];
-          newDeals[activeIndex] = { ...newDeals[activeIndex], stage: overId as DealStage };
-          return newDeals;
-        }
-        return currentDeals;
-      });
-    }
+  const handleDragOver = () => {
+    // No-op: cross-column moves happen only on drag end.
+    // Prevents the jumpy layout shift when dragging between columns.
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -112,23 +75,37 @@ export default function KanbanBoard({ initialDeals }: Props) {
     if (!over) return;
 
     const activeDealId = active.id as string;
-    const finalStage = deals.find(d => d.id === activeDealId)?.stage;
-    const originalStage = initialDeals.find(d => d.id === activeDealId)?.stage;
+    const originalStage = deals.find(d => d.id === activeDealId)?.stage;
 
-    // If stage actually changed, call API
-    if (finalStage && originalStage && finalStage !== originalStage) {
-      try {
-        const res = await apiFetch(`/api/v1/deals/${activeDealId}`, {
-          method: 'PATCH',
-          body: JSON.stringify({ stage: finalStage }),
-        });
-        if (!res.ok) throw new Error('Failed to update deal stage');
-      } catch {
-        // Rollback
-        setDeals(current => current.map(d => d.id === activeDealId ? { ...d, stage: originalStage } : d));
-        setError('Failed to move deal. Please try again.');
-        setTimeout(() => setError(null), 3000);
-      }
+    // Derive target stage from what was dropped onto
+    let targetStage: DealStage | undefined;
+    if (over.data.current?.type === 'Column') {
+      targetStage = over.id as DealStage;
+    } else if (over.data.current?.type === 'Deal') {
+      targetStage = over.data.current.deal?.stage as DealStage;
+    }
+
+    if (!targetStage || !originalStage || targetStage === originalStage) return;
+
+    // Optimistically update UI
+    setDeals(current =>
+      current.map(d => d.id === activeDealId ? { ...d, stage: targetStage! } : d)
+    );
+
+    // Persist to API
+    try {
+      const res = await apiFetch(`/api/v1/deals/${activeDealId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ stage: targetStage }),
+      });
+      if (!res.ok) throw new Error('Failed to update deal stage');
+    } catch {
+      // Rollback on failure
+      setDeals(current =>
+        current.map(d => d.id === activeDealId ? { ...d, stage: originalStage } : d)
+      );
+      setError('Failed to move deal. Please try again.');
+      setTimeout(() => setError(null), 3000);
     }
   };
 
@@ -157,7 +134,10 @@ export default function KanbanBoard({ initialDeals }: Props) {
   const totalValue = deals.filter(d => d.stage !== 'lost').reduce((sum, d) => sum + d.value, 0);
   const wonValue = deals.filter(d => d.stage === 'won').reduce((sum, d) => sum + d.value, 0);
 
+  // Smoother drop animation — card glides to its new column instead of snapping
   const dropAnimation = {
+    duration: 250,
+    easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
     sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.4' } } }),
   };
 
@@ -198,32 +178,58 @@ export default function KanbanBoard({ initialDeals }: Props) {
 
       {error && <div className={styles.errorToast}>{error}</div>}
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCorners}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
-      >
-        <div className={styles.columns}>
-          {visibleStages.map(stage => (
-            <KanbanColumn
-              key={stage.id}
-              stage={stage}
-              deals={columnDeals(stage.id)}
-              onCardClick={setSelectedDeal}
-              onAddDeal={openAddDeal}
-            />
-          ))}
-        </div>
+      <div className={styles.columnsWrapper}>
+        <button
+          className={styles.scrollBtn}
+          aria-label="Scroll left"
+          onClick={() => columnsRef.current?.scrollBy({ left: -290, behavior: 'smooth' })}
+        >
+          ‹
+        </button>
 
-        {typeof window !== 'undefined' && createPortal(
-          <DragOverlay dropAnimation={dropAnimation}>
-            {activeDeal ? <DealCard deal={activeDeal} isOverlay /> : null}
-          </DragOverlay>,
-          document.body
-        )}
-      </DndContext>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+          autoScroll={{
+            // Wider zone → scroll kicks in earlier
+            threshold: { x: 0.2, y: 0.05 },
+            // 15 = faster (default 10). dnd-kit scales speed proportionally
+            // to how close cursor is to edge → naturally fast/slow based on user
+            acceleration: 15,
+            interval: 5,
+          }}
+        >
+          <div className={styles.columns} ref={columnsRef}>
+            {visibleStages.map(stage => (
+              <KanbanColumn
+                key={stage.id}
+                stage={stage}
+                deals={columnDeals(stage.id)}
+                onCardClick={setSelectedDeal}
+                onAddDeal={openAddDeal}
+              />
+            ))}
+          </div>
+
+          {typeof window !== 'undefined' && createPortal(
+            <DragOverlay dropAnimation={dropAnimation}>
+              {activeDeal ? <DealCard deal={activeDeal} isOverlay /> : null}
+            </DragOverlay>,
+            document.body
+          )}
+        </DndContext>
+
+        <button
+          className={styles.scrollBtn}
+          aria-label="Scroll right"
+          onClick={() => columnsRef.current?.scrollBy({ left: 290, behavior: 'smooth' })}
+        >
+          ›
+        </button>
+      </div>
 
       {showModal && (
         <DealFormModal

@@ -8,13 +8,12 @@
 
 .app-layout {
   display: grid;
-  // Bug fix: use CSS variable so grid tracks the sidebar width dynamically
   grid-template-columns: var(--sidebar-current-width, var(--sidebar-width)) 1fr;
   grid-template-rows: var(--header-height) 1fr;
-  min-height: 100vh;
+  height: 100vh;           // ← was min-height; needs to be fixed height so 1fr constrains
+  overflow: hidden;        // ← prevent the layout itself from scrolling
   transition: grid-template-columns var(--transition-normal);
 
-  // Set on parent when sidebar is collapsed
   &.sidebar-collapsed { --sidebar-current-width: 64px; }
 
   @media (max-width: 768px) {
@@ -60,6 +59,13 @@
   background: var(--color-bg);
   padding: var(--space-6);
   overflow-y: auto;
+  // height is set by grid-template-rows: 1fr (see .app-layout)
+
+  // Sheet pages need to opt in to fill the content area without padding
+  &:has(.page--sheet) {
+    padding: 0;
+    overflow: hidden;
+  }
 
   @media (max-width: 768px) {
     padding: var(--space-4);
@@ -82,6 +88,16 @@
   max-width: var(--max-content-width);
   margin: 0 auto;
   width: 100%;
+}
+
+// Full-height sheet variant — used by SmartGrid sheet views.
+// Removes padding, fills height so inner scroll container works properly.
+.page--sheet {
+  max-width: none;
+  margin: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .page-header {

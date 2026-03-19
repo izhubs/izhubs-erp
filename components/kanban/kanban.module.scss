@@ -82,28 +82,59 @@
   flex-shrink: 0;
 }
 
+// ---- Columns wrapper (with scroll arrows) ----
+.columnsWrapper {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-1);
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+// Scroll arrow buttons
+.scrollBtn {
+  flex-shrink: 0;
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-size: 20px;
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+  align-self: center;
+  height: 48px;
+
+  &:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-surface));
+  }
+}
+
 // ---- Columns container ----
 .columns {
   display: flex;
-  gap: var(--space-4);
+  gap: var(--space-3);
   overflow-x: auto;
   flex: 1;
   min-height: 0;
   padding-bottom: var(--space-4);
   align-items: flex-start;
-  scroll-snap-type: x mandatory;
-
-  &::-webkit-scrollbar { height: 6px; }
-  &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb {
-    background: var(--color-border);
-    border-radius: 3px;
-  }
+  // scroll-behavior smooth for arrow button clicks
+  scroll-behavior: smooth;
+  // Hide scrollbar (arrows handle navigation; track is still scrollable by touch/trackpad)
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
 }
 
 // ---- Single column ----
 .column {
-  flex: 0 0 272px;
+  flex: 0 0 240px;
   display: flex;
   flex-direction: column;
   background: var(--color-bg-surface);

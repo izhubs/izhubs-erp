@@ -8,6 +8,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import type { Deal, DealStage } from '@/core/schema/entities';
 import { PIPELINE_STAGES } from '@/core/config/pipeline';
 import Badge from '@/components/shared/Badge';
@@ -207,41 +208,15 @@ export default function PipelineViews({ initialDeals }: { initialDeals: Deal[] }
           </span>
         </div>
 
-        <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
-          {/* View switcher */}
-          <div style={{
-            display: 'flex', background: 'var(--color-bg-hover)',
-            borderRadius: 'var(--radius-lg)', padding: 3, gap: 2,
-          }}>
-            {(Object.keys(VIEW_ICONS) as ViewMode[]).map(v => (
-              <button
-                key={v}
-                id={`pipeline-view-${v}`}
-                onClick={() => setView(v)}
-                title={VIEW_LABELS[v]}
-                style={{
-                  background: view === v ? 'var(--color-bg-card)' : 'transparent',
-                  border: 'none', borderRadius: 'var(--radius-md)',
-                  padding: '6px 12px', cursor: 'pointer',
-                  color: view === v ? 'var(--color-primary)' : 'var(--color-text-muted)',
-                  fontWeight: view === v ? 600 : 400,
-                  fontSize: 'var(--font-size-sm)',
-                  transition: 'all 0.15s ease',
-                  boxShadow: view === v ? 'var(--shadow-sm)' : 'none',
-                  display: 'flex', alignItems: 'center', gap: 6,
-                }}
-              >
-                <span>{VIEW_ICONS[v]}</span>
-                <span>{VIEW_LABELS[v]}</span>
-              </button>
-            ))}
+          <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
+            <Link href="/deals/sheet" className="btn btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--font-size-sm)' }}>
+              📊 Sheet View
+            </Link>
+            <button className="btn btn-primary" style={{ marginLeft: 'var(--space-2)' }}
+              onClick={() => {/* handled by KanbanBoard when in kanban view */}}>
+              + New Deal
+            </button>
           </div>
-
-          <button className="btn btn-primary" style={{ marginLeft: 'var(--space-2)' }}
-            onClick={() => {/* handled by KanbanBoard when in kanban view */}}>
-            + New Deal
-          </button>
-        </div>
       </div>
 
       {/* View content */}

@@ -2,6 +2,7 @@
 // =============================================================
 // izhubs ERP — Seed Base Utilities
 // Shared helpers for all industry seed scripts.
+// v2: supports multi-user seeding (CEO, Sales, Ops, inactive)
 // =============================================================
 
 const { Pool } = require('pg');
@@ -19,16 +20,27 @@ function hashPassword(password) {
 
 async function upsertUser(client, user, tenantId = '00000000-0000-0000-0000-000000000001') {
   const passwordHash = hashPassword(user.password);
+  const active = user.active !== false; // default true
   const result = await client.query(
-    `INSERT INTO users (name, email, password_hash, role, tenant_id)
-     VALUES ($1, $2, $3, $4, $5)
-     ON CONFLICT (email) DO NOTHING
+    `INSERT INTO users (name, email, password_hash, role, tenant_id, active)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     ON CONFLICT (email) DO UPDATE SET active = EXCLUDED.active
      RETURNING id`,
-    [user.name, user.email, passwordHash, user.role, tenantId]
+    [user.name, user.email, passwordHash, user.role, tenantId, active]
   );
-  if (result.rowCount > 0) return result.rows[0].id;
-  const existing = await client.query('SELECT id FROM users WHERE email = $1', [user.email]);
-  return existing.rows[0].id;
+  return result.rows[0].id;
+}
+
+/**
+ * Seeds multiple users from an array.
+ * Returns map: { [email]: userId }
+ */
+async function seedUsers(client, users, tenantId = '00000000-0000-0000-0000-000000000001') {
+  const idMap = {};
+  for (const user of users) {
+    idMap[user.email] = await upsertUser(client, user, tenantId);
+  }
+  return idMap;
 }
 
 async function seedCustomFields(client, ownerId, fields, tenantId = '00000000-0000-0000-0000-000000000001') {
@@ -47,8 +59,8 @@ async function seedCustomFields(client, ownerId, fields, tenantId = '00000000-00
 
 async function seedContacts(client, ownerId, contacts, tenantId = '00000000-0000-0000-0000-000000000001') {
   const existing = await client.query(
-    'SELECT id, email FROM contacts WHERE owner_id = $1 AND tenant_id = $2 AND deleted_at IS NULL ORDER BY created_at ASC',
-    [ownerId, tenantId]
+    'SELECT id, email FROM contacts WHERE tenant_id = $1 AND deleted_at IS NULL ORDER BY created_at ASC',
+    [tenantId]
   );
   const existingEmails = new Set(existing.rows.map(r => r.email));
   const idMap = Object.fromEntries(existing.rows.map(r => [r.email, r.id]));
@@ -62,9 +74,13 @@ async function seedContacts(client, ownerId, contacts, tenantId = '00000000-0000
       continue;
     }
     const result = await client.query(
-      `INSERT INTO contacts (name, email, phone, title, owner_id, custom_fields, tenant_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
-      [c.name, c.email, c.phone || null, c.title || null, ownerId, JSON.stringify(c.custom_fields || {}), tenantId]
+      `INSERT INTO contacts (name, email, phone, title, status, owner_id, custom_fields, tenant_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
+      [
+        c.name, c.email, c.phone || null, c.title || null,
+        c.status || 'lead', ownerId,
+        JSON.stringify(c.custom_fields || {}), tenantId,
+      ]
     );
     ids.push(result.rows[0].id);
     inserted++;
@@ -72,10 +88,10 @@ async function seedContacts(client, ownerId, contacts, tenantId = '00000000-0000
   return { inserted, ids };
 }
 
-async function seedDeals(client, ownerId, contactIds, deals, tenantId = '00000000-0000-0000-0000-000000000001') {
+async function seedDeals(client, ownerId, contactIds, deals, tenantId = '00000000-0000-0000-0000-000000000001', ownerMap = null) {
   const existing = await client.query(
-    'SELECT name FROM deals WHERE owner_id = $1 AND tenant_id = $2 AND deleted_at IS NULL',
-    [ownerId, tenantId]
+    'SELECT name FROM deals WHERE tenant_id = $1 AND deleted_at IS NULL',
+    [tenantId]
   );
   const existingNames = new Set(existing.rows.map(r => r.name));
   let inserted = 0;
@@ -84,10 +100,12 @@ async function seedDeals(client, ownerId, contactIds, deals, tenantId = '0000000
     if (existingNames.has(d.name)) continue;
     const contactId = contactIds[d.contactIdx] ?? null;
     const closedAt = d.closedAt ? new Date(d.closedAt).toISOString() : null;
+    // Allow specifying a different owner by email via ownerMap
+    const dealOwnerId = (ownerMap && d.ownerEmail && ownerMap[d.ownerEmail]) ? ownerMap[d.ownerEmail] : ownerId;
     await client.query(
       `INSERT INTO deals (name, value, stage, contact_id, owner_id, closed_at, custom_fields, tenant_id)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-      [d.name, d.value, d.stage, contactId, ownerId, closedAt, JSON.stringify(d.custom_fields || {}), tenantId]
+      [d.name, d.value, d.stage, contactId, dealOwnerId, closedAt, JSON.stringify(d.custom_fields || {}), tenantId]
     );
     inserted++;
   }
@@ -96,29 +114,40 @@ async function seedDeals(client, ownerId, contactIds, deals, tenantId = '0000000
 
 async function runSeed(industryModule, tenantId = '00000000-0000-0000-0000-000000000001') {
   const client = await pool.connect();
-  const { industry, adminUser, customFields, contacts, deals } = industryModule;
+  const { industry, adminUser, users, customFields, contacts, deals } = industryModule;
 
   console.log(`\n🌱 izhubs ERP — Seed: ${industry.toUpperCase()} (tenant: ${tenantId.split('-')[0]})\n`);
   try {
-    process.stdout.write('  👤 Admin user...');
-    const userId = await upsertUser(client, adminUser, tenantId);
-    console.log(` ✅ ${adminUser.email}`);
+    // Seed admin user (legacy support)
+    process.stdout.write('  👤 Users...');
+    let ownerMap = null;
+    let adminId;
+    if (users && users.length > 0) {
+      ownerMap = await seedUsers(client, users, tenantId);
+      // CEO/first user is the primary owner
+      adminId = Object.values(ownerMap)[0];
+      console.log(` ✅ ${users.length} users (${users.filter(u => u.active === false).length} inactive)`);
+    } else {
+      adminId = await upsertUser(client, adminUser, tenantId);
+      console.log(` ✅ ${adminUser.email}`);
+    }
 
     process.stdout.write('  🏷️  Custom fields...');
-    const cfInserted = await seedCustomFields(client, userId, customFields, tenantId);
+    const cfInserted = await seedCustomFields(client, adminId, customFields, tenantId);
     console.log(` ✅ ${cfInserted} new`);
 
     process.stdout.write('  👥 Contacts...');
-    const { inserted: cInserted, ids: contactIds } = await seedContacts(client, userId, contacts, tenantId);
+    const { inserted: cInserted, ids: contactIds } = await seedContacts(client, adminId, contacts, tenantId);
     console.log(` ✅ ${cInserted} new (${contacts.length} total)`);
 
     process.stdout.write('  💼 Deals...');
-    const dInserted = await seedDeals(client, userId, contactIds, deals, tenantId);
+    const dInserted = await seedDeals(client, adminId, contactIds, deals, tenantId, ownerMap);
     console.log(` ✅ ${dInserted} new (${deals.length} total)`);
 
     console.log(`\n✅ Done: ${contacts.length} contacts, ${deals.length} deals`);
     if (require.main === module) {
-      console.log(`\n   Login: ${adminUser.email} / ${adminUser.password}`);
+      const primaryUser = users ? users.find(u => u.active !== false) : adminUser;
+      console.log(`\n   Login: ${primaryUser.email} / ${primaryUser.password}`);
       console.log('   App  : http://localhost:1303\n');
     }
   } catch (err) {
@@ -132,4 +161,4 @@ async function runSeed(industryModule, tenantId = '00000000-0000-0000-0000-00000
   }
 }
 
-module.exports = { runSeed, hashPassword, upsertUser, seedCustomFields, seedContacts, seedDeals };
+module.exports = { runSeed, hashPassword, upsertUser, seedUsers, seedCustomFields, seedContacts, seedDeals };

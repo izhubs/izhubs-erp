@@ -19,6 +19,7 @@ interface SmartGridProps<TData> {
   rowSelection?: RowSelectionState;
   onRowSelectionChange?: React.Dispatch<React.SetStateAction<RowSelectionState>>;
   updateData?: (rowIndex: number, columnId: string, value: unknown) => void;
+  onAddRow?: () => void;
 }
 
 export function SmartGrid<TData>({
@@ -27,8 +28,13 @@ export function SmartGrid<TData>({
   rowSelection,
   onRowSelectionChange,
   updateData,
+  onAddRow,
 }: SmartGridProps<TData>) {
-  const tableContainerRef = React.useRef<HTMLDivElement>(null);
+  // Two separate refs:
+  // scrollRef  → the vertically scrolling body (rows)
+  // headerRef  → the horizontally-synced fixed header
+  const scrollRef    = React.useRef<HTMLDivElement>(null);
+  const headerRef    = React.useRef<HTMLDivElement>(null);
 
   const { activeCell, setActiveCell, isEditing, setIsEditing, handleKeyDown } =
     useGridKeyboard(data.length, columns.length);
@@ -37,26 +43,16 @@ export function SmartGrid<TData>({
 
   const finalColumns = React.useMemo(() => {
     if (!isSelectionEnabled) return columns;
-
     const selectionCol: ColumnDef<TData, any> = {
       id: '_select',
-      size: 40,
+      size: 32,
       header: ({ table }) => (
-        <input
-          type="checkbox"
-          style={{ cursor: 'pointer' }}
-          checked={table.getIsAllRowsSelected()}
-          onChange={table.getToggleAllRowsSelectedHandler()}
-        />
+        <input type="checkbox" style={{ cursor: 'pointer', accentColor: 'var(--color-primary)' }}
+          checked={table.getIsAllRowsSelected()} onChange={table.getToggleAllRowsSelectedHandler()} />
       ),
       cell: ({ row }) => (
-        <input
-          type="checkbox"
-          style={{ cursor: 'pointer' }}
-          checked={row.getIsSelected()}
-          disabled={!row.getCanSelect()}
-          onChange={row.getToggleSelectedHandler()}
-        />
+        <input type="checkbox" style={{ cursor: 'pointer', accentColor: 'var(--color-primary)' }}
+          checked={row.getIsSelected()} disabled={!row.getCanSelect()} onChange={row.getToggleSelectedHandler()} />
       ),
     };
     return [selectionCol, ...columns];
@@ -65,189 +61,163 @@ export function SmartGrid<TData>({
   const table = useReactTable({
     data,
     columns: finalColumns,
-    state: {
-      rowSelection,
-    },
+    state: { rowSelection },
     enableRowSelection: isSelectionEnabled,
     onRowSelectionChange,
     getCoreRowModel: getCoreRowModel(),
-    meta: {
-      updateData,
-      activeCell,
-      setActiveCell,
-      isEditing,
-      setIsEditing,
-    },
+    meta: { updateData, activeCell, setActiveCell, isEditing, setIsEditing },
   });
 
   const { rows } = table.getRowModel();
+  const leafColumns = table.getVisibleLeafColumns();
+
+  const ROW_NUM_W = 40;
+  const totalWidth = ROW_NUM_W + leafColumns.reduce((sum, c) => sum + c.getSize(), 0);
+
+  const rowVirtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 25,
+    overscan: 12,
+  });
+
+  // Sync horizontal scroll: body → header
+  const handleBodyScroll = React.useCallback(() => {
+    if (scrollRef.current && headerRef.current) {
+      headerRef.current.scrollLeft = scrollRef.current.scrollLeft;
+    }
+  }, []);
 
   const handleCopy = (e: React.ClipboardEvent) => {
     if (isEditing) return;
-    
-    // Copy TSV of selected rows if any
     const selectedRows = table.getSelectedRowModel().rows;
     if (selectedRows.length > 0) {
       e.preventDefault();
-      const headers = table.getVisibleLeafColumns().filter(c => c.id !== '_select').map(c => c.id).join('\t');
-      const rowStrings = selectedRows.map(row => {
-        return row.getVisibleCells().filter(c => c.column.id !== '_select').map(c => String(c.getValue() || '')).join('\t');
-      });
-      e.clipboardData.setData('text/plain', [headers, ...rowStrings].join('\n'));
+      const text = selectedRows.map(row =>
+        row.getVisibleCells().filter(c => c.column.id !== '_select').map(c => String(c.getValue() ?? '')).join('\t')
+      ).join('\n');
+      e.clipboardData.setData('text/plain', text);
       return;
     }
-
-    // Otherwise copy active cell
     if (activeCell) {
       e.preventDefault();
-      const row = rows[activeCell.row];
-      const cell = row?.getVisibleCells()[activeCell.col];
-      if (cell) {
-        e.clipboardData.setData('text/plain', String(cell.getValue() || ''));
-      }
+      const cell = rows[activeCell.row]?.getVisibleCells()[activeCell.col];
+      if (cell) e.clipboardData.setData('text/plain', String(cell.getValue() ?? ''));
     }
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
     if (isEditing || !updateData || !activeCell) return;
     e.preventDefault();
-
     const text = e.clipboardData.getData('text/plain');
     if (!text) return;
-
-    // VERY basic paste starting from active cell
-    // Handling multi-cell paste (e.g. pasting 2x2 cells)
-    const pasteRows = text.split('\n').map(row => row.split('\t'));
-    const startRow = activeCell.row;
-    const startCol = activeCell.col;
-    const visibleCols = table.getVisibleLeafColumns();
-
-    pasteRows.forEach((rowData, rIdx) => {
-      const targetRowIndex = startRow + rIdx;
-      if (targetRowIndex >= data.length) return; // Ignore if beyond row bounds
-
-      rowData.forEach((cellData, cIdx) => {
-        const targetColIndex = startCol + cIdx;
-        if (targetColIndex >= visibleCols.length) return; // Ignore if beyond col bounds
-        
-        const columnId = visibleCols[targetColIndex].id;
-        if (columnId === '_select') return; // Cannot paste into selection column
-
-        // Optimistically trigger updateData for each pasted cell
-        updateData(targetRowIndex, columnId, cellData.trim());
+    text.split('\n').forEach((rowData, rIdx) => {
+      const targetRow = activeCell.row + rIdx;
+      if (targetRow >= data.length) return;
+      rowData.split('\t').forEach((val, cIdx) => {
+        const targetCol = activeCell.col + cIdx;
+        if (targetCol >= leafColumns.length) return;
+        const colId = leafColumns[targetCol].id;
+        if (colId !== '_select') updateData(targetRow, colId, val.trim());
       });
     });
   };
 
-  const rowVirtualizer = useVirtualizer({
-    count: rows.length,
-    getScrollElement: () => tableContainerRef.current,
-    estimateSize: () => 25,
-    overscan: 10,
-  });
-
   return (
     <div
-      ref={tableContainerRef}
-      className={styles.gridContainer}
+      style={{ outline: 'none', display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onCopy={handleCopy}
       onPaste={handlePaste}
-      style={{ outline: 'none' }} // Remove browser default focus outline
     >
-      <table className={styles.table}>
-        <thead className={styles.thead}>
-          {/* A, B, C... Chrome Header Row */}
-          <tr className={styles.tr}>
-            <th className={cn(styles.th, styles.frozenColumn)} style={{ width: 40 }}>
-            </th>
-            {table.getVisibleLeafColumns().map((column, colIndex) => (
-              <th
-                key={`chrome-${column.id}`}
-                className={styles.th}
-                style={{ width: column.getSize() }}
-              >
-                {getColumnLetter(colIndex)}
-              </th>
+      {/* ── FIXED HEADER (does not scroll vertically) ─────── */}
+      <div
+        ref={headerRef}
+        className={styles.headerBlock}
+        style={{ overflowX: 'hidden', flexShrink: 0 }}
+      >
+        <div style={{ width: totalWidth }}>
+          {/* Chrome row: A B C … */}
+          <div className={styles.headerRow}>
+            <div className={cn(styles.th, styles.frozenColumn)} style={{ width: ROW_NUM_W }} />
+            {leafColumns.map((col, i) => (
+              <div key={`chr-${col.id}`} className={styles.th} style={{ width: col.getSize() }}>
+                {getColumnLetter(i)}
+              </div>
             ))}
-          </tr>
-
-          {/* Actual Column Headers */}
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className={styles.tr}>
-              <th className={cn(styles.th, styles.frozenColumn)} style={{ width: 40 }}>
-              </th>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <th
-                    key={header.id}
-                    className={styles.th}
-                    style={{ width: header.getSize() }}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </th>
-                );
-              })}
-            </tr>
+          </div>
+          {/* Field name row */}
+          {table.getHeaderGroups().map(hg => (
+            <div key={hg.id} className={styles.headerRow}>
+              <div className={cn(styles.th, styles.frozenColumn)} style={{ width: ROW_NUM_W }} />
+              {hg.headers.map(header => (
+                <div key={header.id} className={styles.th} style={{ width: header.getSize() }}>
+                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                </div>
+              ))}
+            </div>
           ))}
-        </thead>
+        </div>
+      </div>
 
-        <tbody
-          className={styles.tbody}
-          style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
-        >
-          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+      {/* ── SCROLLABLE BODY ───────────────────────────────── */}
+      <div
+        ref={scrollRef}
+        className={styles.bodyScroll}
+        onScroll={handleBodyScroll}
+        style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'auto' }}
+      >
+        {/* Virtual rows */}
+        <div style={{ height: rowVirtualizer.getTotalSize(), width: totalWidth, position: 'relative' }}>
+          {rowVirtualizer.getVirtualItems().map(virtualRow => {
             const row = rows[virtualRow.index];
             const isSelected = row.getIsSelected();
 
             return (
-              <tr
+              <div
                 key={row.id}
-                data-index={virtualRow.index}
-                ref={rowVirtualizer.measureElement}
-                className={cn(styles.tr, isSelected && styles.selectedRow)}
+                className={cn(styles.bodyRow, isSelected && styles.selectedRow)}
                 style={{
                   position: 'absolute',
                   top: 0,
                   left: 0,
                   transform: `translateY(${virtualRow.start}px)`,
+                  width: totalWidth,
                 }}
               >
-                <td className={cn(styles.td, styles.frozenColumn)} style={{ width: 40 }}>
+                <div className={cn(styles.td, styles.frozenColumn)} style={{ width: ROW_NUM_W }}>
                   {virtualRow.index + 1}
-                </td>
-
+                </div>
                 {row.getVisibleCells().map((cell, colIndex) => {
                   const isActive = activeCell?.row === virtualRow.index && activeCell?.col === colIndex;
-
                   return (
-                    <td
+                    <div
                       key={cell.id}
-                      className={cn(
-                        styles.td,
-                        isActive && styles.activeCell,
-                        isActive && isEditing ? "p-0" : "" // smaller padding when editing to fit input
-                      )}
+                      className={cn(styles.td, isActive && styles.activeCell)}
                       style={{ width: cell.column.getSize() }}
+                      onClick={() => setActiveCell({ row: virtualRow.index, col: colIndex })}
+                      onDoubleClick={() => { setActiveCell({ row: virtualRow.index, col: colIndex }); setIsEditing(true); }}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </div>
                   );
                 })}
-              </tr>
+              </div>
             );
           })}
-        </tbody>
-      </table>
+        </div>
+
+        {/* Phantom add-row */}
+        <div
+          className={styles.addRowPhantom}
+          style={{ width: Math.max(totalWidth, 300) }}
+          onClick={onAddRow}
+        >
+          <span>+</span>
+          <span style={{ fontSize: 12 }}>Thêm dòng mới</span>
+        </div>
+      </div>
     </div>
   );
 }
