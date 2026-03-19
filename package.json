@@ -22,6 +22,7 @@
     "backup": "bash scripts/backup.sh",
     "typecheck": "tsc --noEmit",
     "db:migrate": "node scripts/migrate.js",
+    "db:reset": "node scripts/db-reset.js",
     "seed:demo": "node scripts/seed.js --industry=agency",
     "seed:agency": "node scripts/seed.js --industry=agency",
     "seed:freelancer": "node scripts/seed.js --industry=freelancer",

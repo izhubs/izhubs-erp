@@ -4,7 +4,7 @@
 // PipelineViews supports Kanban / Table / Funnel views.
 // =============================================================
 
-import { listDeals } from '@/core/engine/deals';
+import { listDeals } from '@/modules/crm/engine/deals';
 import PipelineViews from '@/components/deals/PipelineViews';
 
 export const metadata = { title: 'Pipeline — izhubs ERP' };

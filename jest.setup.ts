@@ -2,3 +2,6 @@
 // Extends Jest matchers with @testing-library/jest-dom
 // (toBeInTheDocument, toHaveTextContent, etc.)
 import '@testing-library/jest-dom';
+
+import { TextEncoder, TextDecoder } from 'util';
+Object.assign(global, { TextDecoder, TextEncoder });

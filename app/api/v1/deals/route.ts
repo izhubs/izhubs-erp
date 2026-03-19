@@ -1,7 +1,7 @@
 import { DealSchema, DealStageSchema } from '@/core/schema/entities';
 import { withPermission } from '@/core/engine/rbac';
 import { ApiResponse } from '@/core/engine/response';
-import * as DealsEngine from '@/core/engine/deals';
+import * as DealsEngine from '@/modules/crm/engine/deals';
 
 export const GET = withPermission('deals:read', async (req) => {
   try {

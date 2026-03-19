@@ -1,5 +1,5 @@
-import { listContacts } from '@/core/engine/contacts';
-import { listDeals } from '@/core/engine/deals';
+import { listContacts } from '@/modules/crm/engine/contacts';
+import { listDeals } from '@/modules/crm/engine/deals';
 import { listServicePackages } from '@/core/engine/service-packages';
 import { cookies } from 'next/headers';
 import Link from 'next/link';

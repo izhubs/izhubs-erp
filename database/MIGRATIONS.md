@@ -105,11 +105,11 @@ npm run seed:industry-templates       # ghi vào DB
 
 ## Lịch sử migration
 
-| File | Ngày | Nội dung |
-|------|------|----------|
-| `001_initial_schema.sql` | 2026-03-17 | Squash từ 001–008 cũ. Tất cả bảng cốt lõi: users, contacts, deals, companies, activities, audit_log, import_jobs, webhooks, modules, tenant_modules |
-| `002_seed_data.sql` | 2026-03-17 | Default tenant (UUID `...0001`), 7 official modules catalog, CRM activated by default |
-| `003_industry_theme.sql` | 2026-03-17 | Thêm `industry` + `custom_theme_config` vào `tenants`. Tạo `industry_templates` table (nav_config, theme_defaults lưu JSON) |
+| Thư mục/File | Nội dung |
+|------|----------|
+| `001_initial_schema.sql` | Squash từ 001–010 cũ. Tất cả bảng cốt lõi và **Universal Extensibility Layer** (`universal_records` với `GIN` jsonb_path_ops index, `record_links`). |
+| `002_seed_data.sql` | Default tenant (UUID `...0001`), official modules catalog. |
+| `scripts/db-reset.js` | Script `npm run db:reset` tiện dụng để reset DB tự động và apply schema (dùng trong MVP phase không cần file `003`, `004`...). |
 
 ---
 

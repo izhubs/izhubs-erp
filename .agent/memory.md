@@ -128,6 +128,15 @@ npm run typecheck; npm run test:contracts
 - Core engine layer: `core/engine/contacts.ts`, `core/engine/deals.ts` — only these may query the DB directly
 - `ApiResponse` factory: `core/engine/response.ts` — ALL API routes must use this, never `NextResponse.json()` directly
 
+### Session 14 — 2026-03-19 (Core Foundation Hardening & Universal DB Architecture)
+- **Database Squashing**: Thu gọn toàn bộ tệp migration từ 001 đến 010 vào `001_initial_schema.sql` và `002_seed_data.sql`
+- **Universal DB Extensibility**: Thêm bảng `universal_records` và `record_links`
+- **Advanced JSONB Indexing**: Áp dụng `GIN` với `jsonb_path_ops` trên biến `payload JSONB` theo chuẩn kỹ năng `antigravity-awesome-skills: postgres-best-practices`
+- **Fat Module Logic**: Đưa logic `contacts.ts` và `deals.ts` vào thư mục `modules/crm/engine/` đúng chuẩn kiến trúc Fat Module
+- **UI Accessibility**: Nâng cấp `ContactFormModal.tsx` và `DealFormModal.tsx` sang Radix UI `<Dialog>` framework.
+- **Workflow Tools**: Thêm `scripts/db-reset.js` và `npm run db:reset`
+- **Testing**: Cả 74 Contract Tests và npm run build passed 100%.
+
 ### Session 12 — 2026-03-18 (Refactor & Audit Master Plan)
 - **Master Plan doc**: `brain/.../refactor_audit_master_plan.md` — 5 phases (Security, CI/CD, UI, Data Layer, Core Libs)
 - **Conductor track**: `.agent/tracks/2026-03-18-refactor-audit-hardening/SPEC.md` — 6 phases với full acceptance criteria

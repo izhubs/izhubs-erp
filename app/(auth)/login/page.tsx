@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectParams = searchParams?.get('redirect') || '/dashboard';
@@ -31,8 +31,6 @@ export default function LoginPage() {
         throw new Error(json.error?.message || json.message || 'Login failed');
       }
 
-      // We have access token, and refresh is in HTTP Only Cookie.
-      // E.g. save access token to Zustand store. We'll store temporarily in memory or local storage.
       if (typeof window !== 'undefined') {
         localStorage.setItem('hz_access', json.data.accessToken);
       }
@@ -99,5 +97,13 @@ export default function LoginPage() {
         </a>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="card" style={{ width: '100%', maxWidth: 400 }}>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

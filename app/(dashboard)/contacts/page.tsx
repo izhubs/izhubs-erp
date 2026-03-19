@@ -1,4 +1,4 @@
-import { listContacts, countByStatus } from '@/core/engine/contacts';
+import { listContacts, countByStatus } from '@/modules/crm/engine/contacts';
 import ContactsTable from '@/components/contacts/ContactsTable';
 
 export const metadata = { title: 'Contacts — izhubs ERP' };
