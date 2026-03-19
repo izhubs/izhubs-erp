@@ -18,7 +18,7 @@ interface ContractRow extends Record<string, unknown> {
   package_name: string | null;
   stage: string;
   value: number;
-  close_date: string | null;
+  closed_at: string | null;
   owner_name: string | null;
   days_until_expiry: number | null;
 }
@@ -51,11 +51,11 @@ const COLUMNS: DataTableColumn<ContractRow>[] = [
     render: (r) => `${Number(r.value).toLocaleString('vi-VN')}đ`,
   },
   {
-    key: 'close_date',
+    key: 'closed_at',
     label: 'Hết hạn',
     render: (r) =>
-      r.close_date
-        ? new Date(r.close_date).toLocaleDateString('vi-VN')
+      r.closed_at
+        ? new Date(r.closed_at).toLocaleDateString('vi-VN')
         : '—',
   },
   {
@@ -82,11 +82,11 @@ export default async function ContractsPage() {
          sp.name    AS package_name,
          d.stage,
          d.value,
-         d.close_date,
+         d.closed_at,
          u.name     AS owner_name,
          CASE
-           WHEN d.close_date IS NOT NULL
-           THEN (d.close_date::date - CURRENT_DATE)
+           WHEN d.closed_at IS NOT NULL
+           THEN (d.closed_at::date - CURRENT_DATE)
            ELSE NULL
          END        AS days_until_expiry
        FROM deals d
@@ -98,7 +98,7 @@ export default async function ContractsPage() {
          AND d.deleted_at IS NULL
        ORDER BY
          CASE WHEN d.stage = 'renewal' THEN 0 ELSE 1 END,
-         d.close_date ASC NULLS LAST`,
+         d.closed_at ASC NULLS LAST`,
       [tenantId]
     ),
     db.query(
@@ -106,7 +106,7 @@ export default async function ContractsPage() {
          COUNT(*) FILTER (WHERE stage = 'active')                                   AS active,
          COUNT(*) FILTER (WHERE stage = 'renewal')                                  AS needs_renewal,
          COUNT(*) FILTER (WHERE stage = 'renewal'
-           AND close_date BETWEEN now() AND now() + interval '7 days')              AS expiring_7d,
+           AND closed_at BETWEEN now() AND now() + interval '7 days')              AS expiring_7d,
          COALESCE(SUM(value) FILTER (WHERE stage = 'active'), 0)                    AS arr
        FROM deals
        WHERE tenant_id = $1 AND deleted_at IS NULL`,

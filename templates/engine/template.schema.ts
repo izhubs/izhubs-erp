@@ -98,10 +98,18 @@ export const NavConfigSchema = z.object({
   dashboardLayout: z.object({
     rows: z.array(DashboardWidgetRowSchema),
   }),
+  /**
+   * CSS variable overrides injected into :root when this template is active.
+   * Stored in the separate `theme_defaults` column in industry_templates,
+   * merged into NavConfig at query time in getNavConfig().
+   * Example: { "--color-primary": "#6366f1", "--color-primary-hover": "#4f46e5" }
+   */
+  themeDefaults: z.record(z.string()).optional(),
 });
 
 export type NavConfig = z.infer<typeof NavConfigSchema>;
 export type DashboardWidgetRow = z.infer<typeof DashboardWidgetRowSchema>;
+
 
 // =============================================================
 // Full Industry Template

@@ -46,7 +46,7 @@ function filterByRole(items: NavItem[], userRole: string): NavItem[] {
 /** Raw fetch from DB — not cached (used inside unstable_cache wrapper). */
 async function fetchNavConfigFromDB(tenantId: string): Promise<NavConfig | null> {
   const result = await db.query(
-    `SELECT it.nav_config
+    `SELECT it.nav_config, it.theme_defaults
      FROM tenants t
      JOIN industry_templates it ON it.id = t.industry
      WHERE t.id = $1 AND t.active = true`,
@@ -55,7 +55,10 @@ async function fetchNavConfigFromDB(tenantId: string): Promise<NavConfig | null>
 
   if (result.rows.length === 0) return null;
   // JSONB is already parsed by the pg driver
-  return result.rows[0].nav_config as NavConfig;
+  const navConfig = result.rows[0].nav_config as NavConfig;
+  const themeDefaults = result.rows[0].theme_defaults as Record<string, string> | null;
+  // Merge theme_defaults (stored as separate column) into the NavConfig
+  return { ...navConfig, themeDefaults: themeDefaults ?? {} };
 }
 
 /**
@@ -86,12 +89,12 @@ export async function getNavConfig(
   // Apply role filter at call time (not cached, fast in-memory)
   return {
     ...config,
-    sidebar: filterByRole(config.sidebar, userRole),
+    sidebar: filterByRole(config.sidebar ?? [], userRole),
     bottomItems: config.bottomItems
       ? filterByRole(config.bottomItems, userRole)
       : undefined,
     dashboardLayout: {
-      rows: config.dashboardLayout.rows.filter((row) => {
+      rows: (config.dashboardLayout?.rows ?? []).filter((row) => {
         if (!row.minRole) return true;
         const userLevel = ROLE_HIERARCHY[userRole] ?? 0;
         const minLevel = ROLE_HIERARCHY[row.minRole] ?? 0;
