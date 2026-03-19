@@ -39,6 +39,9 @@ _Last updated: 2026-03-18 (Session 14 — UI Layer, Chart Widgets, Pipeline Mult
 | 2026-03-16 | agency-vertical-polish | planning | Stage names, project tracking fields, retainer deal type |
 | 2026-03-17 | pipeline-views | ✅ done | Multi-view: Kanban / Table (sortable) / Funnel (stage-order bars) + localStorage persistence |
 | 2026-03-17 | sales-frameworks | planning | AIDA, BANT, MEDDIC, SPIN framework templates per industry |
+| 2026-03-19 | onboarding-ui | planning | Onboarding Wizard UI (Register, Industry Selection, Provisioning) |
+| 2026-03-19 | json-template-engine | planning | Export/Import whole tenant configuration to JSON file (Freelancer OS enabler) |
+| 2026-03-19 | embeddable-lead-form | planning | Viral Loop Web-to-Lead Form Generator (iframe module) |
 
 ---
 

@@ -246,7 +246,8 @@ export default function KanbanBoard({ initialDeals }: Props) {
 }
 
 function formatCurrency(value: number): string {
-  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`;
-  return `$${value.toLocaleString()}`;
+  if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}Tỷđ`;
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(0)}Mđ`;
+  if (value >= 1_000) return `${(value / 1_000).toFixed(0)}Kđ`;
+  return `${value}đ`;
 }

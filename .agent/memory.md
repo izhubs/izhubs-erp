@@ -292,6 +292,9 @@ npm run typecheck; npm run test:contracts
 - **MCP Server** (moved up from v0.3) — query ERP data with Claude/Cursor
 - **Agency vertical polish** — staged pipeline, project tracking custom fields, retainer deal type
 - 🏗️ **json-template-format** — migrate templates to JSON for Gumroad distribution
+- 🏗️ **onboarding-ui** — 3-step setup wizard (Register, Industry Selection, Provisioning)
+- 🏗️ **json-template-engine** — Complete Export/Import to `.izhubs.json` file for Gumroad package 
+- 🏗️ **embeddable-lead-form** — Viral loop lead generation (Powered by IZhubs iframe form)
 
 ## Planned v0.3 — Managed Cloud (3 months)
 - **tenant_id activated** — multi-tenant mode for managed hosting ($19/mo)

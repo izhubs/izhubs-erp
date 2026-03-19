@@ -255,8 +255,8 @@ export default function PipelineViews({ initialDeals }: { initialDeals: Deal[] }
 }
 
 function formatVnd(v: number): string {
-  if (v >= 1_000_000_000) return `${(v / 1_000_000_000).toFixed(1)}B`;
-  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(0)}M`;
-  if (v >= 1_000) return `${(v / 1_000).toFixed(0)}K`;
-  return String(v);
+  if (v >= 1_000_000_000) return `${(v / 1_000_000_000).toFixed(1)}Tỷđ`;
+  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(0)}Mđ`;
+  if (v >= 1_000) return `${(v / 1_000).toFixed(0)}Kđ`;
+  return `${v}đ`;
 }

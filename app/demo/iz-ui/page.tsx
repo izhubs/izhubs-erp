@@ -25,6 +25,7 @@ import { IzInput } from '@/components/ui/IzInput';
 import { IzTextarea } from '@/components/ui/IzTextarea';
 import { IzFormTextarea } from '@/components/ui/IzFormTextarea';
 import { IzFormCheckbox } from '@/components/ui/IzFormCheckbox';
+import { IzSwitch } from '@/components/ui/IzSwitch';
 import { IzFormSwitch } from '@/components/ui/IzFormSwitch';
 import { IzFormRadioGroup } from '@/components/ui/IzFormRadioGroup';
 import { IzFormSelect } from '@/components/ui/IzFormSelect';
@@ -39,6 +40,14 @@ import {
 import { 
   IzAlertDialog, IzAlertDialogTrigger, IzAlertDialogContent, IzAlertDialogHeader, IzAlertDialogFooter, IzAlertDialogTitle, IzAlertDialogDescription, IzAlertDialogAction, IzAlertDialogCancel 
 } from '@/components/ui/IzAlertDialog';
+import { IzCard, IzCardHeader, IzCardTitle, IzCardDescription, IzCardContent, IzCardFooter } from '@/components/ui/IzCard';
+import { IzAvatar, IzAvatarImage, IzAvatarFallback } from '@/components/ui/IzAvatar';
+import { IzTabs, IzTabsList, IzTabsTrigger, IzTabsContent } from '@/components/ui/IzTabs';
+import { IzDropdownMenu, IzDropdownMenuTrigger, IzDropdownMenuContent, IzDropdownMenuItem, IzDropdownMenuLabel, IzDropdownMenuSeparator, IzDropdownMenuGroup, IzDropdownMenuShortcut } from '@/components/ui/IzDropdownMenu';
+import { IzTooltip, IzTooltipTrigger, IzTooltipContent, IzTooltipProvider } from '@/components/ui/IzTooltip';
+import { IzPopover, IzPopoverTrigger, IzPopoverContent } from '@/components/ui/IzPopover';
+import { IzDrawer, IzDrawerTrigger, IzDrawerContent, IzDrawerHeader, IzDrawerTitle, IzDrawerDescription, IzDrawerFooter, IzDrawerClose, IzDrawerBody } from '@/components/ui/IzDrawer';
+import { IzBreadcrumb, IzBreadcrumbList, IzBreadcrumbItem, IzBreadcrumbLink, IzBreadcrumbPage, IzBreadcrumbSeparator } from '@/components/ui/IzBreadcrumb';
 import { useToast } from '@/hooks/use-toast';
 import styles from './Demo.module.scss'; 
 
@@ -644,6 +653,185 @@ const columns = [
                 </div>
             </div>
           </section>
+        </div>
+
+        {/* --- PART 5: DATA DISPLAY & NAVIGATION --- */}
+        <div className={styles.partContainer}>
+          <h2 className={styles.partHeader}>E. Hiển Thị Dữ Liệu & Điều Hướng (Data & Navigation)</h2>
+          
+          <IzTooltipProvider delayDuration={300}>
+            <section className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <h2>1. Card, Avatar & Breadcrumb</h2>
+                <span className={styles.badge}>FOUNDATION</span>
+              </div>
+              
+              <div className={styles.grid}>
+                <div className={styles.smartCard}>
+                  <IzBreadcrumb className={`${styles.mb6}`}>
+                    <IzBreadcrumbList>
+                      <IzBreadcrumbItem>
+                        <IzBreadcrumbLink href="#">Trang Chủ</IzBreadcrumbLink>
+                      </IzBreadcrumbItem>
+                      <IzBreadcrumbSeparator />
+                      <IzBreadcrumbItem>
+                        <IzBreadcrumbLink href="#">Khách Hàng</IzBreadcrumbLink>
+                      </IzBreadcrumbItem>
+                      <IzBreadcrumbSeparator />
+                      <IzBreadcrumbItem>
+                        <IzBreadcrumbPage>Isaac Vu</IzBreadcrumbPage>
+                      </IzBreadcrumbItem>
+                    </IzBreadcrumbList>
+                  </IzBreadcrumb>
+
+                  <h3 className={`${styles.textXl} ${styles.mb6} ${styles.flexRow} ${styles.gap2}`}><User size={20} /> Hồ sơ tóm tắt</h3>
+                  
+                  <IzCard>
+                    <IzCardHeader>
+                      <div className={`${styles.flexRow} ${styles.gap4}`}>
+                        <IzAvatar size="xl">
+                          <IzAvatarImage src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Isaac Vu" />
+                          <IzAvatarFallback>IV</IzAvatarFallback>
+                        </IzAvatar>
+                        <div>
+                          <IzCardTitle>Isaac Vu</IzCardTitle>
+                          <IzCardDescription>isaac@izhubs.com</IzCardDescription>
+                        </div>
+                      </div>
+                    </IzCardHeader>
+                    <IzCardContent>
+                      <p className={`${styles.textSm} ${styles.textMutedForeground}`}>
+                        Giám đốc kỹ thuật phụ trách hệ thống ERP. Đã tham gia từ tháng 1, 2026.
+                      </p>
+                    </IzCardContent>
+                    <IzCardFooter>
+                      <div className={`${styles.flexRow} ${styles.gap2} ${styles.wFull}`}>
+                        <IzTooltip>
+                          <IzTooltipTrigger asChild>
+                            <IzButton variant="outline" className={`${styles.wFull}`}><Mail size={16} className="mr-2" />Gửi Email</IzButton>
+                          </IzTooltipTrigger>
+                          <IzTooltipContent side="bottom"> Soạn email qua hệ thống IzHubs Mail </IzTooltipContent>
+                        </IzTooltip>
+                      </div>
+                    </IzCardFooter>
+                  </IzCard>
+                </div>
+
+                <div className={styles.smartCard}>
+                  <h3 className={`${styles.textXl} ${styles.mb6} ${styles.flexRow} ${styles.gap2}`}><Briefcase size={20} /> Tabs & Popovers</h3>
+                  
+                  <IzTabs defaultValue="account" className={`${styles.wFull} ${styles.mb6}`}>
+                    <IzTabsList className={`${styles.wFull}`}>
+                      <IzTabsTrigger value="account" className={`${styles.wFull}`}>Tài Khoản</IzTabsTrigger>
+                      <IzTabsTrigger value="password" className={`${styles.wFull}`}>Mật Khẩu</IzTabsTrigger>
+                    </IzTabsList>
+                    <IzTabsContent value="account">
+                      <div className={`${styles.flexCol} ${styles.gap4} ${styles.pt4}`}>
+                        <IzInput placeholder="Tên hiển thị" defaultValue="Isaac Vu" />
+                        <IzButton>Lưu thay đổi</IzButton>
+                      </div>
+                    </IzTabsContent>
+                    <IzTabsContent value="password">
+                      <div className={`${styles.flexCol} ${styles.gap4} ${styles.pt4}`}>
+                        <IzInput type="password" placeholder="Mật khẩu cũ" />
+                        <IzInput type="password" placeholder="Mật khẩu mới" />
+                        <IzButton variant="outline">Đổi mật khẩu</IzButton>
+                      </div>
+                    </IzTabsContent>
+                  </IzTabs>
+
+                  <IzPopover>
+                    <IzPopoverTrigger asChild>
+                      <IzButton variant="secondary" className={`${styles.wFull}`}>Mở Quick Settings (Popover)</IzButton>
+                    </IzPopoverTrigger>
+                    <IzPopoverContent align="center" side="top">
+                      <div className={`${styles.flexCol} ${styles.gap2}`}>
+                        <h4 className={`${styles.textSm} ${styles.fontMedium}`}>Cài đặt nhanh</h4>
+                        <p className={`${styles.textSm} ${styles.textMutedForeground} ${styles.mb2}`}>Bật thông báo đẩy và email.</p>
+                        <div className={`${styles.flexRow} ${styles.itemsCenter} ${styles.justifyBetween}`}>
+                          <label className={`${styles.textSm}`}>Email Alerts</label>
+                          <IzSwitch checked={true} />
+                        </div>
+                      </div>
+                    </IzPopoverContent>
+                  </IzPopover>
+                </div>
+              </div>
+            </section>
+
+            <section className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <h2>2. Menu Chức Năng & Bảng Trượt Kéo (Complex Layouts)</h2>
+                <span className={styles.badge}>RADIX & VAUL</span>
+              </div>
+              
+              <div className={styles.card}>
+                <div className={`${styles.flexRow} ${styles.gap4}`}>
+                  
+                  <IzDropdownMenu>
+                    <IzDropdownMenuTrigger asChild>
+                      <IzButton variant="outline"><Settings size={16} className="mr-2" /> Menu Chức Năng</IzButton>
+                    </IzDropdownMenuTrigger>
+                    <IzDropdownMenuContent align="start">
+                      <IzDropdownMenuLabel>Tài Khoản Của Tôi</IzDropdownMenuLabel>
+                      <IzDropdownMenuSeparator />
+                      <IzDropdownMenuGroup>
+                        <IzDropdownMenuItem>
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Hồ sơ</span>
+                          <IzDropdownMenuShortcut>⇧⌘P</IzDropdownMenuShortcut>
+                        </IzDropdownMenuItem>
+                        <IzDropdownMenuItem>
+                          <Settings className="mr-2 h-4 w-4" />
+                          <span>Cài đặt</span>
+                          <IzDropdownMenuShortcut>⌘S</IzDropdownMenuShortcut>
+                        </IzDropdownMenuItem>
+                      </IzDropdownMenuGroup>
+                      <IzDropdownMenuSeparator />
+                      <IzDropdownMenuItem variant="destructive">
+                        <Lock className="mr-2 h-4 w-4" />
+                        <span>Đăng xuất</span>
+                        <IzDropdownMenuShortcut>⇧⌘Q</IzDropdownMenuShortcut>
+                      </IzDropdownMenuItem>
+                    </IzDropdownMenuContent>
+                  </IzDropdownMenu>
+
+                  <IzDrawer>
+                    <IzDrawerTrigger asChild>
+                      <IzButton><Workflow size={16} className="mr-2" /> Mở Bảng Phải (Drawer)</IzButton>
+                    </IzDrawerTrigger>
+                    <IzDrawerContent side="right">
+                      <IzDrawerHeader>
+                        <IzDrawerTitle>Chỉnh sửa quy trình bán hàng</IzDrawerTitle>
+                        <IzDrawerDescription>Kéo thả các bước để thay đổi thứ tự quy trình (Tính năng giả lập).</IzDrawerDescription>
+                      </IzDrawerHeader>
+                      <IzDrawerBody>
+                         <div className={`${styles.flexCol} ${styles.gap4} ${styles.py6}`}>
+                            <div>
+                              <label className={`${styles.textSm} ${styles.fontMedium} ${styles.mb2} ${styles.block}`}>Tên quy trình</label>
+                              <IzInput defaultValue="SaaS Sales Pipeline" />
+                            </div>
+                            <div>
+                              <label className={`${styles.textSm} ${styles.fontMedium} ${styles.mb2} ${styles.block}`}>Mô tả</label>
+                              <IzTextarea rows={5} defaultValue="Dùng cho các khách hàng mua gói trả góp định kỳ." />
+                            </div>
+                         </div>
+                      </IzDrawerBody>
+                      <IzDrawerFooter>
+                        <IzDrawerClose asChild>
+                          <IzButton variant="ghost">Hủy bỏ</IzButton>
+                        </IzDrawerClose>
+                        <IzDrawerClose asChild>
+                          <IzButton>Lưu Thay Đổi</IzButton>
+                        </IzDrawerClose>
+                      </IzDrawerFooter>
+                    </IzDrawerContent>
+                  </IzDrawer>
+
+                </div>
+              </div>
+            </section>
+          </IzTooltipProvider>
         </div>
 
       </div>
