@@ -128,12 +128,13 @@ npm run typecheck; npm run test:contracts
 - Core engine layer: `core/engine/contacts.ts`, `core/engine/deals.ts` — only these may query the DB directly
 - `ApiResponse` factory: `core/engine/response.ts` — ALL API routes must use this, never `NextResponse.json()` directly
 
-### Session 16 — 2026-03-19 (IzUI Component Library Finalization)
+### Session 16 — 2026-03-19 (IzUI Component Library Finalization & Virtual Office Template)
 - **IzUI Master Roadmap Completed**: All 13 phases of the component library are done natively with SCSS Modules and Radix UI primitives.
 - **Data Visualization**: `IzLineChart`, `IzBarChart`, `IzPieChart`, `IzMetricCard` built on `recharts`.
 - **ERP Widgets**: `IzAccordion` (FAQ), `IzActivityTimeline` (Audit logs), `IzFileUpload` (DND capacity check).
 - **Kanban Layout**: `IzKanbanBoard` CSS structure provided for future `@dnd-kit` usage.
 - **Documentation**: Established `docs/IzUI_Usage_Guide.md` (Strict encapsulation, no Tailwind permitted inside core components).
+- **Virtual Office Template Checked**: `templates/industry/virtual-office.ts` verified complete (8 stages, fields, automations).
 
 ### Session 14 — 2026-03-19 (Core Foundation Hardening & Universal DB Architecture)
 - **Database Squashing**: Thu gọn toàn bộ tệp migration từ 001 đến 010 vào `001_initial_schema.sql` và `002_seed_data.sql`
