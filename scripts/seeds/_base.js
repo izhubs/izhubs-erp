@@ -117,15 +117,18 @@ async function runSeed(industryModule, tenantId = '00000000-0000-0000-0000-00000
     console.log(` ✅ ${dInserted} new (${deals.length} total)`);
 
     console.log(`\n✅ Done: ${contacts.length} contacts, ${deals.length} deals`);
-    console.log(`\n   Login: ${adminUser.email} / ${adminUser.password}`);
-    console.log('   App  : http://localhost:1303\n');
+    if (require.main === module) {
+      console.log(`\n   Login: ${adminUser.email} / ${adminUser.password}`);
+      console.log('   App  : http://localhost:1303\n');
+    }
   } catch (err) {
     console.error('\n❌ Seed failed:', err.message);
     if (err.detail) console.error('   Detail:', err.detail);
-    process.exit(1);
+    if (require.main === module) process.exit(1);
+    throw err;
   } finally {
     client.release();
-    await pool.end();
+    if (require.main === module) await pool.end();
   }
 }
 

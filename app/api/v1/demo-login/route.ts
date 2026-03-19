@@ -34,12 +34,15 @@ export async function POST(req: Request) {
     // Get or create a demo session for this industry + role
     const { tenantId, userId, email, role: userRole } = await getDemoSession(industry, role);
 
-    // Issue a short-lived demo JWT (30 minutes)
-    const payload = { sub: userId, email, role: userRole, tenantId, type: 'access' as const };
-    const accessToken = await signJwt(payload, '30m');
+    // Issue demo tokens — 30m access + 2h refresh so middleware doesn't boot the user
+    const basePayload = { sub: userId, email, role: userRole, tenantId };
+    const accessToken  = await signJwt({ ...basePayload, type: 'access'  as const }, '30m');
+    const refreshToken = await signJwt({ ...basePayload, type: 'refresh' as const }, '2h');
 
-    // Set the access cookie so middleware.ts picks it up
-    (await cookies()).set({
+    const jar = await cookies();
+
+    // Access token (readable by JS — needed for apiFetch Authorization header)
+    jar.set({
       name: 'hz_access',
       value: accessToken,
       httpOnly: false,
@@ -47,6 +50,17 @@ export async function POST(req: Request) {
       sameSite: 'lax',
       path: '/',
       maxAge: 60 * 30, // 30 minutes
+    });
+
+    // Refresh token (httpOnly — used by middleware to keep the session alive)
+    jar.set({
+      name: 'hz_refresh',
+      value: refreshToken,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 120, // 2 hours
     });
 
     return ApiResponse.success({

@@ -43,6 +43,7 @@ _Last updated: 2026-03-18 (Session 14 — UI Layer, Chart Widgets, Pipeline Mult
 | 2026-03-19 | onboarding-ui | planning | Onboarding Wizard UI (Register, Industry Selection, Provisioning) |
 | 2026-03-19 | json-template-engine | planning | Export/Import whole tenant configuration to JSON file (Freelancer OS enabler) |
 | 2026-03-19 | embeddable-lead-form | planning | Viral Loop Web-to-Lead Form Generator (iframe module) |
+| 2026-03-19 | smart-grid | planning | Spreadsheet-Style Grid: post-import review + standalone Sheet View per entity |
 | 2026-03-19 | ui-polish-vo | ✅ done | VO Industry UI Polish: DealCard VND+badge, Pipeline stages fixed, demo data seeded |
 | 2026-03-19 | refactor-to-izui | planning | Mass refactor of entire app UI to use the native IzUI component suite |
 | 2026-03-19 | vo-template-complete | ✅ done | Verified Virtual Office template completeness checked (8 stages, fields, automations) |

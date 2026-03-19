@@ -58,19 +58,16 @@ export type Contact = z.infer<typeof ContactSchema>;
 
 // ---- Deal ----
 export const DealStageSchema = z.enum([
-  // Generic CRM stages (original)
-  'new',
-  'contacted',
-  'qualified',
-  'proposal',
-  'negotiation',
-  'won',
-  'lost',
+  // Generic CRM stages
+  'new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost',
   // Virtual Office / subscription-model stages
-  'lead',
-  'active',
-  'onboarding',
-  'renewal',
+  'lead', 'active', 'onboarding', 'renewal',
+  // Project / freelancer stages
+  'revision', 'completed', 'cancelled', 'pending',
+  // Restaurant / F&B stages
+  'inquiry', 'reservation', 'confirmed', 'seated',
+  // Coworking stages
+  'tour_scheduled', 'tour_completed', 'member_active',
 ]);
 
 export const DealSchema = z.object({

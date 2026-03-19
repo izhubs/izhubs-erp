@@ -22,10 +22,9 @@ interface Props {
 
 function DemoBanner() {
   const [isDemo, setIsDemo] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    // Demo emails follow the pattern demo_{industry}_{role}@izhubs.com
-    // We check by decoding the JWT payload (no verification needed here — just UX)
     try {
       const token = document.cookie
         .split('; ')
@@ -36,39 +35,75 @@ function DemoBanner() {
       if (payload.email?.startsWith('demo_') && payload.email?.endsWith('@izhubs.com')) {
         setIsDemo(true);
       }
-    } catch {
-      // Not a valid JWT or cookie missing — silent fail
-    }
+    } catch { /* silent fail */ }
   }, []);
 
-  if (!isDemo) return null;
+  if (!isDemo || dismissed) return null;
 
   return (
     <div style={{
-      background: 'var(--color-primary)',
-      color: '#fff',
-      textAlign: 'center',
-      fontSize: 'var(--font-size-sm)',
-      fontWeight: 500,
-      padding: '8px 16px',
+      position: 'fixed',
+      bottom: '24px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      zIndex: 10000,
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center',
-      gap: '12px',
-      flexShrink: 0,
+      gap: '10px',
+      background: 'rgba(20, 22, 34, 0.88)',
+      backdropFilter: 'blur(14px)',
+      WebkitBackdropFilter: 'blur(14px)',
+      border: '1px solid rgba(255,255,255,0.12)',
+      borderRadius: '100px',
+      padding: '8px 16px 8px 14px',
+      boxShadow: '0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(99,102,241,0.2)',
+      whiteSpace: 'nowrap',
     }}>
-      <span>💡 This is a demo session. Data resets every hour.</span>
+      <span style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '7px',
+        fontSize: '13px',
+        fontWeight: 500,
+        color: 'rgba(255,255,255,0.72)',
+      }}>
+        <span style={{
+          width: '7px', height: '7px',
+          background: 'var(--color-primary)',
+          borderRadius: '50%',
+          display: 'inline-block',
+          boxShadow: '0 0 8px var(--color-primary)',
+          flexShrink: 0,
+          animation: 'demoP 2s ease-in-out infinite',
+        }} />
+        Demo session
+      </span>
       <a
         href="/register"
         style={{
-          color: '#fff',
-          fontWeight: 700,
-          textDecoration: 'underline',
-          whiteSpace: 'nowrap',
+          fontSize: '12px',
+          fontWeight: 600,
+          color: 'var(--color-primary)',
+          textDecoration: 'none',
+          padding: '3px 12px',
+          background: 'rgba(99,102,241,0.18)',
+          borderRadius: '100px',
+          border: '1px solid rgba(99,102,241,0.3)',
         }}
       >
-        Sign up to keep your data →
+        Sign up free →
       </a>
+      <button
+        onClick={() => setDismissed(true)}
+        aria-label="Dismiss"
+        style={{
+          background: 'none', border: 'none',
+          color: 'rgba(255,255,255,0.3)',
+          cursor: 'pointer', padding: '0 2px',
+          fontSize: '13px', lineHeight: 1,
+        }}
+      >✕</button>
+      <style>{`@keyframes demoP{0%,100%{opacity:1}50%{opacity:0.35}}`}</style>
     </div>
   );
 }

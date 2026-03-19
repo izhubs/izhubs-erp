@@ -30,7 +30,7 @@ export const ApiResponse = {
    * 200 / 201 success with data payload.
    */
   success<T>(data: T, status: 200 | 201 = 200, meta?: object): NextResponse {
-    return NextResponse.json({ data, ...(meta ? { meta } : {}) }, { status });
+    return NextResponse.json({ success: true, data, ...(meta ? { meta } : {}) }, { status });
   },
 
   /**
@@ -44,7 +44,7 @@ export const ApiResponse = {
     code?: ErrorCode
   ): NextResponse {
     return NextResponse.json(
-      { error: { message, ...(code ? { code } : {}), ...(details ? { details } : {}) } },
+      { success: false, error: { message, ...(code ? { code } : {}), ...(details ? { details } : {}) } },
       { status }
     );
   },
@@ -54,7 +54,7 @@ export const ApiResponse = {
    */
   validationError(err: ZodError): NextResponse {
     return NextResponse.json(
-      { error: { code: ErrorCodes.VALIDATION_FAILED, message: 'Validation failed', details: err.format() } },
+      { success: false, error: { code: ErrorCodes.VALIDATION_FAILED, message: 'Validation failed', details: err.format() } },
       { status: 422 }
     );
   },
@@ -66,7 +66,7 @@ export const ApiResponse = {
     const message = err instanceof Error ? err.message : 'Unknown error';
     console.error(`[API Error]${context ? ` [${context}]` : ''}: ${message}`, err);
     return NextResponse.json(
-      { error: { code: ErrorCodes.INTERNAL_ERROR, message: 'Internal server error' } },
+      { success: false, error: { code: ErrorCodes.INTERNAL_ERROR, message: 'Internal server error' } },
       { status: 500 }
     );
   },
