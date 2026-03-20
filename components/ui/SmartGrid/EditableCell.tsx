@@ -68,7 +68,44 @@ export function EditableCell<TData>({ context }: EditableCellProps<TData>) {
     meta?.setIsEditing?.(true);
   };
 
+  const colMeta = column.columnDef.meta as { type?: string; options?: { label: string; value: string }[] } | undefined;
+
+  let displayValue = String(value ?? '');
+  if (colMeta?.type === 'select' && colMeta.options) {
+    displayValue = colMeta.options.find(o => o.value === value)?.label ?? displayValue;
+  }
+
   if (isEditing) {
+    if (colMeta?.type === 'select') {
+      return (
+        <select
+          autoFocus
+          style={{ ...INPUT_STYLE, cursor: 'pointer' }}
+          value={String(value ?? '')}
+          onChange={(e) => {
+            setValue(e.target.value);
+            // Optionally auto-commit on select for better UX, or just let onBlur handle it
+          }}
+          onBlur={commit}
+          onKeyDown={(e) => {
+            // Stop grid from hijacking arrow keys while dropdown is open
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+              e.stopPropagation();
+            }
+            if (e.key === 'Escape') {
+              setValue(initialValue);
+              e.currentTarget.onblur = null;
+            }
+          }}
+        >
+          <option value="" disabled>-- Chọn --</option>
+          {colMeta.options?.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+      );
+    }
+
     return (
       <input
         // eslint-disable-next-line jsx-a11y/no-autofocus
@@ -97,7 +134,7 @@ export function EditableCell<TData>({ context }: EditableCellProps<TData>) {
 
   return (
     <div style={VIEW_STYLE} onClick={activate} onDoubleClick={startEdit}>
-      {String(value ?? '')}
+      {displayValue}
     </div>
   );
 }

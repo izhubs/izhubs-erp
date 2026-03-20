@@ -318,6 +318,46 @@ export function SmartGrid<TData>({
 
               const isEditingThis = draftEditing === colId;
               const val = draftRow[colId] ?? '';
+              const colMeta = col.columnDef.meta as { type?: string; options?: { label: string; value: string }[] } | undefined;
+
+              if (colMeta?.type === 'select') {
+                return (
+                  <div key={colId} className={cn(styles.td, styles.draftCell)} style={style}>
+                    <select
+                      style={{
+                        width: '100%', height: '100%',
+                        border: 'none', background: 'transparent', outline: 'none',
+                        padding: '0 6px', margin: 0,
+                        font: 'inherit', color: 'inherit',
+                        cursor: 'pointer',
+                        opacity: isEditingThis || (val !== '') ? 1 : 0.3,
+                      }}
+                      value={String(val)}
+                      onFocus={() => {
+                        setDraftEditing(colId);
+                        setActiveCell(null);
+                      }}
+                      onChange={(e) => setDraftRow(prev => ({ ...prev, [colId]: e.target.value }))}
+                      onBlur={() => setDraftEditing(null)}
+                      onKeyDown={(e) => {
+                        e.stopPropagation();
+                        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) e.stopPropagation();
+                        if (e.key === 'Escape') { setDraftRow({}); setDraftEditing(null); }
+                        if (e.key === 'Enter') { e.preventDefault(); commitDraftRow(); }
+                        if (e.key === 'Tab' && !e.shiftKey && i === leafColumns.length - 1) {
+                          e.preventDefault();
+                          commitDraftRow();
+                        }
+                      }}
+                    >
+                      <option value="" disabled>-- Chọn --</option>
+                      {colMeta.options?.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                );
+              }
 
               return (
                 <div

@@ -13,7 +13,17 @@ const columns: ColumnDef<Contact, any>[] = [
   { id: 'email', accessorKey: 'email', header: 'Email',          cell: (ctx) => <EditableCell context={ctx} />, size: 220 },
   { id: 'phone', accessorKey: 'phone', header: 'Số điện thoại', cell: (ctx) => <EditableCell context={ctx} />, size: 150 },
   { id: 'title', accessorKey: 'title', header: 'Chức danh',     cell: (ctx) => <EditableCell context={ctx} />, size: 180 },
-  { id: 'status',accessorKey: 'status',header: 'Trạng thái',    cell: (ctx) => <EditableCell context={ctx} />, size: 120 },
+  { id: 'status',accessorKey: 'status',header: 'Trạng thái',    cell: (ctx) => <EditableCell context={ctx} />, size: 120,
+    meta: {
+      type: 'select',
+      options: [
+        { label: 'Lead', value: 'lead' },
+        { label: 'Customer', value: 'customer' },
+        { label: 'Prospect', value: 'prospect' },
+        { label: 'Churned', value: 'churned' },
+      ],
+    }
+  },
 ];
 
 export default function ContactsSheetPage() {
