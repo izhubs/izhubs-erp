@@ -1,82 +1,80 @@
 'use client';
 
-import { useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import type { Deal } from '@/core/schema/entities';
+import type { Deal, DealStage } from '@/core/schema/entities';
+import type { PipelineStageConfig } from '@/core/config/pipeline';
 import DealCard from './DealCard';
-import QuickCreateDeal from './QuickCreateDeal';
-
-const STAGE_COLORS: Record<string, string> = {
-  new: '#94a3b8', contacted: '#6366f1', qualified: '#0ea5e9',
-  proposal: '#f59e0b', negotiation: '#f97316', won: '#22c55e', lost: '#ef4444',
-};
-
-function formatValue(v: number) {
-  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`;
-  if (v >= 1_000) return `$${(v / 1_000).toFixed(0)}K`;
-  return v > 0 ? `$${v.toLocaleString()}` : '$0';
-}
+import styles from './kanban.module.scss';
+import { useMemo } from 'react';
+import { IzKanbanColumn } from '@/components/ui/IzKanbanBoard';
+import { IzButton } from '@/components/ui/IzButton';
 
 interface Props {
-  stage: string;
-  label: string;
+  stage: PipelineStageConfig;
   deals: Deal[];
-  onDealClick: (deal: Deal) => void;
-  onDealCreated: (deal: Deal) => void;
+  onCardClick: (deal: Deal) => void;
+  onAddDeal: (stage: DealStage) => void;
 }
 
-export default function KanbanColumn({ stage, label, deals, onDealClick, onDealCreated }: Props) {
-  const [showCreate, setShowCreate] = useState(false);
-  const { setNodeRef, isOver } = useDroppable({ id: stage });
+export default function KanbanColumn({ stage, deals, onCardClick, onAddDeal }: Props) {
+  const columnValue = deals.reduce((sum, d) => sum + d.value, 0);
 
-  const totalValue = deals.reduce((s, d) => s + d.value, 0);
-  const colClass = [
-    'kanban-col',
-    isOver ? 'kanban-col--over' : '',
-    stage === 'won' ? 'kanban-col--won' : '',
-    stage === 'lost' ? 'kanban-col--lost' : '',
-  ].filter(Boolean).join(' ');
+  const { setNodeRef, isOver } = useDroppable({
+    id: stage.id,
+    data: { type: 'Column', stage: stage.id },
+  });
+
+  const dealIds = useMemo(() => deals.map(d => d.id), [deals]);
+
+  const formatValue = (v: number) => {
+    if (v >= 1_000_000_000) return `${(v / 1_000_000_000).toFixed(1)}Tỷđ`;
+    if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(0)}Mđ`;
+    if (v >= 1_000) return `${(v / 1_000).toFixed(0)}Kđ`;
+    return v > 0 ? `${v}đ` : '';
+  };
 
   return (
-    <div className={colClass}>
-      <div className="kanban-col__header">
-        <div className="kanban-col__title-row">
-          <span className="kanban-col__dot" style={{ background: STAGE_COLORS[stage] }} />
-          <span className="kanban-col__title">{label}</span>
-        </div>
-        <div className="kanban-col__meta">
-          <span>{deals.length} deal{deals.length !== 1 ? 's' : ''}</span>
-          {totalValue > 0 && <span>{formatValue(totalValue)}</span>}
-        </div>
-      </div>
-
-      <SortableContext items={deals.map(d => d.id)} strategy={verticalListSortingStrategy}>
-        <div ref={setNodeRef} className="kanban-col__cards">
-          {deals.length === 0 && !showCreate && (
-            <div className="kanban-col__empty">
-              <span>Drop deals here</span>
-            </div>
+    <IzKanbanColumn
+      ref={setNodeRef}
+      className={isOver ? styles.columnDragOver : ''}
+      title={stage.label}
+      count={deals.length}
+      style={{ borderTop: `4px solid ${stage.color || 'var(--color-border)'}` }}
+      headerAction={
+        columnValue > 0 ? (
+          <span className={styles.columnValue} style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontWeight: 600 }}>{formatValue(columnValue)}</span>
+        ) : undefined
+      }
+    >
+      <SortableContext items={dealIds} strategy={verticalListSortingStrategy}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+          {deals.length === 0 ? (
+            <IzButton
+              variant="outline"
+              className={styles.emptyColumn}
+              onClick={() => onAddDeal(stage.id)}
+            >
+              + Add a card
+            </IzButton>
+          ) : (
+            deals.map(deal => (
+              <DealCard
+                key={deal.id}
+                deal={deal}
+                onClick={() => onCardClick(deal)}
+              />
+            ))
           )}
-          {deals.map(deal => (
-            <DealCard key={deal.id} deal={deal} onClick={onDealClick} />
-          ))}
         </div>
       </SortableContext>
 
-      <div className="kanban-col__footer">
-        {showCreate ? (
-          <QuickCreateDeal
-            stage={stage}
-            onCreated={deal => { onDealCreated(deal); setShowCreate(false); }}
-            onCancel={() => setShowCreate(false)}
-          />
-        ) : (
-          <button className="kanban-add-btn" onClick={() => setShowCreate(true)}>
-            + Add deal
-          </button>
-        )}
-      </div>
-    </div>
+      {deals.length > 0 && (
+        <IzButton variant="ghost" className={styles.addCardBtn} onClick={() => onAddDeal(stage.id)} style={{ marginTop: 'var(--space-2)' }}>
+          <span className={styles.addCardIcon}>+</span>
+          Add a card
+        </IzButton>
+      )}
+    </IzKanbanColumn>
   );
 }

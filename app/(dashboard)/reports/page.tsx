@@ -7,6 +7,7 @@
 import { db } from '@/core/engine/db';
 import { getTenantId } from '@/core/engine/auth';
 import { PageHeader, KpiCard, Badge } from '@/components/shared';
+import { IzButton } from '@/components/ui/IzButton';
 
 export const metadata = { title: 'Báo cáo & Phân tích — izhubs ERP' };
 
@@ -89,7 +90,7 @@ export default async function ReportsPage() {
         title="Báo cáo & Phân tích"
         subtitle="Tổng quan kinh doanh — Virtual Office"
         actions={
-          <button className="btn btn-ghost">📥 Xuất CSV</button>
+          <IzButton variant="ghost">📥 Xuất CSV</IzButton>
         }
       />
 

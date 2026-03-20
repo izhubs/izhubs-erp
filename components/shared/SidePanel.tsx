@@ -11,6 +11,7 @@
 
 import React, { useEffect } from 'react';
 import styles from './SidePanel.module.scss';
+import { IzButton } from '@/components/ui/IzButton';
 
 interface SidePanelProps {
   open: boolean;
@@ -61,13 +62,15 @@ export default function SidePanel({
         {/* Header */}
         <div className={styles.header}>
           {title && <h2 className={styles.title}>{title}</h2>}
-          <button
-            className={`btn btn-ghost ${styles.closeBtn}`}
+          <IzButton
+            variant="ghost"
+            size="icon"
+            className={styles.closeBtn}
             onClick={onClose}
             aria-label="Đóng"
           >
             ✕
-          </button>
+          </IzButton>
         </div>
 
         {/* Content */}

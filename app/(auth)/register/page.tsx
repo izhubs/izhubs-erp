@@ -43,8 +43,8 @@ export default function RegisterPage() {
       throw new Error(json.error || 'Failed to register');
     }
 
-    // Automatically redirect to login or login them directly
-    router.push('/login?redirect=/dashboard');
+    // Automatically redirect to onboarding flow for new users
+    window.location.href = '/onboarding';
   };
 
   const handleAsyncError = (err: unknown) => {

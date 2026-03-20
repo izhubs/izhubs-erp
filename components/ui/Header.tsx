@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Palette, LogOut, User, ChevronDown, Globe } from 'lucide-react';
+import { Palette, LogOut, User, ChevronDown, Globe, HelpCircle, History } from 'lucide-react';
 import { useLanguage } from '@/components/providers/LanguageProvider';
+import { useTour } from '@/components/onboarding/TourContext';
+import { GlobalHistorySlideOver } from '@/components/shared/GlobalHistorySlideOver';
 import {
   IzDropdownMenu,
   IzDropdownMenuTrigger,
@@ -34,8 +36,10 @@ export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenu
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [themeMenuOpen, setThemeMenuOpen] = useState(false);
   const [currentTheme, setCurrentTheme] = useState('default');
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const { locale, setLocale, t } = useLanguage();
+  const { startTour } = useTour();
 
   const userMenuRef = useRef<HTMLDivElement>(null);
   const themeMenuRef = useRef<HTMLDivElement>(null);
@@ -125,6 +129,28 @@ export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenu
           </span>
         </IzButton>
 
+        {/* Help/Tour Button */}
+        <IzButton
+          className="btn-help-tour"
+          onClick={() => startTour(true)}
+          variant="ghost"
+          size="icon"
+          title="Show Guide for this screen"
+        >
+          <HelpCircle size={16} />
+        </IzButton>
+
+        {/* Global History Button */}
+        <IzButton
+          className="btn-global-history"
+          onClick={() => setHistoryOpen(true)}
+          variant="ghost"
+          size="icon"
+          title="System Activity History"
+        >
+          <History size={16} />
+        </IzButton>
+
         {/* Theme Switcher */}
         <IzDropdownMenu open={themeMenuOpen} onOpenChange={setThemeMenuOpen}>
           <IzDropdownMenuTrigger asChild>
@@ -198,6 +224,9 @@ export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenu
         </IzDropdownMenu>
 
       </div>
+      
+      {/* Global History SlideOver Panel */}
+      <GlobalHistorySlideOver open={historyOpen} onOpenChange={setHistoryOpen} />
     </header>
   );
 }

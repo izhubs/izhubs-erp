@@ -4,6 +4,29 @@ All notable changes to izhubs ERP are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 Versioning: [Semantic Versioning](https://semver.org/)
 
+## [Unreleased] — 2026-03-20 (Session 16 — System Logs, Dashboard fixes, Activity Timeline)
+
+### ✨ Added
+- feat(agent): setup multi-agent rules, roles, and workflow guidelines
+- feat(backend): implement dynamic SQL query builder for entities
+- feat(smart-grid): add visual boundary to range selection and fix bulk delete validation
+- feat(smart-grid): implement core spreadsheet interactions
+- feat(smart-grid): add combobox support for select fields
+- feat(core): Database-backed Error Tracking with UI/API error capturing
+
+### 🐛 Fixed
+- fix(backend): fix createContact sql insert query dropping status
+- fix(smart-grid): robust tab navigation and combobox state retention
+- fix(smart-grid): eliminate react batching race conditions on combobox drafts
+- fix(smart-grid): robust dropdown select commit via Enter and Tab
+- fix(smart-grid): correctly capture dropdown selection on Enter
+- fix(smart-grid): make select dropdown options visible in dark mode
+- fix(smart-grid): draft row focus and commit behavior
+- fix(smart-grid): prevent tab from entering selection column
+- fix(routing): restore local root `/` redirect to `/dashboard` to prevent 404s
+
+---
+
 ## [Unreleased] — 2026-03-19 (Session 15b — UI Polish, DB Refactor Impact, Currency Fix)
 
 ### ✨ Added

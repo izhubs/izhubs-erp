@@ -34,7 +34,9 @@ export interface ListResult<T> {
 }
 
 export async function listContacts({ page = 1, limit = 50, search, status, sortBy = 'created_at', sortOrder = 'desc' }: ListOptions = {}): Promise<ListResult<Contact>> {
-  const offset = (page - 1) * limit;
+  const pageNum = Number(page) || 1;
+  const limitNum = Number(limit) || 50;
+  const offset = (pageNum - 1) * limitNum;
   const conditions: string[] = ['deleted_at IS NULL'];
   const values: unknown[] = [];
   let idx = 1;
@@ -57,13 +59,13 @@ export async function listContacts({ page = 1, limit = 50, search, status, sortB
   const order = sortOrder === 'asc' ? 'ASC' : 'DESC';
 
   const [rows, count] = await Promise.all([
-    db.query(`SELECT ${COLUMNS} FROM contacts WHERE ${where} ORDER BY ${sortCol} ${order} LIMIT $${idx} OFFSET $${idx + 1}`, [...values, limit, offset]),
+    db.query(`SELECT ${COLUMNS} FROM contacts WHERE ${where} ORDER BY ${sortCol} ${order} LIMIT $${idx} OFFSET $${idx + 1}`, [...values, limitNum, offset]),
     db.query(`SELECT COUNT(*) FROM contacts WHERE ${where}`, values),
   ]);
   const total = parseInt(count.rows[0].count);
   return {
     data: rows.rows.map(row => ContactSchema.parse(row)),
-    meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    meta: { total, page: pageNum, limit: limitNum, totalPages: Math.ceil(total / limitNum) },
   };
 }
 

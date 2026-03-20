@@ -1,6 +1,7 @@
 'use client';
 
 import styles from './shared.module.scss';
+import { IzButton } from '@/components/ui/IzButton';
 
 interface Props {
   page: number;
@@ -17,13 +18,13 @@ export default function Pagination({ page, totalPages, total, limit, onPageChang
 
   return (
     <div className={styles.paginationBar}>
-      <button className="btn btn-ghost" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
+      <IzButton variant="ghost" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
         ← Prev
-      </button>
+      </IzButton>
       <span className={styles.paginationInfo}>{start}–{end} of {total}</span>
-      <button className="btn btn-ghost" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}>
+      <IzButton variant="ghost" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}>
         Next →
-      </button>
+      </IzButton>
     </div>
   );
 }

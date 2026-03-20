@@ -11,6 +11,8 @@ import type { Activity } from '@/core/engine/activities';
 import Badge, { BadgeVariant } from '@/components/shared/Badge';
 import EmptyState from '@/components/shared/EmptyState';
 import SidePanel from '@/components/shared/SidePanel';
+import { IzButton } from '@/components/ui/IzButton';
+import { IzCheckbox } from '@/components/ui/IzCheckbox';
 
 interface TasksClientProps {
   initialToday: Activity[];
@@ -64,13 +66,11 @@ function TaskRow({
       onClick={() => onClick(task)}
     >
       <td style={{ width: 36 }}>
-        <input
-          type="checkbox"
+        <IzCheckbox
           checked={task.completed}
           onChange={handleCheck}
           disabled={pending}
           onClick={(e) => e.stopPropagation()}
-          style={{ accentColor: 'var(--color-primary)', cursor: 'pointer' }}
         />
       </td>
       <td style={{ fontWeight: 500 }}>{task.title}</td>
@@ -222,15 +222,15 @@ export default function TasksClient({ initialToday, initialThisWeek, initialOver
         title={selected?.title}
         footer={
           selected && !selected.completed ? (
-            <button
-              className="btn btn-primary"
+            <IzButton
+              variant="default"
               onClick={() => {
                 markComplete(selected.id);
                 setSelected(null);
               }}
             >
               ✓ Đánh dấu hoàn thành
-            </button>
+            </IzButton>
           ) : undefined
         }
       >

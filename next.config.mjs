@@ -6,6 +6,16 @@ const nextConfig = {
     includePaths: ['./app/styles'],
   },
 
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/dashboard',
+        permanent: false, // Set to false to allow middleware interception if needed
+      },
+    ];
+  },
+
   async headers() {
     return [
       {

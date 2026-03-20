@@ -7,6 +7,7 @@
 import { listActivities } from '@/core/engine/activities';
 import { PageHeader } from '@/components/shared';
 import TasksClient from '@/components/shared/TasksClient';
+import { IzButton } from '@/components/ui/IzButton';
 
 export const metadata = { title: 'Công việc — izhubs ERP' };
 
@@ -23,9 +24,9 @@ export default async function TasksPage() {
         title="Công việc"
         subtitle="Tất cả tasks, cuộc gọi, và follow-up của bạn"
         actions={
-          <button className="btn btn-primary" id="create-task-btn">
+          <IzButton variant="default" id="create-task-btn">
             + Tạo công việc
-          </button>
+          </IzButton>
         }
       />
       <TasksClient

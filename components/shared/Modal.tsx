@@ -8,6 +8,7 @@
 
 import React, { useEffect } from 'react';
 import styles from './Modal.module.scss';
+import { IzButton } from '@/components/ui/IzButton';
 
 interface ModalProps {
   open: boolean;
@@ -55,13 +56,15 @@ export default function Modal({
         {title && (
           <div className={styles.header}>
             <h2 className={styles.title}>{title}</h2>
-            <button
-              className={`btn btn-ghost ${styles.closeBtn}`}
+            <IzButton
+              variant="ghost"
+              size="icon"
+              className={styles.closeBtn}
               onClick={onClose}
               aria-label="Đóng"
             >
               ✕
-            </button>
+            </IzButton>
           </div>
         )}
 

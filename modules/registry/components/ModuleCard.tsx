@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import styles from './ModuleCard.module.scss';
+import { IzButton } from '@/components/ui/IzButton';
 
 interface ModuleCardProps {
   id: string;
@@ -91,14 +92,15 @@ export function ModuleCard({
 
         {error && <p className={styles.errorMsg}>{error}</p>}
 
-        <button
-          className={`${styles.btn} ${isActive ? styles.btnUninstall : styles.btnInstall}`}
+        <IzButton
+          variant={isActive ? 'outline' : 'default'}
+          className={styles.btn}
           onClick={handleToggle}
           disabled={loading || isCoreModule}
           title={isCoreModule ? 'Module này không thể gỡ cài đặt' : undefined}
         >
           {loading ? '...' : isActive ? (isCoreModule ? '🔒 Bắt buộc' : 'Gỡ cài đặt') : 'Cài đặt'}
-        </button>
+        </IzButton>
       </div>
     </div>
   );

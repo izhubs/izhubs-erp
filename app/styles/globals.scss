@@ -32,6 +32,11 @@ body {
   color: var(--color-text);
   min-height: 100vh;
   line-height: 1.6;
+  // Prevent layout shift when Radix Modals/Sheets open and lock scrolling
+  scrollbar-gutter: stable;
+  &[data-scroll-locked] {
+    padding-right: 0 !important;
+  }
 }
 
 // ---- Scrollbar (dark mode) ----
@@ -50,4 +55,69 @@ body {
 ::selection {
   background: var(--color-primary);
   color: white;
+}
+
+// ==== DRIVER.JS PREMIUM OVERRIDES (Mocked IzCard) ==== //
+div.driver-popover {
+  border-radius: var(--radius-lg, 0.75rem) !important;
+  border: 1px solid var(--color-border, #e2e8f0) !important;
+  background-color: var(--color-surface, #ffffff) !important;
+  color: var(--color-foreground, #000) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05), 0 20px 40px -10px rgba(0,0,0,0.3) !important;
+  font-family: var(--font-sans) !important;
+  padding: 1.5rem !important;
+}
+
+div.driver-popover-title {
+  color: var(--color-foreground, #0f172a) !important;
+  font-weight: 600 !important;
+  font-size: 1.125rem !important;
+  margin-bottom: 0.375rem !important;
+}
+
+div.driver-popover-description {
+  color: var(--color-muted-foreground, #64748b) !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+}
+
+button.driver-popover-btn {
+  border-radius: var(--radius-md, 0.375rem) !important;
+  font-weight: 500 !important;
+  text-shadow: none !important;
+}
+
+.driver-popover-footer {
+  margin-top: 1.5rem !important;
+}
+
+button.driver-popover-prev-btn {
+  background-color: var(--color-secondary, #f1f5f9) !important;
+  color: var(--color-secondary-foreground, #0f172a) !important;
+  border: 1px solid var(--color-border) !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+button.driver-popover-next-btn {
+  background-color: var(--color-primary, #2563eb) !important;
+  color: var(--color-primary-foreground, #ffffff) !important;
+  border: none !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+// ==== TOUR INTERACTIVE PULSE ==== //
+@keyframes tour-pulse-glow {
+  0% { box-shadow: 0 0 0 0 var(--color-primary); }
+  70% { box-shadow: 0 0 0 12px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+.tour-pulse-active {
+  position: relative;
+  z-index: 100000 !important; /* Stand above everything */
+  animation: tour-pulse-glow 1.5s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-radius: var(--radius) !important;
+  transition: all 0.2s ease;
 }

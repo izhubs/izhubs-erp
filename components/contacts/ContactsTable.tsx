@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { IzTable } from '@/components/ui/IzTable';
 import { IzAvatar, IzAvatarFallback } from '@/components/ui/IzAvatar';
 import { IzBadge, IzBadgeVariant } from '@/components/ui/IzBadge';
+import { IzButton } from '@/components/ui/IzButton';
 import {
   IzDropdownMenu,
   IzDropdownMenuTrigger,
@@ -154,9 +155,9 @@ export default function ContactsTable({ initialContacts, initialMeta, initialCou
           <div className={styles.actions} onClick={e => e.stopPropagation()} style={{ textAlign: 'right' }}>
             <IzDropdownMenu>
               <IzDropdownMenuTrigger asChild>
-                <button className={styles.actionBtn} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 'var(--space-1)', opacity: 0.6 }}>
+                <IzButton variant="ghost" size="icon" className={styles.actionBtn} style={{ background: 'transparent', border: 'none', padding: 'var(--space-1)', opacity: 0.6 }}>
                   <MoreHorizontal size={18} />
-                </button>
+                </IzButton>
               </IzDropdownMenuTrigger>
               <IzDropdownMenuContent align="end">
                 <IzDropdownMenuItem onClick={() => setEditContact(contact)}>

@@ -9,6 +9,7 @@ import { getTenantId } from '@/core/engine/auth';
 import PageHeader from '@/components/shared/PageHeader';
 import Badge from '@/components/shared/Badge';
 import LeadsClient from '@/components/shared/LeadsClient';
+import { IzButton } from '@/components/ui/IzButton';
 
 export const metadata = { title: 'Leads — izhubs ERP' };
 
@@ -54,7 +55,7 @@ export default async function LeadsPage() {
         actions={
           <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
             <a href="/import" className="btn btn-ghost">📥 Import CSV</a>
-            <button className="btn btn-primary" id="add-lead-btn">+ Thêm Lead</button>
+            <IzButton variant="default" id="add-lead-btn">+ Thêm Lead</IzButton>
           </div>
         }
       />
@@ -79,14 +80,14 @@ function TabCount({
   label: string; count: number; active?: boolean; badge?: string
 }) {
   return (
-    <button
-      className={`btn ${active ? 'btn-primary' : 'btn-ghost'}`}
+    <IzButton
+      variant={active ? 'default' : 'ghost'}
       style={{ fontSize: 'var(--font-size-sm)' }}
     >
       {label}
       <Badge variant={badge as 'warning' | 'info' | 'success' | 'neutral' | undefined ?? 'neutral'}>
         {count}
       </Badge>
-    </button>
+    </IzButton>
   );
 }

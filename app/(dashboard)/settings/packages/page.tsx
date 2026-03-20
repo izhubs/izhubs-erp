@@ -10,6 +10,7 @@ import { getTenantId } from '@/core/engine/auth';
 import PageHeader from '@/components/shared/PageHeader';
 import Badge from '@/components/shared/Badge';
 import EmptyState from '@/components/shared/EmptyState';
+import { IzButton } from '@/components/ui/IzButton';
 
 export const metadata = { title: 'Gói Dịch vụ — izhubs ERP' };
 
@@ -37,9 +38,9 @@ export default async function ServicePackagesPage() {
         title="Gói Dịch vụ"
         subtitle="Quản lý các gói dịch vụ và tính năng đi kèm"
         actions={
-          <button className="btn btn-primary" id="create-package-btn">
+          <IzButton variant="default" id="create-package-btn">
             + Tạo gói mới
-          </button>
+          </IzButton>
         }
       />
 
@@ -47,7 +48,7 @@ export default async function ServicePackagesPage() {
         <EmptyState
           title="Chưa có gói dịch vụ nào"
           description="Tạo gói dịch vụ đầu tiên để Sales có thể chọn khi tạo Deal."
-          action={<button className="btn btn-primary">+ Tạo gói đầu tiên</button>}
+          action={<IzButton variant="default">+ Tạo gói đầu tiên</IzButton>}
         />
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 'var(--space-5)', alignItems: 'start' }}>
@@ -87,8 +88,8 @@ export default async function ServicePackagesPage() {
                   </p>
                 </div>
                 <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-                  <button className="btn btn-ghost">Chỉnh sửa</button>
-                  <button className="btn btn-danger" style={{ fontSize: 'var(--font-size-xs)' }}>Ngừng bán</button>
+                  <IzButton variant="ghost">Chỉnh sửa</IzButton>
+                  <IzButton variant="destructive" style={{ fontSize: 'var(--font-size-xs)' }}>Ngừng bán</IzButton>
                 </div>
               </div>
 

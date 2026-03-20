@@ -1,4 +1,5 @@
 import { Pool, PoolClient } from 'pg';
+import { getRequestContext } from './request-context';
 
 // Single connection pool — max 10 to prevent exhaustion in production.
 const pool = new Pool({
@@ -11,11 +12,25 @@ const pool = new Pool({
 // Helper for standardized querying
 export const db = {
   /**
-   * Plain query — no RLS context. Use for migrations, admin ops, and
-   * queries where tenant filtering happens in the WHERE clause.
+   * Plain query — automatically injects audit context (userId, tenantId)
+   * from AsyncLocalStorage when called within a request handler.
+   * Falls back to plain pool query outside of request context.
    */
   query: async (text: string, params?: unknown[]) => {
-    return pool.query(text, params);
+    const ctx = getRequestContext();
+    if (!ctx) return pool.query(text, params);
+
+    // Use dedicated client to guarantee SET LOCAL applies before the query
+    const client = await pool.connect();
+    try {
+      await client.query(`SET LOCAL audit.current_user_id = '${ctx.userId}'`);
+      await client.query(`SET LOCAL app.current_tenant_id = '${ctx.tenantId}'`);
+      return await client.query(text, params);
+    } finally {
+      await client.query('RESET audit.current_user_id').catch(() => {});
+      await client.query('RESET app.current_tenant_id').catch(() => {});
+      client.release();
+    }
   },
 
   /**
@@ -39,6 +54,31 @@ export const db = {
     } finally {
       // Reset and release so next checkout gets a clean connection
       await client.query(`RESET app.current_tenant_id`).catch(() => {});
+      client.release();
+    }
+  },
+
+  /**
+   * User-scoped query — sets audit.current_user_id session variable so that
+   * PostgreSQL audit triggers can capture who made the change.
+   * Use for ALL write operations (INSERT/UPDATE/DELETE) on business tables.
+   *
+   * @example
+   *   await db.queryAsUser(userId, 'UPDATE deals SET stage = $1 WHERE id = $2', ['won', dealId])
+   */
+  queryAsUser: async (
+    userId: string | null,
+    text: string,
+    params?: unknown[]
+  ) => {
+    const client = await pool.connect();
+    try {
+      if (userId) {
+        await client.query(`SET LOCAL audit.current_user_id = '${userId}'`);
+      }
+      return await client.query(text, params);
+    } finally {
+      await client.query(`RESET audit.current_user_id`).catch(() => {});
       client.release();
     }
   },

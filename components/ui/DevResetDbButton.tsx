@@ -29,6 +29,12 @@ export default function DevResetDbButton() {
       if (!res.ok) throw new Error(data.error || 'Failed to reset DB');
 
       toast.success('✅ Reset DB Thành Công! Đang đăng xuất...');
+      // Xoá Tour State để test lại từ đầu
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('tour_seen_')) {
+          localStorage.removeItem(key);
+        }
+      });
       // Clear session cookies so middleware doesn't bounce back to dashboard
       await fetch('/api/v1/auth/logout', { method: 'POST' }).catch(() => {});
       setTimeout(() => { window.location.href = '/demo'; }, 1500);

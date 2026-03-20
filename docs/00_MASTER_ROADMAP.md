@@ -40,9 +40,11 @@ Các tài liệu chi tiết đã được phân bổ vào các thư mục đánh
 - 🟡 Kanban Polish: Filters trong Kanban, Cấu hình các column (Pipeline stages) tùy ý cho từng tenant.
 - 🟡 Dashboard: Lắp số thật (Win Rate, Trends) và thay bảng trống bằng Onboarding nhắc nhở "Nhập CRM CSV ngay".
 
-**Bước GTM:**
-- Gumroad Packages: Đóng gói code seed của 2 ngành Agency & Freelancer. Quạy GIF Demo.
-- AI Import: Kéo list csv Airtable tự ráp map cột.
+**Bước GTM (Wedge Features):**
+- Gumroad Packages: Đóng gói code seed của 2 ngành Agency & Freelancer. Quay GIF Demo.
+- Interactive Demo: Trải nghiệm full tính năng bằng dữ liệu giả mạo (Seed) mà không cần Signup.
+- AI Import: Kéo list csv Airtable tự ráp map cột (Tính năng chốt sale quyết định).
+- Hệ thống SDK / OpenAPI: Cài đặt thư viện tự động sinh OpenAPI/Swagger schema từ Zod để phục vụ cho API Reference trên web Docs (Tự động hóa hoàn toàn).
 - Cấu hình MCP Server cho Cursor.
 
 ---

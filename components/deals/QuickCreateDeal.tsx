@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { apiFetch } from '@/lib/apiFetch';
+import { IzInput } from '@/components/ui/IzInput';
+import { IzButton } from '@/components/ui/IzButton';
 
 interface Props {
   stage: string;
@@ -35,28 +37,28 @@ export default function QuickCreateDeal({ stage, onCreated, onCancel }: Props) {
 
   return (
     <form className="quick-create" onSubmit={handleSubmit}>
-      <input
+      <IzInput
         className="quick-create__input"
         placeholder="Deal name…"
         value={name}
-        onChange={e => setName(e.target.value)}
+        onChange={(e: { target: { value: string } }) => setName(e.target.value)}
         autoFocus
       />
-      <input
+      <IzInput
         className="quick-create__input"
         type="number"
         placeholder="Value (0)"
         value={value}
-        onChange={e => setValue(e.target.value)}
+        onChange={(e: { target: { value: string } }) => setValue(e.target.value)}
         min={0}
       />
       <div className="quick-create__actions">
-        <button type="button" className="quick-create__btn quick-create__btn--ghost" onClick={onCancel}>
+        <IzButton variant="ghost" type="button" className="quick-create__btn quick-create__btn--ghost" onClick={onCancel}>
           Cancel
-        </button>
-        <button type="submit" className="quick-create__btn quick-create__btn--primary" disabled={loading || !name.trim()}>
+        </IzButton>
+        <IzButton variant="default" type="submit" className="quick-create__btn quick-create__btn--primary" disabled={loading || !name.trim()}>
           {loading ? '…' : 'Add'}
-        </button>
+        </IzButton>
       </div>
     </form>
   );

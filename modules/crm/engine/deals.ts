@@ -3,6 +3,7 @@ import { DealSchema, DealStageSchema } from '@/core/schema/entities';
 import type { Deal, DealStage } from '@/core/schema/entities';
 import { eventBus } from '@/core/engine/event-bus';
 
+
 // =============================================================
 // Deals Engine
 // ONLY layer allowed to query the deals table directly.

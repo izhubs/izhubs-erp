@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { verifyJwt } from '@/core/engine/auth/jwt';
 import { db } from '@/core/engine/db';
 import type { NavItem } from '@/templates/engine/template.schema';
+import { TourProvider } from '@/components/onboarding/TourContext';
 
 
 export const dynamic = 'force-dynamic';
@@ -63,8 +64,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   return (
-    <AppLayout navItems={navItems} bottomItems={bottomItems} themeDefaults={themeDefaults}>
-      {children}
-    </AppLayout>
+    <TourProvider>
+      <AppLayout navItems={navItems} bottomItems={bottomItems} themeDefaults={themeDefaults}>
+        {children}
+      </AppLayout>
+    </TourProvider>
   );
 }

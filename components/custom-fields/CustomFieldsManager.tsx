@@ -4,6 +4,11 @@ import { useState, useCallback } from 'react';
 import type { CustomFieldDefinition } from '@/core/schema/entities';
 import styles from './custom-fields.module.scss';
 import { apiFetch } from '@/lib/apiFetch';
+import { IzButton } from '@/components/ui/IzButton';
+import { IzInput } from '@/components/ui/IzInput';
+import { IzTextarea } from '@/components/ui/IzTextarea';
+import { IzSelect } from '@/components/ui/IzSelect';
+import { IzCheckbox } from '@/components/ui/IzCheckbox';
 
 type EntityType = 'contact' | 'company' | 'deal' | 'activity';
 type FieldType = 'text' | 'number' | 'date' | 'boolean' | 'select' | 'multiselect' | 'url' | 'email' | 'phone';
@@ -138,9 +143,9 @@ export default function CustomFieldsManager({ initialFields }: Props) {
                 Custom fields appear in {activeTab} records and forms.
               </p>
             </div>
-            <button className="btn btn-primary" onClick={() => { setShowForm(true); setForm(EMPTY_FORM); }}>
+            <IzButton variant="default" onClick={() => { setShowForm(true); setForm(EMPTY_FORM); }}>
               + Add Field
-            </button>
+            </IzButton>
           </div>
 
           {tabFields.length === 0 ? (
@@ -150,9 +155,9 @@ export default function CustomFieldsManager({ initialFields }: Props) {
               <p className={styles.emptySubtitle}>
                 Add custom fields to capture extra data on {activeTab} records.
               </p>
-              <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+              <IzButton variant="default" onClick={() => setShowForm(true)}>
                 + Add your first field
-              </button>
+              </IzButton>
             </div>
           ) : (
             <table className={styles.table}>
@@ -181,12 +186,16 @@ export default function CustomFieldsManager({ initialFields }: Props) {
                       </span>
                     </td>
                     <td>
-                      <button
-                        className={styles.deleteBtn}
+                      <IzButton
+                        variant="ghost"
+                        size="icon"
                         onClick={() => handleDelete(field.id)}
                         disabled={deletingId === field.id}
                         title="Delete field"
-                      >✕</button>
+                        style={{ color: 'var(--color-danger)' }}
+                      >
+                        ✕
+                      </IzButton>
                     </td>
                   </tr>
                 ))}
@@ -200,15 +209,14 @@ export default function CustomFieldsManager({ initialFields }: Props) {
           <div className={styles.formCard}>
             <div className={styles.formHeader}>
               <h3 className={styles.formTitle}>New Field for {ENTITY_TABS.find(t => t.id === activeTab)?.label}</h3>
-              <button className={styles.closeBtn} onClick={() => { setShowForm(false); setError(null); }}>✕</button>
+              <IzButton variant="ghost" size="icon" onClick={() => { setShowForm(false); setError(null); }}>✕</IzButton>
             </div>
 
             <form onSubmit={handleSubmit} className={styles.form}>
               <div className={styles.formRow}>
                 <label className="form-label" style={{ flex: 1 }}>
                   Label *
-                  <input
-                    className="form-control"
+                  <IzInput
                     value={form.label}
                     onChange={e => handleLabelChange(e.target.value)}
                     placeholder="e.g. LinkedIn URL"
@@ -218,8 +226,7 @@ export default function CustomFieldsManager({ initialFields }: Props) {
                 </label>
                 <label className="form-label" style={{ flex: 1 }}>
                   Key (auto-generated)
-                  <input
-                    className="form-control"
+                  <IzInput
                     value={form.key}
                     onChange={e => setForm(f => ({ ...f, key: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') }))}
                     placeholder="linkedin_url"
@@ -232,50 +239,42 @@ export default function CustomFieldsManager({ initialFields }: Props) {
               <div className={styles.formRow}>
                 <label className="form-label" style={{ flex: 1 }}>
                   Type *
-                  <select
-                    className="form-control"
-                    value={form.type}
-                    onChange={e => setForm(f => ({ ...f, type: e.target.value as FieldType }))}
-                  >
-                    {FIELD_TYPES.map(t => (
-                      <option key={t.id} value={t.id}>{t.label}</option>
-                    ))}
-                  </select>
+                  <IzSelect
+                    value={{ label: FIELD_TYPES.find(t => t.id === form.type)?.label, value: form.type }}
+                    onChange={(selected: any) => setForm(f => ({ ...f, type: selected.value as FieldType }))}
+                    options={FIELD_TYPES.map(t => ({ value: t.id, label: t.label }))}
+                  />
                 </label>
                 <label className="form-label" style={{ flex: 1, justifyContent: 'flex-end' }}>
-                  <span>&nbsp;</span>
-                  <label className={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      checked={form.required}
-                      onChange={e => setForm(f => ({ ...f, required: e.target.checked }))}
-                    />
-                    Required field
-                  </label>
+                  <IzCheckbox
+                    checked={form.required}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, required: e.target.checked }))}
+                    label="Required field"
+                  />
                 </label>
               </div>
 
               {needsOptions && (
                 <label className="form-label">
                   Options (one per line) *
-                  <textarea
-                    className="form-control"
+                  <IzTextarea
                     value={form.options}
                     onChange={e => setForm(f => ({ ...f, options: e.target.value }))}
                     placeholder={"Option A\nOption B\nOption C"}
                     rows={4}
                     required={needsOptions}
+                    style={{ fontFamily: 'monospace' }}
                   />
                 </label>
               )}
 
               {error && <p className={styles.error}>{error}</p>}
 
-              <div className={styles.formActions}>
-                <button type="button" className="btn btn-ghost" onClick={() => { setShowForm(false); setError(null); }}>Cancel</button>
-                <button type="submit" className="btn btn-primary" disabled={loading}>
+              <div className={styles.formActions} style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '16px' }}>
+                <IzButton type="button" variant="ghost" onClick={() => { setShowForm(false); setError(null); }}>Cancel</IzButton>
+                <IzButton type="submit" variant="default" disabled={loading} isLoading={loading}>
                   {loading ? 'Creating…' : 'Create Field'}
-                </button>
+                </IzButton>
               </div>
             </form>
           </div>

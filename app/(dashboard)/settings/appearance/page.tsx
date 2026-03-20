@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/components/providers/LanguageProvider';
+import { IzButton } from '@/components/ui/IzButton';
 
 const THEMES = [
   { id: 'default', label: 'Bản gốc (Theo Template)',  color: '#6366f1', isLight: false },
@@ -110,11 +111,11 @@ export default function AppearancePage() {
               const isSelected = currentTemplateId === tpl.id; // Just for visual click feedback during reload
               
               return (
-                <button
+                <IzButton
                   key={tpl.id}
+                  variant="ghost"
                   onClick={() => handleTemplateSelect(tpl.id)}
                   disabled={isSaving}
-                  className="btn btn-ghost"
                   style={{
                     display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
                     gap: 'var(--space-2)', padding: 'var(--space-3)',
@@ -151,7 +152,7 @@ export default function AppearancePage() {
                   <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', lineHeight: 1.4 }}>
                     {tpl.description}
                   </div>
-                </button>
+                </IzButton>
               );
             })}
           </div>
@@ -171,10 +172,10 @@ export default function AppearancePage() {
           {THEMES.map((theme) => {
             const isActive = currentTheme === theme.id;
             return (
-              <button
+              <IzButton
                 key={theme.id}
+                variant="ghost"
                 onClick={() => handleTheme(theme.id)}
-                className="btn btn-ghost"
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -213,7 +214,7 @@ export default function AppearancePage() {
                     color: 'var(--color-primary)', fontSize: 12, fontWeight: 700,
                   }}>✓</span>
                 )}
-              </button>
+              </IzButton>
             );
           })}
         </div>
@@ -231,10 +232,10 @@ export default function AppearancePage() {
           {LOCALES.map((lang) => {
             const isActive = locale === lang.id;
             return (
-              <button
+              <IzButton
                 key={lang.id}
+                variant="ghost"
                 onClick={() => setLocale(lang.id as 'en' | 'vi')}
-                className="btn btn-ghost"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -256,7 +257,7 @@ export default function AppearancePage() {
                 {isActive && (
                   <span style={{ marginLeft: 'auto', color: 'var(--color-primary)', fontSize: 16 }}>✓</span>
                 )}
-              </button>
+              </IzButton>
             );
           })}
         </div>

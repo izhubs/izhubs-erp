@@ -14,13 +14,29 @@ export async function sendTelegram(chatId: string, message: Message): Promise<vo
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token) { console.warn('[messaging] TELEGRAM_BOT_TOKEN not set'); return; }
 
-  // TODO: implement
-  // await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ chat_id: chatId, text: message.text, parse_mode: message.parseMode }),
-  // });
-  console.log('[telegram] stub — would send to', chatId, ':', message.text);
+  // Format required: "chatId_threadId" or just "chatId"
+  const parts = chatId.split('_');
+  const targetChatId = parts[0];
+  const threadId = parts[1] ? parseInt(parts[1]) : undefined;
+
+  try {
+    const payload: any = { 
+      chat_id: targetChatId, 
+      text: message.text, 
+      parse_mode: message.parseMode 
+    };
+    if (threadId) {
+      payload.message_thread_id = threadId;
+    }
+
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch(e) {
+    console.warn('[messaging] Failed to send Telegram alert:', e);
+  }
 }
 
 // ---- Slack ----

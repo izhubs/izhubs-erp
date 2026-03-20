@@ -1,29 +1,36 @@
 /**
  * core/engine/demo.ts
  * ============================================================
- * Programmatic seeding for demo tenants.
- * Called by the /api/v1/demo-login endpoint.
+ * Ephemeral demo session management.
  *
- * Strategy:
- *  - Each industry gets a dedicated demo tenant (slug: demo-agency, etc)
- *  - Demo data is wiped + reseeded on each call for a fresh experience
- *  - 3 demo users per tenant: CEO (admin), Sale (member), Ops (member)
+ * Each call to getDemoSession() creates:
+ *   - A unique demo tenant (e.g. "Demo Agency #a3f2")
+ *   - A single demo user tied to that tenant
+ *   - Full industry seed data for that tenant
+ *
+ * Lifecycle:
+ *   - Tenant + user expire after 24h or when user clicks Reset
+ *   - Deleting the tenant CASCADE-deletes: users, deals, contacts,
+ *     notes, activities, audit_log (all via FK ON DELETE CASCADE)
+ *
+ * Cleanup:
+ *   - Lazy: expired demo tenants are purged at start of each session
+ *   - Manual: DELETE /api/v1/tenant/reset-demo-data drops the tenant
  * ============================================================
  */
 
 import { db } from './db';
-import { Pool } from 'pg';
 import crypto from 'crypto';
 import { type IndustryId, type RoleId, ROLES } from '../types/demo';
+import { Pool } from 'pg';
 
-// Re-export for convenience — consumers can import from here or from core/types/demo
 export type { IndustryId as DemoIndustry, RoleId as DemoRole };
 
 export interface DemoLoginResult {
   tenantId: string;
-  userId: string;
-  email: string;
-  role: string; // The actual RBAC role from the users table
+  userId:   string;
+  email:    string;
+  role:     string;
 }
 
 function hashPassword(password: string): string {
@@ -32,94 +39,83 @@ function hashPassword(password: string): string {
   return `${salt}:${hash}`;
 }
 
-// Derived from ROLES registry — ROLES is the single source of truth
-// for role labels, descriptions, and icon.
+/** Short random suffix for display names (e.g. "#a3f2") */
+function shortId() {
+  return crypto.randomBytes(3).toString('hex');
+}
 
 /**
- * Get or create a demo tenant for the given industry and seed it with fresh data.
- * Returns the tenant ID and user info for the requested role.
+ * Create a new ephemeral demo session.
+ * Each call provisions a fresh isolated tenant + user.
+ * Expires after 24 hours.
  */
 export async function getDemoSession(industry: IndustryId, demoRole: RoleId): Promise<DemoLoginResult> {
-  const slug = `demo-${industry}`;
-  const industryLabel = industry.charAt(0).toUpperCase() + industry.slice(1);
+  // 1. Lazy cleanup — delete expired demo tenants (and all their cascade data)
+  await db.query(
+    `DELETE FROM tenants WHERE is_demo = true AND expires_at < NOW()`
+  );
 
-  // Create or ensure demo tenant exists
+  const industryLabel = industry.charAt(0).toUpperCase() + industry.slice(1);
+  const sessionId     = shortId();
+  const slug          = `demo-${industry}-${sessionId}`;
+  const { rbacRole: role, label: roleLabel } = ROLES[demoRole];
+
+  // 2. Create isolated demo tenant (expires in 24h)
   const tenantResult = await db.query(
-    `INSERT INTO tenants (name, slug, plan, active)
-     VALUES ($1, $2, 'self-hosted', true)
-     ON CONFLICT (slug) DO UPDATE SET active = true
+    `INSERT INTO tenants (name, slug, plan, active, is_demo, expires_at, industry)
+     VALUES ($1, $2, 'self-hosted', true, true, NOW() + INTERVAL '24 hours', $3)
      RETURNING id`,
-    [`Demo: ${industryLabel}`, slug]
+    [`${industryLabel} Demo`, slug, industry]
   );
   const tenantId: string = tenantResult.rows[0].id;
 
-  // Check if this tenant already has seeded users
-  const existingCheck = await db.query(
-    `SELECT id, email, role FROM users WHERE tenant_id = $1 AND email LIKE $2 LIMIT 3`,
-    [tenantId, `demo_${industry}_%@izhubs.com`]
-  );
+  // 3. Create a single ephemeral user for this session
+  const guestName  = `Demo ${roleLabel} #${sessionId}`;
+  const guestEmail = `demo_${sessionId}_${demoRole}@demo.izhubs.local`;
 
-  // Only reseed if not seeded yet (avoids wiping data mid-session)
-  if (existingCheck.rowCount === 0) {
-    await seedDemoIndustry(tenantId, industry);
-  }
-
-  // Fetch the user for the requested role — lookup from shared ROLES registry
-  const { rbacRole: role } = ROLES[demoRole];
-  const emailPattern = `demo_${industry}_${demoRole}@izhubs.com`;
   const userResult = await db.query(
-    `SELECT id, email, role FROM users WHERE tenant_id = $1 AND email = $2`,
-    [tenantId, emailPattern]
+    `INSERT INTO users (name, email, password_hash, role, tenant_id, is_demo, expires_at)
+     VALUES ($1, $2, $3, $4, $5, true, NOW() + INTERVAL '24 hours')
+     RETURNING id, email, role`,
+    [guestName, guestEmail, hashPassword(crypto.randomBytes(16).toString('hex')), role, tenantId]
   );
-
-  if (!userResult.rowCount) {
-    throw new Error(`Demo user not found for industry=${industry} role=${demoRole}`);
-  }
-
   const user = userResult.rows[0];
+
+  // 4. Seed industry data for this tenant
+  await seedDemoIndustry(tenantId, industry, user.id);
+
   return { tenantId, userId: user.id, email: user.email, role: user.role };
 }
 
 /**
- * Seed demo data for a specific tenant. Creates 3 users (CEO/Sale/Ops)
- * and delegates contact/deal seeding to the industry seed module.
+ * Delete a demo tenant and ALL its data (cascade).
+ * Called by: reset-demo-data API, or can be called directly.
  */
-async function seedDemoIndustry(tenantId: string, industry: IndustryId) {
-  // Create 3 role-specific users
-  const users = [
-    { email: `demo_${industry}_ceo@izhubs.com`,  name: 'Demo CEO',  role: 'admin'  as const },
-    { email: `demo_${industry}_sale@izhubs.com`, name: 'Demo Sales', role: 'member' as const },
-    { email: `demo_${industry}_ops@izhubs.com`,  name: 'Demo Ops',   role: 'member' as const },
-  ];
-
-  const userIds: Record<string, string> = {};
-  for (const u of users) {
-    const res = await db.query(
-      `INSERT INTO users (name, email, password_hash, role, tenant_id)
-       VALUES ($1, $2, $3, $4, $5)
-       ON CONFLICT (email) DO UPDATE SET tenant_id = EXCLUDED.tenant_id
-       RETURNING id`,
-      [u.name, u.email, hashPassword('Demo@12345'), u.role, tenantId]
-    );
-    userIds[u.email] = res.rows[0].id;
+export async function deleteDemoTenant(tenantId: string): Promise<void> {
+  // Verify it's actually a demo tenant before deleting (safety check)
+  const check = await db.query(
+    `SELECT id FROM tenants WHERE id = $1 AND is_demo = true`,
+    [tenantId]
+  );
+  if (check.rowCount === 0) {
+    throw new Error('Not a demo tenant or tenant not found');
   }
+  // CASCADE deletes: users → audit_log, deals, contacts, notes, activities, etc.
+  await db.query(`DELETE FROM tenants WHERE id = $1`, [tenantId]);
+}
 
-  // Use the CEO user as owner for seed data
-  const ownerId = userIds[`demo_${industry}_ceo@izhubs.com`];
-
-  // Load and run industry-specific seed data
+/**
+ * Seed demo data for a specific tenant.
+ */
+async function seedDemoIndustry(tenantId: string, industry: IndustryId, ownerId: string) {
   const seedPool = new Pool({
     connectionString: process.env.DATABASE_URL || 'postgresql://postgres:izhubs_dev_2026@localhost:5432/izhubs_erp',
   });
-  const { runSeed } = require('../../scripts/seeds/_base');
-  const industryModule = require(`../../scripts/seeds/seed-${industry}`);
-
-  // Override the adminUser email to match our demo user
-  industryModule.adminUser = { ...industryModule.adminUser, email: `demo_${industry}_ceo@izhubs.com` };
-
   try {
-    await runSeed(industryModule, tenantId);
+    const { runSeed } = require('../../scripts/seeds/_base');
+    const industryModule = require(`../../scripts/seeds/seed-${industry}`);
+    await runSeed(industryModule, tenantId, ownerId);
   } finally {
-    await seedPool.end();
+    await seedPool.end().catch(() => {});
   }
 }

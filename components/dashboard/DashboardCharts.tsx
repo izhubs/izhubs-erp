@@ -7,10 +7,11 @@
 // =============================================================
 
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
 } from 'recharts';
 import { IzCard, IzCardHeader, IzCardTitle, IzCardContent } from '@/components/ui/IzCard';
+import { IzChartTooltip, IzChartGradient, izChartLegendFormatter } from '@/components/ui/IzChart';
 
 interface ArrDataPoint { month: string; arr: number }
 interface RevenueSlice  { name: string; value: number; color: string }
@@ -43,7 +44,8 @@ export function DashboardCharts({ arrData, revenueData, locale }: Props) {
         </IzCardHeader>
         <IzCardContent style={{ padding: '0 var(--space-4) var(--space-4)' }}>
           <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={arrData} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
+            <AreaChart data={arrData} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
+              <IzChartGradient id="colorArr" color="var(--color-primary)" />
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis
                 dataKey="month"
@@ -56,17 +58,21 @@ export function DashboardCharts({ arrData, revenueData, locale }: Props) {
                 axisLine={false} tickLine={false} width={40}
               />
               <Tooltip
-                formatter={(v: number) => [`${v.toLocaleString('vi-VN')}đ`, isVi ? 'Doanh thu' : 'Revenue']}
-                contentStyle={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 12, boxShadow: 'var(--shadow-lg)' }}
-                labelStyle={{ color: 'var(--color-text-muted)', fontSize: 11, fontWeight: 600, marginBottom: 4 }}
+                content={
+                  <IzChartTooltip 
+                    valueSuffix="đ" 
+                    nameMap={{ arr: isVi ? 'Doanh thu' : 'Revenue' }}
+                  />
+                }
+                cursor={{ stroke: 'var(--color-border)', strokeWidth: 1, strokeDasharray: '4 4' }}
               />
-              <Line
+              <Area
                 type="monotone" dataKey="arr"
                 stroke="var(--color-primary)" strokeWidth={3}
-                dot={{ fill: 'var(--color-bg-surface)', stroke: 'var(--color-primary)', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, fill: 'var(--color-primary)', stroke: '#fff', strokeWidth: 2 }}
+                fillOpacity={1} fill="url(#colorArr)"
+                activeDot={{ r: 6, fill: 'var(--color-primary)', stroke: 'var(--color-bg-surface)', strokeWidth: 2 }}
               />
-            </LineChart>
+            </AreaChart>
           </ResponsiveContainer>
         </IzCardContent>
       </IzCard>
@@ -99,16 +105,15 @@ export function DashboardCharts({ arrData, revenueData, locale }: Props) {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(v: number) => [`${v.toLocaleString('vi-VN')}đ`]}
-                  contentStyle={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 12, boxShadow: 'var(--shadow-lg)' }}
+                  content={<IzChartTooltip valueSuffix="đ" />}
                 />
                 <Legend
                   iconType="circle" iconSize={8}
                   layout="vertical"
                   verticalAlign="middle"
                   align="right"
-                  wrapperStyle={{ lineHeight: '22px' }}
-                  formatter={(value) => <span style={{ fontSize: 12, color: 'var(--color-text-muted)', fontWeight: 500 }}>{value}</span>}
+                  wrapperStyle={{ lineHeight: '24px' }}
+                  formatter={izChartLegendFormatter}
                 />
               </PieChart>
             </ResponsiveContainer>

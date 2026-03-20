@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { ModuleCard } from './ModuleCard';
 import { useModules } from '../hooks/useModules';
 import styles from './AppStore.module.scss';
+import { IzInput } from '@/components/ui/IzInput';
 
 interface Module {
   id: string;
@@ -75,12 +76,11 @@ export function AppStore({ initialModules }: AppStoreProps) {
         </div>
 
         {/* Search */}
-        <input
+        <IzInput
           type="search"
           placeholder="Tìm module..."
           value={search}
-          onChange={e => setSearch(e.target.value)}
-          className={styles.search}
+          onChange={(e: { target: { value: string } }) => setSearch(e.target.value)}
           id="module-search"
           aria-label="Tìm kiếm module"
         />

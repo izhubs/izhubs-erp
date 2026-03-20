@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { verifyJwt, type Claims } from './auth/jwt';
+import { withRequestContext } from './request-context';
+
+export type { Claims };
 
 // ============================================================
 // izhubs ERP — RBAC Engine
@@ -134,7 +137,13 @@ export function withPermission(
       );
     }
 
-    return handler(req, claims, ctx);
+    // Propagate userId + tenantId through the async call tree via AsyncLocalStorage
+    // so engine functions can read them without parameter passing.
+    const DEFAULT_TENANT = '00000000-0000-0000-0000-000000000001';
+    return withRequestContext(
+      { userId: claims.sub, tenantId: claims.tenantId ?? DEFAULT_TENANT },
+      () => handler(req, claims, ctx)
+    );
   };
 }
 

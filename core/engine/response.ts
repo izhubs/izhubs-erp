@@ -61,10 +61,35 @@ export const ApiResponse = {
 
   /**
    * Convenience: wrap unknown catch blocks — logs internally, returns 500.
+   * Now accepts reqMeta to log API input arguments for QA reproduction.
    */
-  serverError(err: unknown, context?: string): NextResponse {
+  serverError(err: unknown, context?: string, reqMeta?: any): NextResponse {
     const message = err instanceof Error ? err.message : 'Unknown error';
+    const stack = err instanceof Error ? err.stack : undefined;
+    
     console.error(`[API Error]${context ? ` [${context}]` : ''}: ${message}`, err);
+
+    const dbMeta = {
+      stack: (stack || '').substring(0, 800),
+      ...(reqMeta || {})
+    };
+
+    // 1. Log to Database for QA & Developer trace
+    import('@/core/engine/db').then(({ db }) => {
+      db.query(`
+        INSERT INTO system_logs (level, context, message, meta)
+        VALUES ($1, $2, $3, $4)
+      `, ['error', context || 'API_FATAL', message, JSON.stringify(dbMeta)]).catch(console.error);
+    }).catch(console.error);
+
+    // 2. Auto report critical API errors to Telegram (fire and forget)
+    if (process.env.TELEGRAM_ADMIN_CHAT_ID) {
+      import('../../lib/messaging').then(({ notify }) => {
+        const text = `🚨 *IZHUBS ERP API ERROR* 🚨\n*Context:* ${context || 'Unknown'}\n*Error:* ${message}`;
+        notify('telegram', process.env.TELEGRAM_ADMIN_CHAT_ID as string, text).catch(() => {});
+      });
+    }
+
     return NextResponse.json(
       { success: false, error: { code: ErrorCodes.INTERNAL_ERROR, message: 'Internal server error' } },
       { status: 500 }

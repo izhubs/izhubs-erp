@@ -8,6 +8,8 @@ export interface IzInputProps extends React.InputHTMLAttributes<HTMLInputElement
   leftIcon?: React.ReactNode;
   /** Component Icon ở bên phải (Vd: <EyeOff />) */
   rightIcon?: React.ReactNode;
+  /** ClassName bổ sung cho thẻ bọc ngoài cùng */
+  wrapperClassName?: string;
 }
 
 const cx = (...args: any[]) => args.filter(Boolean).join(' ');
@@ -17,9 +19,9 @@ const cx = (...args: any[]) => args.filter(Boolean).join(' ');
  * Không chứa logic Form state, chỉ tập trung vào hiển thị.
  */
 export const IzInput = forwardRef<HTMLInputElement, IzInputProps>(
-  ({ className, error, leftIcon, rightIcon, disabled, ...props }, ref) => {
+  ({ className, error, leftIcon, rightIcon, disabled, wrapperClassName, ...props }, ref) => {
     return (
-      <div className={styles.inputContainer}>
+      <div className={cx(styles.inputContainer, wrapperClassName)}>
         {leftIcon && (
           <div className={cx(styles.iconOverlay, styles.left)}>
             {leftIcon}

@@ -3,6 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Plus, Package, Pencil, Trash2, Users, DollarSign, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '@/components/providers/LanguageProvider';
+import { IzButton } from '@/components/ui/IzButton';
+import { IzInput } from '@/components/ui/IzInput';
+import { IzSelect } from '@/components/ui/IzSelect';
+import { IzCheckbox } from '@/components/ui/IzCheckbox';
 
 interface ServicePackage {
   id: string;
@@ -103,10 +107,10 @@ export default function ServicePackagesPage() {
           <Package size={22} style={{ color: 'var(--color-primary)' }} />
           {isVi ? 'Gói Dịch vụ' : 'Service Packages'}
         </h1>
-        <button className="btn btn-primary" onClick={openCreate} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+        <IzButton variant="default" onClick={openCreate} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
           <Plus size={16} />
           {isVi ? 'Tạo gói mới' : 'New Package'}
-        </button>
+        </IzButton>
       </div>
 
       {/* Tabs */}
@@ -115,10 +119,10 @@ export default function ServicePackagesPage() {
           { key: 'active',   labelEn: 'Active',   labelVi: 'Đang bán' },
           { key: 'inactive', labelEn: 'Inactive',  labelVi: 'Không hoạt động' },
         ].map(tab => (
-          <button
+          <IzButton
+            variant="ghost"
             key={tab.key}
             onClick={() => setActiveTab(tab.key as 'active' | 'inactive')}
-            className="btn btn-ghost"
             style={{
               borderBottom: `2px solid ${activeTab === tab.key ? 'var(--color-primary)' : 'transparent'}`,
               borderRadius: 0,
@@ -134,7 +138,7 @@ export default function ServicePackagesPage() {
             }}>
               {packages.filter(p => tab.key === 'active' ? p.is_active : !p.is_active).length}
             </span>
-          </button>
+          </IzButton>
         ))}
       </div>
 
@@ -190,12 +194,12 @@ export default function ServicePackagesPage() {
                 </span>
               </div>
               <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-                <button className="btn btn-ghost" onClick={() => openEdit(selected)} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <IzButton variant="ghost" onClick={() => openEdit(selected)} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   <Pencil size={14} /> {isVi ? 'Sửa' : 'Edit'}
-                </button>
-                <button className="btn btn-ghost" onClick={() => handleDelete(selected)} style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--color-danger)' }}>
+                </IzButton>
+                <IzButton variant="ghost" onClick={() => handleDelete(selected)} style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--color-danger)' }}>
                   <Trash2 size={14} /> {isVi ? 'Xoá' : 'Delete'}
-                </button>
+                </IzButton>
               </div>
             </div>
 
@@ -270,12 +274,10 @@ export default function ServicePackagesPage() {
                   <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, marginBottom: 4, color: 'var(--color-text-muted)' }}>
                     {isVi ? f.labelVi : f.labelEn}
                   </div>
-                  <input
-                    className="input"
+                  <IzInput
                     value={(form as Record<string, unknown>)[f.key] as string}
-                    onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
+                    onChange={(e: any) => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
                     placeholder={f.placeholder}
-                    style={{ width: '100%' }}
                   />
                 </label>
               ))}
@@ -285,30 +287,35 @@ export default function ServicePackagesPage() {
                   <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, marginBottom: 4, color: 'var(--color-text-muted)' }}>
                     {isVi ? 'Giá' : 'Price'}
                   </div>
-                  <input className="input" type="number" min={0} value={form.price} onChange={e => setForm(p => ({ ...p, price: Number(e.target.value) }))} style={{ width: '100%' }} />
+                  <IzInput type="number" min={0} value={form.price} onChange={(e: any) => setForm(p => ({ ...p, price: Number(e.target.value) }))} />
                 </label>
                 <label>
                   <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, marginBottom: 4, color: 'var(--color-text-muted)' }}>
                     {isVi ? 'Chu kỳ' : 'Billing'}
                   </div>
-                  <select className="input" value={form.billing} onChange={e => setForm(p => ({ ...p, billing: e.target.value as 'monthly' | 'yearly' | 'one_time' }))} style={{ width: '100%' }}>
-                    <option value="monthly">{isVi ? 'Hàng tháng' : 'Monthly'}</option>
-                    <option value="yearly">{isVi ? 'Hàng năm' : 'Yearly'}</option>
-                    <option value="one_time">{isVi ? 'Một lần' : 'One-time'}</option>
-                  </select>
+                  <IzSelect
+                    value={{ label: isVi ? BILLING_LABELS_VI[form.billing] : BILLING_LABELS[form.billing], value: form.billing }}
+                    onChange={(selected: any) => setForm(p => ({ ...p, billing: selected.value as BillingCycle }))}
+                    options={[
+                      { value: "monthly", label: isVi ? 'Hàng tháng' : 'Monthly' },
+                      { value: "yearly", label: isVi ? 'Hàng năm' : 'Yearly' },
+                      { value: "one_time", label: isVi ? 'Một lần' : 'One-time' }
+                    ]}
+                  />
                 </label>
               </div>
 
-              <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', cursor: 'pointer' }}>
-                <input type="checkbox" checked={form.is_active} onChange={e => setForm(p => ({ ...p, is_active: e.target.checked }))} />
-                <span style={{ fontSize: 'var(--font-size-sm)' }}>{isVi ? 'Đang bán' : 'Active'}</span>
-              </label>
+              <IzCheckbox
+                checked={form.is_active}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm(p => ({ ...p, is_active: e.target.checked }))}
+                label={isVi ? 'Đang bán' : 'Active'}
+              />
 
               <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end' }}>
-                <button className="btn btn-ghost" onClick={() => setShowForm(false)}>{isVi ? 'Huỷ' : 'Cancel'}</button>
-                <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
+                <IzButton variant="ghost" onClick={() => setShowForm(false)}>{isVi ? 'Huỷ' : 'Cancel'}</IzButton>
+                <IzButton variant="default" onClick={handleSave} disabled={saving}>
                   {saving ? '…' : (isVi ? 'Lưu' : 'Save')}
-                </button>
+                </IzButton>
               </div>
             </div>
           </div>

@@ -58,6 +58,10 @@ import { IzFileUpload } from '@/components/ui/IzFileUpload';
 import { IzKanbanBoard, IzKanbanColumn, IzKanbanCard } from '@/components/ui/IzKanbanBoard';
 import type { TimelineEvent } from '@/components/ui/IzActivityTimeline';
 import { useToast } from '@/hooks/use-toast';
+import { 
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer
+} from 'recharts';
+import { IzChartTooltip, IzChartGradient } from '@/components/ui/IzChart';
 import styles from './Demo.module.scss'; 
 
 const CodeSnippet = ({ code }: { code: string }) => {
@@ -209,13 +213,6 @@ export default function IzUIDemoPage() {
               <span className={styles.badge}>UI VARIANTS</span>
             </div>
             <div className={styles.card}>
-              <div className={`${styles.flexRow} ${styles.gap4} ${styles.wFull} ${styles.flexWrap}`}>
-                <IzButton variant="default">Giao diện gốc</IzButton>
-                <IzButton variant="secondary">Nút thứ cấp</IzButton>
-                <IzButton variant="outline">Viền ngoài</IzButton>
-                <IzButton variant="ghost">Tàng hình</IzButton>
-                <IzButton variant="destructive">Nguy hiểm</IzButton>
-              </div>
               <CodeSnippet code={`
 <IzButton variant="default">Giao diện gốc</IzButton>
 <IzButton variant="secondary">Nút thứ cấp</IzButton>
@@ -223,6 +220,13 @@ export default function IzUIDemoPage() {
 <IzButton variant="ghost">Tàng hình</IzButton>
 <IzButton variant="destructive">Nguy hiểm</IzButton>
               `} />
+              <div className={`${styles.flexRow} ${styles.gap4} ${styles.wFull} ${styles.flexWrap}`}>
+                <IzButton variant="default">Giao diện gốc</IzButton>
+                <IzButton variant="secondary">Nút thứ cấp</IzButton>
+                <IzButton variant="outline">Viền ngoài</IzButton>
+                <IzButton variant="ghost">Tàng hình</IzButton>
+                <IzButton variant="destructive">Nguy hiểm</IzButton>
+              </div>
             </div>
           </section>
 
@@ -232,18 +236,18 @@ export default function IzUIDemoPage() {
               <span className={styles.badge}>MULTI SIZES</span>
             </div>
             <div className={styles.card}>
-              <div className={`${styles.flexRow} ${styles.gap4} ${styles.wFull} ${styles.flexWrap} ${styles.itemsEnd}`}>
-                <IzButton size="sm">Nhỏ gọn</IzButton>
-                <IzButton size="md">Tiêu chuẩn (Mặc định)</IzButton>
-                <IzButton size="lg">Kích thước Lớn</IzButton>
-                <IzButton size="icon" aria-label="Settings"><Settings size={18} /></IzButton>
-              </div>
               <CodeSnippet code={`
 <IzButton size="sm">Nhỏ gọn</IzButton>
 <IzButton size="md">Tiêu chuẩn (Mặc định)</IzButton>
 <IzButton size="lg">Kích thước Lớn</IzButton>
 <IzButton size="icon" aria-label="Settings"><Settings size={18} /></IzButton>
               `} />
+              <div className={`${styles.flexRow} ${styles.gap4} ${styles.wFull} ${styles.flexWrap} ${styles.itemsEnd}`}>
+                <IzButton size="sm">Nhỏ gọn</IzButton>
+                <IzButton size="md">Tiêu chuẩn (Mặc định)</IzButton>
+                <IzButton size="lg">Kích thước Lớn</IzButton>
+                <IzButton size="icon" aria-label="Settings"><Settings size={18} /></IzButton>
+              </div>
             </div>
           </section>
 
@@ -253,17 +257,17 @@ export default function IzUIDemoPage() {
               <span className={styles.badge}>INTERACTIVE STATES</span>
             </div>
             <div className={styles.card}>
+              <CodeSnippet code={`
+<IzButton disabled>Vô hiệu hóa (Default)</IzButton>
+<IzButton isLoading>Đang truyền tải dữ liệu...</IzButton>
+<IzButton isLoading variant="destructive">Đang xóa bản ghi...</IzButton>
+              `} />
               <div className={`${styles.flexRow} ${styles.gap4} ${styles.wFull} ${styles.flexWrap}`}>
                 <IzButton disabled>Vô hiệu hóa (Default)</IzButton>
                 <IzButton disabled variant="outline">Vô hiệu hóa (Outline)</IzButton>
                 <IzButton isLoading>Đang truyền tải dữ liệu...</IzButton>
                 <IzButton isLoading variant="destructive">Đang xóa bản ghi...</IzButton>
               </div>
-              <CodeSnippet code={`
-<IzButton disabled>Vô hiệu hóa (Default)</IzButton>
-<IzButton isLoading>Đang truyền tải dữ liệu...</IzButton>
-<IzButton isLoading variant="destructive">Đang xóa bản ghi...</IzButton>
-              `} />
             </div>
           </section>
 
@@ -276,12 +280,6 @@ export default function IzUIDemoPage() {
             <div className={styles.grid}>
               <div className={styles.smartCard}>
                 <h3><Zap size={20} /> IzAsyncButton</h3>
-                <p>Tự động quản lý vòng đời Promise. Tự hiện Spinner, khóa click đúp ngăn spam API.</p>
-                <div className={styles.actions}>
-                  <IzAsyncButton onClick={handleAsyncClick}>
-                    <Save className="w-4 h-4 mr-2" /> Lưu Lên Cloud
-                  </IzAsyncButton>
-                </div>
                 <CodeSnippet code={`
 <IzAsyncButton onClick={async () => {
   await fetch('/api/save');
@@ -289,15 +287,16 @@ export default function IzUIDemoPage() {
   <Save className="w-4 h-4 mr-2" /> Lưu Lên Cloud
 </IzAsyncButton>
                 `} />
+                <p>Tự động quản lý vòng đời Promise. Tự hiện Spinner, khóa click đúp ngăn spam API.</p>
+                <div className={styles.actions}>
+                  <IzAsyncButton onClick={handleAsyncClick}>
+                    <Save className="w-4 h-4 mr-2" /> Lưu Lên Cloud
+                  </IzAsyncButton>
+                </div>
               </div>
 
               <div className={styles.smartCard}>
                 <h3><Workflow size={20} /> IzIconButton</h3>
-                <p>Nút Icon siêu gọn nhẹ cho Table, kèm Tooltip Hover và chuẩn cấu trúc ARIA.</p>
-                <div className={styles.actions}>
-                  <IzIconButton icon={<Plus size={18} />} aria-label="Thêm mới" tooltip="Thêm KH mới" />
-                  <IzIconButton icon={<Trash size={18} />} aria-label="Xóa" variant="destructive" />
-                </div>
                 <CodeSnippet code={`
 <IzIconButton 
   icon={<Plus size={18} />} 
@@ -305,21 +304,26 @@ export default function IzUIDemoPage() {
   tooltip="Thêm KH mới" 
 />
                 `} />
+                <p>Nút Icon siêu gọn nhẹ cho Table, kèm Tooltip Hover và chuẩn cấu trúc ARIA.</p>
+                <div className={styles.actions}>
+                  <IzIconButton icon={<Plus size={18} />} aria-label="Thêm mới" tooltip="Thêm KH mới" />
+                  <IzIconButton icon={<Trash size={18} />} aria-label="Xóa" variant="destructive" />
+                </div>
               </div>
 
               <div className={styles.smartCard} style={{ gridColumn: '1 / -1' }}>
                 <h3><ShieldAlert size={20} /> IzPermissionButton (Kiểm soát RBAC)</h3>
+                <CodeSnippet code={`
+<IzPermissionButton permissions={['deals.delete']} variant="default">
+  Xóa Hợp Đồng Giao Dịch
+</IzPermissionButton>
+                `} />
                 <p>Tự rà soát cờ Permissions, nếu thiếu quyền thao tác (VD: deals.delete) nút sẽ bị vô hiệu hóa kèm khóa.</p>
                 <div className={styles.actions}>
                   <IzPermissionButton permissions={['deals.delete']} variant="default">
                     Xóa Hợp Đồng Giao Dịch
                   </IzPermissionButton>
                 </div>
-                <CodeSnippet code={`
-<IzPermissionButton permissions={['deals.delete']} variant="default">
-  Xóa Hợp Đồng Giao Dịch
-</IzPermissionButton>
-                `} />
               </div>
             </div>
           </section>
@@ -338,10 +342,6 @@ export default function IzUIDemoPage() {
             <div className={styles.grid}>
               <div className={styles.smartCard}>
                 <h3 className={`${styles.textXl} ${styles.mb6} ${styles.flexRow} ${styles.gap2}`}><User size={20} /> Sử dụng độc lập</h3>
-                <div className={`${styles.flexCol} ${styles.gap4} ${styles.wFull}`}>
-                  <IzInput placeholder="Nhập tên đăng nhập..." />
-                  <IzInput placeholder="Kèm Icon trái..." leftIcon={<Mail size={16} />} />
-                </div>
                 <CodeSnippet code={`
 <IzInput placeholder="Nhập tên đăng nhập..." />
 <IzInput 
@@ -349,14 +349,14 @@ export default function IzUIDemoPage() {
   leftIcon={<Mail size={16} />} 
 />
                 `} />
+                <div className={`${styles.flexCol} ${styles.gap4} ${styles.wFull}`}>
+                  <IzInput placeholder="Nhập tên đăng nhập..." />
+                  <IzInput placeholder="Kèm Icon trái..." leftIcon={<Mail size={16} />} />
+                </div>
               </div>
 
               <div className={styles.smartCard}>
                 <h3 className={`${styles.textXl} ${styles.mb6} ${styles.flexRow} ${styles.gap2}`}><Lock size={20} /> Trạng thái Đặc Biệt</h3>
-                <div className={`${styles.flexCol} ${styles.gap4} ${styles.wFull}`}>
-                  <IzInput placeholder="Input bị vô hiệu hóa..." disabled />
-                  <IzInput placeholder="Lỗi Validation..." leftIcon={<Lock size={16} />} error="Sai mật khẩu" />
-                </div>
                 <CodeSnippet code={`
 <IzInput placeholder="Input bị vô hiệu hóa..." disabled />
 <IzInput 
@@ -364,6 +364,10 @@ export default function IzUIDemoPage() {
   leftIcon={<Lock size={16} />} 
 />
                 `} />
+                <div className={`${styles.flexCol} ${styles.gap4} ${styles.wFull}`}>
+                  <IzInput placeholder="Input bị vô hiệu hóa..." disabled />
+                  <IzInput placeholder="Lỗi Validation..." leftIcon={<Lock size={16} />} error="Sai mật khẩu" />
+                </div>
               </div>
             </div>
           </section>
@@ -507,35 +511,7 @@ return (
               </div>
 
               <div className={styles.wFull}>
-                <IzTable 
-                  table={table}
-                  isLoading={isTableLoading}
-                  isEmpty={tableData.length === 0}
-                  onRowClick={(row) => console.log('Row clicked:', row)}
-                  emptyProps={{
-                    title: 'Chưa có thành viên nào',
-                    description: 'Hệ thống hiện chưa có dữ liệu thành viên. Hãy thêm người dùng mới để bắt đầu.',
-                    actionLabel: '+ Thêm Mới',
-                    onAction: () => setTableData(MOCK_TABLE_DATA)
-                  }}
-                />
-                {!isTableLoading && tableData.length > 0 && (
-                  <IzPagination 
-                    pageIndex={pagination.pageIndex}
-                    pageCount={Math.ceil(tableData.length / pagination.pageSize)}
-                    canPreviousPage={table.getCanPreviousPage()}
-                    canNextPage={table.getCanNextPage()}
-                    setPageIndex={table.setPageIndex}
-                    nextPage={table.nextPage}
-                    previousPage={table.previousPage}
-                    pageSize={pagination.pageSize}
-                    setPageSize={table.setPageSize}
-                    totalRows={tableData.length}
-                  />
-                )}
-                
-                <div className={styles.mt8}>
-                  <CodeSnippet code={`
+                <CodeSnippet code={`
 // 1. Định nghĩa Data Model & Cấu hình Cột
 const columnHelper = createColumnHelper<UserRow>();
 const columns = [
@@ -566,7 +542,32 @@ const columns = [
   ... 
 />
                   `} />
-                </div>
+                <IzTable 
+                  table={table}
+                  isLoading={isTableLoading}
+                  isEmpty={tableData.length === 0}
+                  onRowClick={(row) => console.log('Row clicked:', row)}
+                  emptyProps={{
+                    title: 'Chưa có thành viên nào',
+                    description: 'Hệ thống hiện chưa có dữ liệu thành viên. Hãy thêm người dùng mới để bắt đầu.',
+                    actionLabel: '+ Thêm Mới',
+                    onAction: () => setTableData(MOCK_TABLE_DATA)
+                  }}
+                />
+                {!isTableLoading && tableData.length > 0 && (
+                  <IzPagination 
+                    pageIndex={pagination.pageIndex}
+                    pageCount={Math.ceil(tableData.length / pagination.pageSize)}
+                    canPreviousPage={table.getCanPreviousPage()}
+                    canNextPage={table.getCanNextPage()}
+                    setPageIndex={table.setPageIndex}
+                    nextPage={table.nextPage}
+                    previousPage={table.previousPage}
+                    pageSize={pagination.pageSize}
+                    setPageSize={table.setPageSize}
+                    totalRows={tableData.length}
+                  />
+                )}
               </div>
             </div>
           </section>
@@ -618,6 +619,18 @@ const columns = [
 
               <div className={styles.smartCard}>
                 <h3 className={`${styles.textXl} ${styles.mb6} ${styles.flexRow} ${styles.gap2}`}><ShieldAlert size={20} /> Alert Dialog Xác Nhận</h3>
+                <CodeSnippet code={`
+<IzAlertDialog>
+  <IzAlertDialogTrigger><IzButton variant="destructive">Xóa Dữ Liệu</IzButton></IzAlertDialogTrigger>
+  <IzAlertDialogContent>
+    <IzAlertDialogHeader><IzAlertDialogTitle>Xóa vĩnh viễn?</IzAlertDialogTitle></IzAlertDialogHeader>
+    <IzAlertDialogFooter>
+      <IzAlertDialogCancel>Hủy</IzAlertDialogCancel>
+      <IzAlertDialogAction variant="destructive">Đồng ý</IzAlertDialogAction>
+    </IzAlertDialogFooter>
+  </IzAlertDialogContent>
+</IzAlertDialog>
+                `} />
                 <div className={`${styles.flexRow} ${styles.gap4}`}>
                   <IzAlertDialog>
                     <IzAlertDialogTrigger asChild>
@@ -647,6 +660,13 @@ const columns = [
             
             <div className={styles.card}>
                 <h3 className={`${styles.textXl} ${styles.mb6}`}>Bắn Toast từ Global</h3>
+                <CodeSnippet code={`
+toast({ 
+  title: 'Cập nhật thành công', 
+  description: 'Bản ghi đã được lưu vào hệ thống.', 
+  variant: 'success'
+});
+                `} />
                 <div className={`${styles.flexRow} ${styles.gap4}`}>
                   <IzButton variant="outline" onClick={() => toast({ title: 'Cập nhật thành công', description: 'Bản ghi đã được lưu vào hệ thống.', variant: 'success'})}>
                     <CheckCircle size={16} className="mr-2 text-emerald-500" /> Toast Thành Công
@@ -694,7 +714,17 @@ const columns = [
                   </IzBreadcrumb>
 
                   <h3 className={`${styles.textXl} ${styles.mb6} ${styles.flexRow} ${styles.gap2}`}><User size={20} /> Hồ sơ tóm tắt</h3>
-                  
+                  <CodeSnippet code={`
+<IzCard>
+  <IzCardHeader>
+    <IzAvatar><IzAvatarImage src="..." /></IzAvatar>
+    <div>
+      <IzCardTitle>Isaac Vu</IzCardTitle>
+      <IzCardDescription>CTO</IzCardDescription>
+    </div>
+  </IzCardHeader>
+</IzCard>
+                  `} />
                   <IzCard>
                     <IzCardHeader>
                       <div className={`${styles.flexRow} ${styles.gap4}`}>
@@ -728,7 +758,19 @@ const columns = [
 
                 <div className={styles.smartCard}>
                   <h3 className={`${styles.textXl} ${styles.mb6} ${styles.flexRow} ${styles.gap2}`}><Briefcase size={20} /> Tabs & Popovers</h3>
-                  
+                  <CodeSnippet code={`
+<IzTabs defaultValue="account">
+  <IzTabsList>
+    <IzTabsTrigger value="account">Tài Khoản</IzTabsTrigger>
+  </IzTabsList>
+  <IzTabsContent value="account">...</IzTabsContent>
+</IzTabs>
+
+<IzPopover>
+  <IzPopoverTrigger asChild><IzButton>Quick Settings</IzButton></IzPopoverTrigger>
+  <IzPopoverContent align="center" side="top">...</IzPopoverContent>
+</IzPopover>
+                  `} />
                   <IzTabs defaultValue="account" className={`${styles.wFull} ${styles.mb6}`}>
                     <IzTabsList className={`${styles.wFull}`}>
                       <IzTabsTrigger value="account" className={`${styles.wFull}`}>Tài Khoản</IzTabsTrigger>
@@ -775,6 +817,23 @@ const columns = [
               </div>
               
               <div className={styles.card}>
+                <CodeSnippet code={`
+<IzDropdownMenu>
+  <IzDropdownMenuTrigger asChild><IzButton>Menu</IzButton></IzDropdownMenuTrigger>
+  <IzDropdownMenuContent>
+    <IzDropdownMenuItem>
+      <span>Hồ sơ</span>
+    </IzDropdownMenuItem>
+  </IzDropdownMenuContent>
+</IzDropdownMenu>
+
+<IzDrawer>
+  <IzDrawerTrigger asChild><IzButton>Open Drawer</IzButton></IzDrawerTrigger>
+  <IzDrawerContent side="right">
+    <IzDrawerHeader><IzDrawerTitle>Chỉnh sửa quy trình</IzDrawerTitle></IzDrawerHeader>
+  </IzDrawerContent>
+</IzDrawer>
+                `} />
                 <div className={`${styles.flexRow} ${styles.gap4}`}>
                   
                   <IzDropdownMenu>
@@ -852,11 +911,22 @@ const columns = [
               <h2>1. Metric Cards (Tổng Quan Nhanh)</h2>
               <span className={styles.badge}>CUSTOM SCSS</span>
             </div>
-            <div className={`${styles.grid4}`}>
-              <IzMetricCard label="Doanh Thu Tháng" value="234.5M" trend={12.4} trendLabel="vs tháng trước" icon={<DollarSign size={18}/>} />
-              <IzMetricCard label="Khách Hàng Mới" value="1,293" trend={8.1} trendLabel="vs tháng trước" icon={<Users size={18}/>} />
-              <IzMetricCard label="Đơn Hàng" value="842" trend={-3.2} trendLabel="vs tháng trước" icon={<Package size={18}/>} />
-              <IzMetricCard label="Tỷ Lệ Thành Công" value="94.7%" trend={0} trendLabel="không đổi" icon={<BarChart2 size={18}/>} />
+            <div className={styles.card}>
+              <CodeSnippet code={`
+<IzMetricCard 
+  label="Doanh Thu Tháng" 
+  value="234.5M" 
+  trend={12.4} 
+  trendLabel="vs tháng trước" 
+  icon={<DollarSign size={18}/>} 
+/>
+              `} />
+              <div className={`${styles.grid4}`}>
+                <IzMetricCard label="Doanh Thu Tháng" value="234.5M" trend={12.4} trendLabel="vs tháng trước" icon={<DollarSign size={18}/>} />
+                <IzMetricCard label="Khách Hàng Mới" value="1,293" trend={8.1} trendLabel="vs tháng trước" icon={<Users size={18}/>} />
+                <IzMetricCard label="Đơn Hàng" value="842" trend={-3.2} trendLabel="vs tháng trước" icon={<Package size={18}/>} />
+                <IzMetricCard label="Tỷ Lệ Thành Công" value="94.7%" trend={0} trendLabel="không đổi" icon={<BarChart2 size={18}/>} />
+              </div>
             </div>
           </section>
 
@@ -868,6 +938,15 @@ const columns = [
             <div className={styles.grid}>
               <div className={styles.smartCard}>
                 <h3 className={`${styles.textXl} ${styles.mb6}`}>Biểu đồ đường - Doanh thu 6 tháng</h3>
+                <CodeSnippet code={`
+<IzLineChart
+  data={[ {name: 'T1', doanhThu: 100, chiPhi: 80}, ... ]}
+  dataKeys={[
+    {key: 'doanhThu', name: 'Doanh thu', color: '#6366f1'},
+    {key: 'chiPhi', name: 'Chi phí', color: '#10b981'}
+  ]}
+/>
+                `} />
                 <IzLineChart
                   data={[
                     {name: 'T10', doanhThu: 120, chiPhi: 80},
@@ -885,6 +964,12 @@ const columns = [
               </div>
               <div className={styles.smartCard}>
                 <h3 className={`${styles.textXl} ${styles.mb6}`}>Biểu đồ cột - Top sản phẩm</h3>
+                <CodeSnippet code={`
+<IzBarChart
+  data={[{name: 'CRM', doanhThu: 340}, ...]}
+  dataKeys={[{key:'doanhThu', name:'Doanh thu (Tr)', color:'#6366f1'}]}
+/>
+                `} />
                 <IzBarChart
                   data={[
                     {name: 'CRM', doanhThu: 340},
@@ -909,6 +994,14 @@ const columns = [
             <div className={styles.grid}>
               <div className={styles.smartCard}>
                 <h3 className={`${styles.textXl} ${styles.mb6}`}>Biểu đồ tròn dạng Phần (Pie)</h3>
+                <CodeSnippet code={`
+<IzPieChart
+  data={[
+    {name:'CRM', value:35, color:'#6366f1'},
+    {name:'ERP', value:25, color:'#10b981'},
+  ]}
+/>
+                `} />
                 <IzPieChart
                   data={[
                     {name:'CRM', value:35, color:'#6366f1'},
@@ -920,6 +1013,15 @@ const columns = [
               </div>
               <div className={styles.smartCard}>
                 <h3 className={`${styles.textXl} ${styles.mb6}`}>Biểu đồ Donut</h3>
+                <CodeSnippet code={`
+<IzPieChart
+  donut
+  data={[
+    {name:'Thành công', value:100, color:'#10b981'},
+    {name:'Chờ xử lý', value:50, color:'#f59e0b'},
+  ]}
+/>
+                `} />
                 <IzPieChart
                   donut
                   data={[
@@ -931,6 +1033,51 @@ const columns = [
               </div>
             </div>
           </section>
+
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2>4. Premium Area Chart (IzChart - Stitch Design)</h2>
+              <span className={styles.badge}>RECHARTS + GLASSMORPHISM</span>
+            </div>
+            <div className={styles.grid}>
+              <div className={styles.smartCard} style={{ gridColumn: 'span 2' }}>
+                <h3 className={`${styles.textXl} ${styles.mb6}`}>Doanh Thu Theo Tháng (Glassmorphism Tooltip & Gradient Fill)</h3>
+                <CodeSnippet code={`
+<AreaChart data={data}>
+  <IzChartGradient id="demoColorArr" color="var(--color-primary)" />
+  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+  <XAxis dataKey="month" axisLine={false} tickLine={false} />
+  <YAxis tickFormatter={(v) => \`\${v}Tr\`} axisLine={false} tickLine={false} />
+  <RechartsTooltip content={<IzChartTooltip valueSuffix="đ" />} />
+  <Area type="monotone" dataKey="arr" fill="url(#demoColorArr)" />
+</AreaChart>
+                `} />
+                <div style={{ height: 300, width: '100%' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart 
+                      data={[
+                        { month: 'T10', arr: 210000000 },
+                        { month: 'T11', arr: 250000000 },
+                        { month: 'T12', arr: 280000000 },
+                        { month: 'T1', arr: 310000000 },
+                        { month: 'T2', arr: 390000000 },
+                        { month: 'T3', arr: 450000000 },
+                      ]} 
+                      margin={{ top: 10, right: 8, left: 0, bottom: 0 }}
+                    >
+                      <IzChartGradient id="demoColorArr" color="var(--color-primary)" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+                      <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--color-text-muted)' }} axisLine={false} tickLine={false} />
+                      <YAxis tickFormatter={(v: number) => `${(v / 1000000).toFixed(0)}Tr`} tick={{ fontSize: 11, fill: 'var(--color-text-muted)' }} axisLine={false} tickLine={false} width={40} />
+                      <RechartsTooltip content={<IzChartTooltip valueSuffix="đ" nameMap={{ arr: 'Doanh Thu Định Kỳ' }} />} cursor={{ stroke: 'var(--color-border)', strokeWidth: 1, strokeDasharray: '4 4' }} />
+                      <Area type="monotone" dataKey="arr" stroke="var(--color-primary)" strokeWidth={3} fillOpacity={1} fill="url(#demoColorArr)" activeDot={{ r: 6, fill: 'var(--color-primary)', stroke: 'var(--color-bg-surface)', strokeWidth: 2 }} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+          </section>
+
         </div>
 
         {/* --- PART 7: ERP-SPECIFIC & MISC --- */}
@@ -945,6 +1092,14 @@ const columns = [
             <div className={styles.grid}>
               <div className={styles.smartCard}>
                 <h3 className={`${styles.textXl} ${styles.mb6} ${styles.flexRow} ${styles.gap2}`}><HelpCircle size={20}/> Hỏi Đáp (FAQ Accordion)</h3>
+                <CodeSnippet code={`
+<IzAccordion type="single" collapsible>
+  <IzAccordionItem value="q1">
+    <IzAccordionTrigger>Câu hỏi số 1?</IzAccordionTrigger>
+    <IzAccordionContent>Nội dung trả lời.</IzAccordionContent>
+  </IzAccordionItem>
+</IzAccordion>
+                `} />
                 <IzAccordion type="single" collapsible>
                   <IzAccordionItem value="q1">
                     <IzAccordionTrigger>IzHub lưu trữ dữ liệu ở đâu?</IzAccordionTrigger>
@@ -963,6 +1118,13 @@ const columns = [
 
               <div className={styles.smartCard}>
                 <h3 className={`${styles.textXl} ${styles.mb6} ${styles.flexRow} ${styles.gap2}`}><FileSearch size={20}/> Lịch Sử Thao Tác (Activity Timeline)</h3>
+                <CodeSnippet code={`
+<IzActivityTimeline
+  events={[
+    {id:'1', title:'Deal được tạo', description:'Bước 1 quy trình', timestamp:'2 phút trước', variant:'success'},
+  ]}
+/>
+                `} />
                 <IzActivityTimeline
                   events={[
                     {id:'1', title:'Deal được tạo', description:'Bước 1 quy trình bán hàng', timestamp:'2 phút trước', variant:'success'},
@@ -981,6 +1143,14 @@ const columns = [
               <span className={styles.badge}>DRAG & DROP</span>
             </div>
             <div className={styles.card}>
+              <CodeSnippet code={`
+<IzFileUpload
+  accept=".pdf,.docx,.xlsx"
+  multiple
+  label="Kéo thả hợp đồng, báo cáo, hóa đơn vào đây"
+  maxSizeMB={20}
+/>
+              `} />
               <IzFileUpload
                 accept=".pdf,.docx,.xlsx"
                 multiple
@@ -994,6 +1164,20 @@ const columns = [
             <div className={styles.sectionHeader}>
               <h2>3. Kanban Layout (Khung CSS)</h2>
               <span className={styles.badge}>SCSS ONLY</span>
+            </div>
+            <div className={styles.mt4}>
+              <CodeSnippet code={`
+<IzKanbanBoard>
+  <IzKanbanColumn title="Khách Hàng Mới" count={3} headerAction={<Plus />}>
+    <IzKanbanCard 
+      title="Cty TNHH An Phát" 
+      description="Yêu cầu báo giá hệ thống CRM & HRM."
+      footerLeft={<span>150.000.000₫</span>}
+      footerRight={<span>2 giờ trước</span>}
+    />
+  </IzKanbanColumn>
+</IzKanbanBoard>
+              `} />
             </div>
             <IzKanbanBoard>
               <IzKanbanColumn title="Khách Hàng Mới" count={3} headerAction={<Plus size={16} style={{ cursor: 'pointer', color: 'var(--color-muted-foreground)' }} />}>

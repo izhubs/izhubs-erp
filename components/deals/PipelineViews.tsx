@@ -9,15 +9,17 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useReactTable, getCoreRowModel, getSortedRowModel, createColumnHelper, SortingState } from '@tanstack/react-table';
 import type { Deal, DealStage } from '@/core/schema/entities';
 import { PIPELINE_STAGES, type PipelineStageConfig } from '@/core/config/pipeline';
 import { IzTable } from '@/components/ui/IzTable';
 import { IzBadge, IzBadgeVariant } from '@/components/ui/IzBadge';
+import { IzButton } from '@/components/ui/IzButton';
 import { apiFetch } from '@/lib/apiFetch';
 
 // Kanban is already complex — keep lazy
-const KanbanBoard = dynamic(() => import('@/components/kanban/KanbanBoard'), { ssr: false });
+const KanbanBoard = dynamic(() => import('./KanbanBoard'), { ssr: false });
 
 type ViewMode = 'kanban' | 'table' | 'funnel';
 
@@ -153,6 +155,7 @@ function Stat({ label, value, green }: { label: string; value: string; green?: b
 // ---- Main PipelineViews component ------------------------------
 export default function PipelineViews({ initialDeals, stages: stagesProp }: { initialDeals: Deal[]; stages?: PipelineStageConfig[] }) {
   const stages = stagesProp ?? PIPELINE_STAGES;
+  const router = useRouter();
   const [view, setView] = useState<ViewMode>('kanban');
   const [deals, setDeals] = useState<Deal[]>(initialDeals);
   const [totalValue, setTotalValue] = useState(0);
@@ -202,13 +205,9 @@ export default function PipelineViews({ initialDeals, stages: stagesProp }: { in
         </div>
 
           <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
-            <Link href="/deals/sheet" className="btn btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--font-size-sm)' }}>
-              📊 Sheet View
-            </Link>
-            <button className="btn btn-primary" style={{ marginLeft: 'var(--space-2)' }}
-              onClick={() => {/* handled by KanbanBoard when in kanban view */}}>
-              + New Deal
-            </button>
+            <IzButton variant="ghost" onClick={() => router.push('/deals/sheet')} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--font-size-sm)' }}>
+              Bulk Edit
+            </IzButton>
           </div>
       </div>
 

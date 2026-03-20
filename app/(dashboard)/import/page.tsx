@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Upload, ArrowRight, Check, AlertCircle } from 'lucide-react';
 import { SmartGrid, EditableCell } from '@/components/ui/SmartGrid';
 import { ColumnDef } from '@tanstack/react-table';
+import { IzButton } from '@/components/ui/IzButton';
 
 type EntityType = 'contacts' | 'deals';
 type Step = 'upload' | 'mapping' | 'preview' | 'result';
@@ -163,14 +164,14 @@ export default function ImportPage() {
           {/* Entity type selector */}
           <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-6)' }}>
             {(['contacts', 'deals'] as EntityType[]).map(t => (
-              <button
+              <IzButton
                 key={t}
-                className={`btn ${entityType === t ? 'btn-primary' : 'btn-ghost'}`}
+                variant={entityType === t ? 'default' : 'ghost'}
                 onClick={() => setEntityType(t)}
                 style={{ textTransform: 'capitalize' }}
               >
                 {t}
-              </button>
+              </IzButton>
             ))}
           </div>
 
@@ -319,15 +320,15 @@ export default function ImportPage() {
           </div>
 
           <div style={{ marginTop: 'var(--space-6)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <button className="btn btn-ghost" onClick={() => setStep('upload')} style={{ color: '#fff' }}>← Quay lại</button>
+            <IzButton variant="ghost" onClick={() => setStep('upload')} style={{ color: '#fff' }}>← Quay lại</IzButton>
             <div style={{ textAlign: 'center' }}>
               <span className="text-muted" style={{ fontSize: 'var(--font-size-sm)' }}>
                 {proposal.totalRows} dòng từ file CSV
               </span>
             </div>
-            <button className="btn btn-primary" onClick={() => setStep('preview')} disabled={loading} style={{ background: '#7c3aed', color: '#fff', border: 'none' }}>
+            <IzButton variant="default" onClick={() => setStep('preview')} disabled={loading} style={{ background: '#7c3aed', color: '#fff', border: 'none' }}>
               Xem trước dữ liệu →
-            </button>
+            </IzButton>
           </div>
         </div>
       )}
@@ -343,10 +344,10 @@ export default function ImportPage() {
               </p>
             </div>
             <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
-              <button className="btn btn-ghost" onClick={() => setStep('mapping')}>← Cột</button>
-              <button className="btn btn-primary" onClick={handleConfirm} disabled={loading} style={{ background: '#7c3aed', color: '#fff', border: 'none' }}>
+              <IzButton variant="ghost" onClick={() => setStep('mapping')}>← Cột</IzButton>
+              <IzButton variant="default" onClick={handleConfirm} disabled={loading} style={{ background: '#7c3aed', color: '#fff', border: 'none' }}>
                 {loading ? 'Đang xử lý…' : `Import ${allRows.length} dòng`}
-              </button>
+              </IzButton>
             </div>
           </div>
 
@@ -382,9 +383,9 @@ export default function ImportPage() {
               {result.errors.slice(0, 5).map((e, i) => <div key={i}>{e}</div>)}
             </div>
           )}
-          <button className="btn btn-primary" onClick={() => router.push(entityType === 'contacts' ? '/contacts/sheet' : '/deals/sheet')}>
+          <IzButton variant="default" onClick={() => router.push(entityType === 'contacts' ? '/contacts/sheet' : '/deals/sheet')}>
             Xem dữ liệu trên Sheet →
-          </button>
+          </IzButton>
         </div>
       )}
     </div>

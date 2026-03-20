@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import Badge from '@/components/shared/Badge';
 import EmptyState from '@/components/shared/EmptyState';
 import SidePanel from '@/components/shared/SidePanel';
+import { IzButton } from '@/components/ui/IzButton';
 
 interface Lead extends Record<string, unknown> {
   id: string;
@@ -46,7 +47,7 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
       <EmptyState
         title="Chưa có Lead nào"
         description="Thêm lead thủ công hoặc import từ CSV/Excel."
-        action={<button className="btn btn-primary" id="add-lead-btn">+ Thêm Lead đầu tiên</button>}
+        action={<IzButton variant="default" id="add-lead-btn">+ Thêm Lead đầu tiên</IzButton>}
       />
     );
   }
@@ -101,8 +102,8 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
         title={selected?.name as string | undefined}
         footer={
           <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-            <button className="btn btn-ghost">Gọi điện</button>
-            <button className="btn btn-primary">Tạo Deal →</button>
+            <IzButton variant="ghost">Gọi điện</IzButton>
+            <IzButton variant="default">Tạo Deal →</IzButton>
           </div>
         }
       >

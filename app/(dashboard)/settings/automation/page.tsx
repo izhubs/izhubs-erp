@@ -3,6 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Zap } from 'lucide-react';
 import { useLanguage } from '@/components/providers/LanguageProvider';
+import { IzButton } from '@/components/ui/IzButton';
+import { IzInput } from '@/components/ui/IzInput';
+import { IzSelect } from '@/components/ui/IzSelect';
+import { IzCheckbox } from '@/components/ui/IzCheckbox';
 
 interface ActionConfig {
   type: string;
@@ -128,10 +132,10 @@ export default function AutomationSettingsPage() {
           <Zap size={22} style={{ color: 'var(--color-primary)' }} />
           {isVi ? 'Automation Rules' : 'Automation Rules'}
         </h1>
-        <button className="btn btn-primary" onClick={openCreate} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+        <IzButton variant="default" onClick={openCreate} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
           <Plus size={16} />
           {isVi ? 'Thêm rule' : 'Add Rule'}
-        </button>
+        </IzButton>
       </div>
 
       <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-5)' }}>
@@ -149,9 +153,9 @@ export default function AutomationSettingsPage() {
         <div className="card" style={{ textAlign: 'center', padding: 'var(--space-8)', color: 'var(--color-text-muted)' }}>
           <Zap size={32} style={{ opacity: 0.3, marginBottom: 'var(--space-3)' }} />
           <p>{isVi ? 'Chưa có automation rule nào.' : 'No automation rules yet.'}</p>
-          <button className="btn btn-primary" onClick={openCreate} style={{ marginTop: 'var(--space-3)' }}>
+          <IzButton variant="default" onClick={openCreate} style={{ marginTop: 'var(--space-3)' }}>
             {isVi ? 'Tạo rule đầu tiên' : 'Create first rule'}
-          </button>
+          </IzButton>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
@@ -190,12 +194,12 @@ export default function AutomationSettingsPage() {
 
               {/* Actions */}
               <div style={{ display: 'flex', gap: 'var(--space-2)', flexShrink: 0 }}>
-                <button className="btn btn-ghost" onClick={() => openEdit(a)} title={isVi ? 'Chỉnh sửa' : 'Edit'} style={{ padding: 'var(--space-1) var(--space-2)' }}>
+                <IzButton variant="ghost" size="icon" onClick={() => openEdit(a)} title={isVi ? 'Chỉnh sửa' : 'Edit'}>
                   <Pencil size={14} />
-                </button>
-                <button className="btn btn-ghost" onClick={() => handleDelete(a)} title={isVi ? 'Xoá' : 'Delete'} style={{ padding: 'var(--space-1) var(--space-2)', color: 'var(--color-danger)' }}>
+                </IzButton>
+                <IzButton variant="ghost" size="icon" onClick={() => handleDelete(a)} title={isVi ? 'Xoá' : 'Delete'} style={{ color: 'var(--color-danger)' }}>
                   <Trash2 size={14} />
-                </button>
+                </IzButton>
               </div>
             </div>
           ))}
@@ -219,12 +223,10 @@ export default function AutomationSettingsPage() {
                 <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, marginBottom: 'var(--space-1)', color: 'var(--color-text-muted)' }}>
                   {isVi ? 'Tên rule' : 'Rule Name'}
                 </div>
-                <input
-                  className="input"
+                <IzInput
                   value={form.name}
-                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                  onChange={(e: any) => setForm(f => ({ ...f, name: e.target.value }))}
                   placeholder={isVi ? 'VD: Nhắc gia hạn khi chuyển sang Renewal' : 'E.g. Remind renewal when stage changes'}
-                  style={{ width: '100%' }}
                 />
               </label>
 
@@ -233,11 +235,15 @@ export default function AutomationSettingsPage() {
                 <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, marginBottom: 'var(--space-1)', color: 'var(--color-text-muted)' }}>
                   {isVi ? 'Trigger sự kiện' : 'Trigger Event'}
                 </div>
-                <select className="input" value={form.trigger} onChange={e => setForm(f => ({ ...f, trigger: e.target.value }))} style={{ width: '100%' }}>
-                  <option value="deal.stage_changed">Deal changes stage</option>
-                  <option value="deal.created">Deal is created</option>
-                  <option value="contact.created">Contact is created</option>
-                </select>
+                <IzSelect
+                  value={{ label: TRIGGER_LABELS[form.trigger], value: form.trigger }}
+                  onChange={(selected: any) => setForm(f => ({ ...f, trigger: selected.value }))}
+                  options={[
+                    { value: "deal.stage_changed", label: "Deal changes stage" },
+                    { value: "deal.created", label: "Deal is created" },
+                    { value: "contact.created", label: "Contact is created" }
+                  ]}
+                />
               </label>
 
               {/* Condition */}
@@ -245,12 +251,11 @@ export default function AutomationSettingsPage() {
                 <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, marginBottom: 'var(--space-1)', color: 'var(--color-text-muted)' }}>
                   {isVi ? 'Điều kiện (stage key)' : 'Condition (stage key)'}
                 </div>
-                <input
-                  className="input"
+                <IzInput
                   value={form.condition}
-                  onChange={e => setForm(f => ({ ...f, condition: e.target.value }))}
+                  onChange={(e: any) => setForm(f => ({ ...f, condition: e.target.value }))}
                   placeholder="toStage == 'renewal'"
-                  style={{ width: '100%', fontFamily: 'monospace', fontSize: 13 }}
+                  style={{ fontFamily: 'monospace', fontSize: 13 }}
                 />
                 <div style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 4 }}>
                   {isVi ? "VD: toStage == 'renewal' hoặc true để luôn chạy" : "E.g. toStage == 'renewal' or true to always run"}
@@ -262,12 +267,10 @@ export default function AutomationSettingsPage() {
                 <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, marginBottom: 'var(--space-1)', color: 'var(--color-text-muted)' }}>
                   {isVi ? 'Tiêu đề task tạo ra' : 'Task Subject'}
                 </div>
-                <input
-                  className="input"
+                <IzInput
                   value={form.action_config.subject}
-                  onChange={e => setForm(f => ({ ...f, action_config: { ...f.action_config, subject: e.target.value } }))}
+                  onChange={(e: any) => setForm(f => ({ ...f, action_config: { ...f.action_config, subject: e.target.value } }))}
                   placeholder={isVi ? 'Liên hệ gia hạn hợp đồng' : 'Follow-up contract renewal'}
-                  style={{ width: '100%' }}
                 />
               </label>
 
@@ -276,14 +279,13 @@ export default function AutomationSettingsPage() {
                 <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, marginBottom: 'var(--space-1)', color: 'var(--color-text-muted)' }}>
                   {isVi ? 'Due sau bao nhiêu ngày?' : 'Due in how many days?'}
                 </div>
-                <input
-                  className="input"
+                <IzInput
                   type="number"
                   min={0}
                   max={365}
                   value={form.action_config.daysFromNow}
-                  onChange={e => setForm(f => ({ ...f, action_config: { ...f.action_config, daysFromNow: Number(e.target.value) } }))}
-                  style={{ width: 120 }}
+                  onChange={(e: any) => setForm(f => ({ ...f, action_config: { ...f.action_config, daysFromNow: Number(e.target.value) } }))}
+                  style={{ width: '120px', display: 'inline-block' }}
                 />
                 <span style={{ marginLeft: 'var(--space-2)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>
                   {isVi ? 'ngày' : 'days'}
@@ -291,22 +293,21 @@ export default function AutomationSettingsPage() {
               </label>
 
               {/* Active */}
-              <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', cursor: 'pointer' }}>
-                <input type="checkbox" checked={form.is_active} onChange={e => setForm(f => ({ ...f, is_active: e.target.checked }))} />
-                <span style={{ fontSize: 'var(--font-size-sm)' }}>
-                  {isVi ? 'Kích hoạt ngay' : 'Active'}
-                </span>
-              </label>
+              <IzCheckbox
+                checked={form.is_active}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, is_active: e.target.checked }))}
+                label={isVi ? 'Kích hoạt ngay' : 'Active'}
+              />
 
               {error && <div style={{ color: 'var(--color-danger)', fontSize: 'var(--font-size-sm)' }}>{error}</div>}
 
               <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end', marginTop: 'var(--space-2)' }}>
-                <button className="btn btn-ghost" onClick={() => setShowForm(false)}>
+                <IzButton variant="ghost" onClick={() => setShowForm(false)}>
                   {isVi ? 'Huỷ' : 'Cancel'}
-                </button>
-                <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
+                </IzButton>
+                <IzButton variant="default" onClick={handleSave} disabled={saving}>
                   {saving ? (isVi ? 'Đang lưu...' : 'Saving...') : (isVi ? 'Lưu' : 'Save')}
-                </button>
+                </IzButton>
               </div>
             </div>
           </div>

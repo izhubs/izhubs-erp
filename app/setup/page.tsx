@@ -1,5 +1,8 @@
 // Setup wizard — first-run onboarding
 // Steps: 1. Create admin → 2. Choose template → 3. Import data (optional) → 4. Done
+import { IzInput } from '@/components/ui/IzInput';
+import { IzButton } from '@/components/ui/IzButton';
+
 export default function SetupPage() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-bg)' }}>
@@ -27,19 +30,19 @@ export default function SetupPage() {
         <form style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
           <div>
             <label style={{ display: 'block', fontSize: 'var(--font-size-sm)', marginBottom: 4 }}>Full Name</label>
-            <input className="input" type="text" placeholder="Your name" id="admin-name" />
+            <IzInput type="text" placeholder="Your name" id="admin-name" />
           </div>
           <div>
             <label style={{ display: 'block', fontSize: 'var(--font-size-sm)', marginBottom: 4 }}>Email</label>
-            <input className="input" type="email" placeholder="admin@yourcompany.com" id="admin-email" />
+            <IzInput type="email" placeholder="admin@yourcompany.com" id="admin-email" />
           </div>
           <div>
             <label style={{ display: 'block', fontSize: 'var(--font-size-sm)', marginBottom: 4 }}>Password</label>
-            <input className="input" type="password" placeholder="Min. 8 characters" id="admin-password" />
+            <IzInput type="password" placeholder="Min. 8 characters" id="admin-password" />
           </div>
-          <button className="btn btn-primary" type="submit" style={{ justifyContent: 'center' }}>
+          <IzButton variant="default" type="submit" style={{ justifyContent: 'center' }}>
             Continue →
-          </button>
+          </IzButton>
         </form>
       </div>
     </div>

@@ -9,6 +9,7 @@ import { getTenantId } from '@/core/engine/auth';
 import { notFound } from 'next/navigation';
 import PageHeader from '@/components/shared/PageHeader';
 import Badge from '@/components/shared/Badge';
+import { IzButton } from '@/components/ui/IzButton';
 import type { Metadata } from 'next';
 
 interface Props {
@@ -85,8 +86,8 @@ export default async function CompanyDetailPage({ params }: Props) {
         breadcrumb={<><a href="/contacts" style={{ color: 'var(--color-primary)' }}>Contacts</a> / Công ty</>}
         actions={
           <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-            <button className="btn btn-ghost">Thêm Contact</button>
-            <button className="btn btn-primary">Tạo Deal</button>
+            <IzButton variant="ghost">Thêm Contact</IzButton>
+            <IzButton variant="default">Tạo Deal</IzButton>
           </div>
         }
       />

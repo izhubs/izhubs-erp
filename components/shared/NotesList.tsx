@@ -4,6 +4,8 @@ import { useState, useCallback, useEffect } from 'react';
 import type { Note } from '@/core/engine/notes';
 import { apiFetch } from '@/lib/apiFetch';
 import styles from './shared.module.scss';
+import { IzButton } from '@/components/ui/IzButton';
+import { IzTextarea } from '@/components/ui/IzTextarea';
 
 interface Props {
   entityType: 'contact' | 'deal' | 'company';
@@ -52,17 +54,18 @@ export default function NotesList({ entityType, entityId }: Props) {
       <span className={styles.notesSectionLabel}>Notes</span>
 
       <div className={styles.notesAddRow}>
-        <textarea
+        <IzTextarea
           value={newNote}
-          onChange={e => setNewNote(e.target.value)}
+          onChange={(e: any) => setNewNote(e.target.value)}
           placeholder="Add a note…"
           rows={2}
-          className={`form-control ${styles.notesTextarea}`}
-          onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleAdd(); }}
+          className={styles.notesTextarea}
+          style={{ resize: 'vertical' }}
+          onKeyDown={(e: any) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleAdd(); }}
         />
-        <button className={`btn btn-primary ${styles.notesAddBtn}`} onClick={handleAdd} disabled={!newNote.trim() || submitting}>
+        <IzButton variant="default" onClick={handleAdd} disabled={!newNote.trim() || submitting} isLoading={submitting}>
           {submitting ? '…' : 'Add'}
-        </button>
+        </IzButton>
       </div>
 
       {loading ? (
@@ -75,7 +78,7 @@ export default function NotesList({ entityType, entityId }: Props) {
             <div key={note.id} className={styles.noteItem}>
               <div className={styles.noteItemMeta}>
                 <span>{timeAgo(new Date(note.createdAt))}</span>
-                <button className={styles.noteDeleteBtn} onClick={() => handleDelete(note.id)} title="Delete note">✕</button>
+                <IzButton variant="ghost" size="icon" className={styles.noteDeleteBtn} onClick={() => handleDelete(note.id)} title="Delete note" style={{ color: 'var(--color-text-muted)' }}>✕</IzButton>
               </div>
               <p className={styles.noteContent}>{note.content}</p>
             </div>

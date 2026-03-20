@@ -17,13 +17,15 @@ const config: Config = {
       transform: {
         '^.+\\.(ts|tsx)$': ['ts-jest', {
           tsconfig: {
-            // Override Next.js tsconfig settings that are incompatible with Jest
             jsx: 'react-jsx',
             moduleResolution: 'node',
             allowJs: true,
           },
         }],
       },
+      transformIgnorePatterns: [
+        'node_modules/(?!(jose)/)'
+      ],
       moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/$1',
         '^jose$': require.resolve('jose'),

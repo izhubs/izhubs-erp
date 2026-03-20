@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import type { Contact } from '@/core/schema/entities';
 import { apiFetch } from '@/lib/apiFetch';
 import NotesList from '@/components/shared/NotesList';
+import { IzSheet, IzSheetContent, IzSheetHeader, IzSheetBody, IzSheetFooter, IzSheetTitle } from '@/components/ui/IzSheet';
+import { IzInput } from '@/components/ui/IzInput';
+import { IzButton } from '@/components/ui/IzButton';
 
 interface Props {
   contact: Contact;
@@ -87,11 +90,10 @@ export default function ContactSlideOver({ contact, onClose, onUpdated, onDelete
   }, [onClose]);
 
   return (
-    <>
-      <div className="slideover-overlay" onClick={onClose} />
-      <aside className="slideover" aria-label="Contact details">
-        <div className="slideover__header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flex: 1 }}>
+    <IzSheet open={true} onOpenChange={(o) => !o && onClose()}>
+      <IzSheetContent size="md">
+        <IzSheetHeader style={{ paddingBottom: 0 }}>
+          <IzSheetTitle style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flex: 1 }}>
             <span style={{
               width: 40, height: 40, borderRadius: '50%',
               background: avatarColor(contact.name),
@@ -100,18 +102,18 @@ export default function ContactSlideOver({ contact, onClose, onUpdated, onDelete
             }}>
               {initials(contact.name)}
             </span>
-            <input
-              className="slideover__title-input"
+            <IzInput
+              wrapperClassName="slideover-title-wrapper"
+              className="slideover-title-input"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder="Contact name"
               aria-label="Contact name"
             />
-          </div>
-          <button className="slideover__close" onClick={onClose} aria-label="Close">✕</button>
-        </div>
+          </IzSheetTitle>
+        </IzSheetHeader>
 
-        <div className="slideover__body">
+        <IzSheetBody>
           {error && (
             <div style={{
               background: 'rgba(239,68,68,0.1)',
@@ -125,107 +127,158 @@ export default function ContactSlideOver({ contact, onClose, onUpdated, onDelete
             </div>
           )}
 
-          <div className="slideover__field">
-            <span className="slideover__label">Email</span>
-            <input
+          <div className="slideover-row">
+            <span className="slideover-label">Email</span>
+            <IzInput
+              wrapperClassName="slideover-input-wrapper"
+              className="slideover-input"
               type="email"
-              className="form-control"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               placeholder="email@example.com"
             />
           </div>
 
-          <div className="slideover__field">
-            <span className="slideover__label">Phone</span>
-            <input
+          <div className="slideover-row">
+            <span className="slideover-label">Phone</span>
+            <IzInput
+              wrapperClassName="slideover-input-wrapper"
+              className="slideover-input"
               type="tel"
-              className="form-control"
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
               placeholder="+84 ..."
             />
           </div>
 
-          <div className="slideover__field">
-            <span className="slideover__label">Title / Role</span>
-            <input
-              className="form-control"
+          <div className="slideover-row">
+            <span className="slideover-label">Title / Role</span>
+            <IzInput
+              wrapperClassName="slideover-input-wrapper"
+              className="slideover-input"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               placeholder="e.g. CEO, Marketing Manager"
             />
           </div>
 
-          <div className="slideover__field tooltip-wrapper" title="Coming soon">
-            <span className="slideover__label">Company</span>
-            <input className="form-control" placeholder="Link company..." disabled style={{ opacity: 0.6, cursor: 'not-allowed' }} />
+          <div className="slideover-row tooltip-wrapper" title="Coming soon">
+            <span className="slideover-label">Company</span>
+            <IzInput wrapperClassName="slideover-input-wrapper" className="slideover-input" placeholder="Link company..." disabled style={{ opacity: 0.6, cursor: 'not-allowed' }} />
           </div>
 
-          <div className="slideover__field tooltip-wrapper" title="Coming soon">
-            <span className="slideover__label">Owner</span>
-            <input className="form-control" value="@me" disabled style={{ opacity: 0.6, cursor: 'not-allowed' }} />
+          <div className="slideover-row tooltip-wrapper" title="Coming soon">
+            <span className="slideover-label">Owner</span>
+            <IzInput wrapperClassName="slideover-input-wrapper" className="slideover-input" value="@me" disabled style={{ opacity: 0.6, cursor: 'not-allowed' }} />
           </div>
 
-          <div className="slideover__divider" />
+          <div className="slideover-divider" />
 
-          {/* Metadata */}
-          <div className="slideover__field">
-            <span className="slideover__label">Created</span>
-            <span className="slideover__value">{new Date(contact.createdAt).toLocaleDateString()}</span>
-          </div>
-          <div className="slideover__field">
-            <span className="slideover__label">Updated</span>
-            <span className="slideover__value">{new Date(contact.updatedAt).toLocaleDateString()}</span>
+          {/* Metadata Info Box */}
+          <div style={{
+            marginTop: '8px',
+            padding: '12px 16px',
+            background: 'var(--color-bg-hover)',
+            borderRadius: 'var(--radius-md)',
+            fontSize: '12px',
+            color: 'var(--color-text-muted)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+              <span>Created</span>
+              <span style={{ fontWeight: 500, color: 'var(--color-text)' }}>
+                {new Date(contact.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Updated</span>
+              <span style={{ fontWeight: 500, color: 'var(--color-text)' }}>
+                {new Date(contact.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </span>
+            </div>
           </div>
 
           {/* Notes section — powered by C1 Notes System */}
-          <div className="slideover__divider" />
+          <div className="slideover-divider" />
           <NotesList entityType="contact" entityId={contact.id} />
-        </div>
+        </IzSheetBody>
 
-        <div className="slideover__footer" style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}>
-          <button className="btn btn-ghost" style={{ color: 'var(--color-danger)' }} onClick={handleDelete} disabled={loading}>
+        <IzSheetFooter style={{ justifyContent: 'space-between' }}>
+          <IzButton variant="ghost" className="text-danger hover:bg-danger/10 hover:text-danger" style={{ color: 'var(--color-danger)' }} onClick={handleDelete} disabled={loading}>
             Delete
-          </button>
+          </IzButton>
 
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button className="btn btn-ghost" onClick={onClose} disabled={loading}>Cancel</button>
-            <button className="btn btn-primary" onClick={handleSave} disabled={!hasChanges || loading}>
+            <IzButton variant="ghost" onClick={onClose} disabled={loading}>Cancel</IzButton>
+            <IzButton variant="default" onClick={handleSave} disabled={!hasChanges || loading} isLoading={loading}>
               {loading ? 'Saving...' : 'Save Changes'}
-            </button>
+            </IzButton>
           </div>
-        </div>
-      </aside>
+        </IzSheetFooter>
+      </IzSheetContent>
 
       <style dangerouslySetInnerHTML={{__html: `
-        .slideover__title-input {
-          font-size: var(--font-size-xl);
-          font-weight: 700;
-          color: var(--color-text);
-          border: 1px solid transparent;
-          background: transparent;
-          border-radius: var(--radius-sm);
-          padding: 4px 8px;
-          margin-left: -8px;
-          width: 100%;
-          outline: none;
-          transition: border-color 0.2s, background 0.2s;
+        .slideover-row {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          padding: 8px 0;
+          border-bottom: 1px solid var(--color-border);
         }
-        .slideover__title-input:hover, .slideover__title-input:focus {
-          border-color: var(--color-border);
-          background: var(--color-bg-surface);
+        .slideover-row:last-of-type {
+          border-bottom: none;
         }
-        .slideover__divider {
+        .slideover-label {
+          flex: 0 0 120px;
+          font-size: 13px;
+          font-weight: 500;
+          color: var(--color-text-subtle, #64748b);
+          margin-bottom: 0;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        .slideover-divider {
           height: 1px;
           background: var(--color-border);
-          margin: 24px 0;
+          margin: 16px 0;
         }
-        .tooltip-wrapper {
-          position: relative;
+        .slideover-input-wrapper {
+          flex: 1;
+        }
+        .slideover-input {
+          border-color: transparent !important;
+          background-color: transparent !important;
+          box-shadow: none !important;
+          padding-left: 8px !important;
+          padding-right: 0 !important;
+          transition: background-color 0.2s !important;
+          border-radius: var(--radius-sm) !important;
+        }
+        .slideover-input-wrapper:hover .slideover-input,
+        .slideover-input:focus {
+          background-color: var(--color-bg-hover) !important;
+        }
+        
+        .slideover-title-wrapper {
+          flex: 1;
+        }
+        .slideover-title-input {
+          font-size: 1.25rem !important;
+          font-weight: 700 !important;
+          color: var(--color-text) !important;
+          border-color: transparent !important;
+          background: transparent !important;
+          border-radius: var(--radius-sm) !important;
+          padding: 4px 8px !important;
+          box-shadow: none !important;
+          transition: all 0.2s ease !important;
+        }
+        .slideover-title-wrapper:hover .slideover-title-input, 
+        .slideover-title-input:focus {
+          border-color: var(--color-border) !important;
+          background: var(--color-bg-base) !important;
         }
       `}} />
-    </>
+    </IzSheet>
   );
 }
 

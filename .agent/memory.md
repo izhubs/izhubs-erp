@@ -302,11 +302,13 @@ npm run typecheck; npm run test:contracts
 - ✅ docs/multi-role-perspective.md: CEO/Manager/Rep/Ops views
 - ✅ izhubs-erp-docs: build-philosophy.md + why-izhubs.md
 
-## Planned v0.2 — Import + MCP (1 month)
+## Planned v0.2 — Import, Demo + Sync (1 month)
 > **Theme**: Own the migration narrative. Make switching from Airtable/Notion = zero friction.
+- 🏗️ **Interactive Demo module** — `/demo` endpoint bypassing signup wrapper for the fastest "Aha moment" wedge.
 - 🏗️ **Airtable import** — CSV/API export → AI column mapper → contacts+deals+custom_fields
 - 🏗️ **Notion import** — CSV export → same AI mapper
 - 🏗️ **Google Sheets import** — Google Sheets API or CSV
+- 🏗️ **OpenAPI Auto-generation pipeline** — Auto export API definitions to JSON for `izhubs-erp-docs` ingestion in CI/CD.
 - **MCP Server** (moved up from v0.3) — query ERP data with Claude/Cursor
 - **Agency vertical polish** — staged pipeline, project tracking custom fields, retainer deal type
 - 🏗️ **json-template-format** — migrate templates to JSON for Gumroad distribution
