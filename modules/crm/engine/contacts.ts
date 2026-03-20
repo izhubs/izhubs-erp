@@ -88,9 +88,9 @@ export async function getContact(id: string): Promise<Contact | null> {
 
 export async function createContact(input: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>): Promise<Contact> {
   const result = await db.query(
-    `INSERT INTO contacts (name, email, phone, title, company_id, owner_id, custom_fields)
-     VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ${COLUMNS}`,
-    [input.name, input.email, input.phone, input.title, input.companyId, input.ownerId, input.customFields ?? {}]
+    `INSERT INTO contacts (name, email, phone, title, company_id, owner_id, custom_fields, status)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING ${COLUMNS}`,
+    [input.name, input.email, input.phone, input.title, input.companyId, input.ownerId, input.customFields ?? {}, input.status ?? 'lead']
   );
   const contact = ContactSchema.parse(result.rows[0]);
   await eventBus.emit('contact.created', { contact });

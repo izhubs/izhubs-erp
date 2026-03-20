@@ -6,32 +6,32 @@
 
 :root {
   // ---- Brand / Primary ----
-  --color-primary:        #6366f1;  // indigo-500
-  --color-primary-hover:  #4f46e5;  // indigo-600
-  --color-primary-light:  #e0e7ff;  // indigo-100
-  --color-primary-muted:  #312e81;  // indigo-900
+  --color-primary:        #2563eb;  // blue-600
+  --color-primary-hover:  #1d4ed8;  // blue-700
+  --color-primary-light:  #eff6ff;  // blue-50
+  --color-primary-muted:  #dbeafe;  // blue-100
 
   // ---- Semantic ----
-  --color-success:    #22c55e;
+  --color-success:    #10b981;
   --color-warning:    #f59e0b;
   --color-danger:     #ef4444;
-  --color-info:       #60a5fa;
+  --color-info:       #3b82f6;
 
   // ---- Backgrounds ----
-  --color-bg:         #0f0f13;  // dark-purple (was slate-900 #0f172a)
-  --color-bg-surface: #17171f;  // dark-purple surface (was slate-800 #1e293b)
-  --color-bg-card:    #17171f;
-  --color-bg-input:   #0f0f13;
-  --color-bg-hover:   #1e1e28;  // dark-purple hover (was slate-700 #334155)
+  --color-bg:         #f8fafc;  // slate-50 canvas
+  --color-bg-surface: #ffffff;  // white panels/sidebar
+  --color-bg-card:    #ffffff;
+  --color-bg-input:   #ffffff;
+  --color-bg-hover:   #f1f5f9;  // slate-100 hover
 
   // ---- Text ----
-  --color-text:         #f1f5f9;  // slate-100
-  --color-text-muted:   #94a3b8;  // slate-400
+  --color-text:         #0f172a;  // slate-900
+  --color-text-muted:   #475569;  // slate-600
   --color-text-subtle:  #64748b;  // slate-500
-  --color-text-inverse: #0f172a;
+  --color-text-inverse: #ffffff;
 
   // ---- Borders ----
-  --color-border:       #2a2a38;  // dark-purple (was slate-700 #334155 — too bright)
+  --color-border:       #e2e8f0;  // slate-200
   --color-border-focus: var(--color-primary);
 
   // ---- Spacing ----
@@ -59,9 +59,9 @@
   --radius-full: 9999px;
 
   // ---- Shadows ----
-  --shadow-sm:  0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md:  0 4px 6px rgba(0,0,0,0.3);
-  --shadow-lg:  0 10px 15px rgba(0,0,0,0.4);
+  --shadow-sm:  0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:  0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.03);
+  --shadow-lg:  0 10px 15px -3px rgba(0,0,0,0.06), 0 4px 6px -4px rgba(0,0,0,0.04);
 
   // ---- Typography ----
   --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, sans-serif;

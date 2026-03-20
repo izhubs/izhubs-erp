@@ -3,6 +3,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { Palette, LogOut, User, ChevronDown, Globe } from 'lucide-react';
 import { useLanguage } from '@/components/providers/LanguageProvider';
+import {
+  IzDropdownMenu,
+  IzDropdownMenuTrigger,
+  IzDropdownMenuContent,
+  IzDropdownMenuItem,
+  IzDropdownMenuLabel,
+  IzDropdownMenuSeparator,
+} from '@/components/ui/IzDropdownMenu';
+import { IzButton } from '@/components/ui/IzButton';
 
 const THEMES = [
   { id: 'default', label: 'Indigo Dark', color: '#6366f1' },
@@ -61,7 +70,9 @@ export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenu
     try {
       await fetch('/api/v1/auth/logout', { method: 'POST' });
     } catch {}
-    window.location.replace('/login');
+    if (typeof window !== 'undefined') {
+      window.location.replace('/login');
+    }
   };
 
   const toggleLocale = () => {
@@ -91,10 +102,11 @@ export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenu
       <div className="header-controls">
 
         {/* Language Toggle */}
-        <button
+        <IzButton
           id="lang-toggle-btn"
           onClick={toggleLocale}
-          className="btn btn-ghost"
+          variant="ghost"
+          size="sm"
           title={locale === 'en' ? 'Switch to Tiếng Việt' : 'Switch to English'}
           aria-label="Toggle language"
           style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', fontWeight: 600, fontSize: 'var(--font-size-xs)', letterSpacing: '0.05em' }}
@@ -111,77 +123,79 @@ export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenu
           }}>
             {locale.toUpperCase()}
           </span>
-        </button>
+        </IzButton>
 
         {/* Theme Switcher */}
-        <div ref={themeMenuRef} className="dropdown">
-          <button
-            id="theme-switcher-btn"
-            onClick={() => { setThemeMenuOpen(!themeMenuOpen); setUserMenuOpen(false); }}
-            className="btn btn-ghost"
-            title="Switch theme"
-          >
-            <Palette size={16} />
-          </button>
+        <IzDropdownMenu open={themeMenuOpen} onOpenChange={setThemeMenuOpen}>
+          <IzDropdownMenuTrigger asChild>
+            <IzButton
+              id="theme-switcher-btn"
+              variant="ghost"
+              size="icon"
+              title="Switch theme"
+            >
+              <Palette size={16} />
+            </IzButton>
+          </IzDropdownMenuTrigger>
 
-          {themeMenuOpen && (
-            <div className="dropdown-panel">
-              <p className="dropdown-panel__label">{t('settings.theme', 'Theme')}</p>
-              {THEMES.map((t_item) => (
-                <button
-                  key={t_item.id}
-                  onClick={() => handleThemeSelect(t_item.id)}
-                  className={`dropdown-item${currentTheme === t_item.id ? ' dropdown-item--active' : ''}`}
-                >
-                  <span
-                    className="theme-swatch"
-                    style={{
-                      background: t_item.color,
-                      border: t_item.isLight ? '2px solid var(--color-border)' : 'none',
-                    }}
-                  />
-                  {t_item.label}
-                  {currentTheme === t_item.id && (
-                    <span style={{ marginLeft: 'auto', color: 'var(--color-primary)', fontSize: 10 }}>✓</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+          <IzDropdownMenuContent align="end" style={{ width: '200px' }}>
+            <IzDropdownMenuLabel>{t('settings.theme', 'Theme')}</IzDropdownMenuLabel>
+            {THEMES.map((t_item) => (
+              <IzDropdownMenuItem
+                key={t_item.id}
+                onClick={() => handleThemeSelect(t_item.id)}
+                style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+              >
+                <span
+                  className="theme-swatch"
+                  style={{
+                    width: 14, height: 14, borderRadius: '50%', marginRight: 8,
+                    background: t_item.color,
+                    border: t_item.isLight ? '1px solid var(--color-border)' : 'none',
+                  }}
+                />
+                <span style={{ flex: 1 }}>{t_item.label}</span>
+                {currentTheme === t_item.id && (
+                  <span style={{ color: 'var(--color-primary)', fontSize: 12 }}>✓</span>
+                )}
+              </IzDropdownMenuItem>
+            ))}
+          </IzDropdownMenuContent>
+        </IzDropdownMenu>
 
         {/* User Menu */}
-        <div ref={userMenuRef} className="dropdown">
-          <button
-            id="user-menu-btn"
-            onClick={() => { setUserMenuOpen(!userMenuOpen); setThemeMenuOpen(false); }}
-            className="user-menu-trigger"
-          >
-            <div className="user-avatar">U</div>
-            <ChevronDown size={14} style={{ color: 'var(--color-text-muted)' }} />
-          </button>
+        <IzDropdownMenu open={userMenuOpen} onOpenChange={setUserMenuOpen}>
+          <IzDropdownMenuTrigger asChild>
+            <button
+              id="user-menu-btn"
+              className="user-menu-trigger"
+            >
+              <div className="user-avatar">U</div>
+              <ChevronDown size={14} style={{ color: 'var(--color-text-muted)' }} />
+            </button>
+          </IzDropdownMenuTrigger>
 
-          {userMenuOpen && (
-            <div className="dropdown-panel dropdown-panel--wide">
-              <div className="dropdown-panel__label">{locale === 'en' ? 'Signed in' : 'Đang đăng nhập'}</div>
-              <hr className="dropdown-panel__divider" />
+          <IzDropdownMenuContent align="end" style={{ width: '220px' }}>
+            <IzDropdownMenuLabel>{locale === 'en' ? 'Signed in' : 'Đang đăng nhập'}</IzDropdownMenuLabel>
+            <IzDropdownMenuSeparator />
 
-              <a href="/settings" className="dropdown-item">
-                <User size={14} />
+            <IzDropdownMenuItem asChild>
+              <a href="/settings" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                <User size={14} style={{ marginRight: 8 }} />
                 {locale === 'en' ? 'Profile & Settings' : 'Hồ sơ & Cài đặt'}
               </a>
+            </IzDropdownMenuItem>
 
-              <button
-                id="logout-btn"
-                onClick={handleLogout}
-                className="dropdown-item dropdown-item--danger"
-              >
-                <LogOut size={14} />
-                {locale === 'en' ? 'Log out' : 'Đăng xuất'}
-              </button>
-            </div>
-          )}
-        </div>
+            <IzDropdownMenuItem
+              variant="destructive"
+              onClick={handleLogout}
+              style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+            >
+              <LogOut size={14} style={{ marginRight: 8 }} />
+              {locale === 'en' ? 'Log out' : 'Đăng xuất'}
+            </IzDropdownMenuItem>
+          </IzDropdownMenuContent>
+        </IzDropdownMenu>
 
       </div>
     </header>
