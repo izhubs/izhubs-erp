@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { ZodError } from 'zod';
+import { getRequestContext } from './request-context';
 
 // =============================================================
 // izhubs ERP — ApiResponse Factory
@@ -61,33 +62,57 @@ export const ApiResponse = {
 
   /**
    * Convenience: wrap unknown catch blocks — logs internally, returns 500.
-   * Now accepts reqMeta to log API input arguments for QA reproduction.
+   *
+   * Automatically captures tenantId + userId from AsyncLocalStorage requestContext
+   * (set by withPermission) — zero changes needed in route handlers.
+   *
+   * @param context  - Short tag identifying the route, e.g. 'deals.update'
+   * @param reqMeta  - Extra payload for reproduction, e.g. { dealId, stage }
    */
-  serverError(err: unknown, context?: string, reqMeta?: any): NextResponse {
-    const message = err instanceof Error ? err.message : 'Unknown error';
-    const stack = err instanceof Error ? err.stack : undefined;
-    
-    console.error(`[API Error]${context ? ` [${context}]` : ''}: ${message}`, err);
+  serverError(err: unknown, context?: string, reqMeta?: Record<string, unknown>): NextResponse {
+    const message = err instanceof Error ? err.message : String(err);
+    const stack   = err instanceof Error ? (err.stack ?? '') : '';
+
+    // Auto-capture identity from request context (set by withPermission)
+    const reqCtx  = getRequestContext();
+    const tenantId = reqCtx?.tenantId ?? 'unknown';
+    const userId   = reqCtx?.userId   ?? 'unknown';
+
+    // Structured console log — visible in Next.js dev terminal and production stdout
+    console.error(
+      `\n🚨 [API 500] ${context ?? 'unknown'}\n` +
+      `   tenant : ${tenantId}\n` +
+      `   user   : ${userId}\n` +
+      `   error  : ${message}\n` +
+      `   stack  : ${stack.substring(0, 600)}\n` +
+      (reqMeta ? `   meta   : ${JSON.stringify(reqMeta)}\n` : ''),
+      err
+    );
 
     const dbMeta = {
-      stack: (stack || '').substring(0, 800),
-      ...(reqMeta || {})
+      tenantId,
+      userId,
+      stack: stack.substring(0, 1200),
+      ...(reqMeta ?? {}),
     };
 
-    // 1. Log to Database for QA & Developer trace
+    // Persist to system_logs for QA & developer trace — fire and forget
     import('@/core/engine/db').then(({ db }) => {
-      db.query(`
-        INSERT INTO system_logs (level, context, message, meta)
-        VALUES ($1, $2, $3, $4)
-      `, ['error', context || 'API_FATAL', message, JSON.stringify(dbMeta)]).catch(console.error);
+      db.query(
+        `INSERT INTO system_logs (level, context, message, meta) VALUES ($1, $2, $3, $4)`,
+        ['error', context ?? 'API_FATAL', message, JSON.stringify(dbMeta)]
+      ).catch(console.error);
     }).catch(console.error);
 
-    // 2. Auto report critical API errors to Telegram (fire and forget)
+    // Auto-notify via Telegram (only if configured)
     if (process.env.TELEGRAM_ADMIN_CHAT_ID) {
       import('../../lib/messaging').then(({ notify }) => {
-        const text = `🚨 *IZHUBS ERP API ERROR* 🚨\n*Context:* ${context || 'Unknown'}\n*Error:* ${message}`;
+        const text =
+          `🚨 *API ERROR* — \`${context ?? 'unknown'}\`\n` +
+          `*Tenant:* \`${tenantId}\`  *User:* \`${userId}\`\n` +
+          `*Error:* ${message}`;
         notify('telegram', process.env.TELEGRAM_ADMIN_CHAT_ID as string, text).catch(() => {});
-      });
+      }).catch(() => {});
     }
 
     return NextResponse.json(
@@ -96,4 +121,3 @@ export const ApiResponse = {
     );
   },
 };
-

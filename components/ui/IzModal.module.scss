@@ -21,36 +21,35 @@
 
 /* Base Parts */
 .overlay {
-  background-color: rgba(15, 23, 42, 0.4); /* Slate-900 with 40% opacity */
-  backdrop-filter: blur(2px);
+  background-color: rgba(0, 0, 0, 0.52);
   position: fixed;
   inset: 0;
-  z-index: 50;
-  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 99999; /* Above header (--z-overlay: 200) and toast (--z-toast: 1080) */
+  animation: fadeIn 0.12s ease;
   
   &[data-state='closed'] {
-    animation: fadeOut 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: fadeOut 0.12s ease;
   }
 }
 
 .content {
   background-color: var(--color-surface, #ffffff);
   border-radius: var(--radius-lg, 0.75rem);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 90vw;
-  max-width: 500px; /* Default size */
+  max-width: 500px;
   max-height: 85vh;
-  z-index: 51;
+  z-index: 100000;
   display: flex;
   flex-direction: column;
-  animation: contentShow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: contentShow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   
   &[data-state='closed'] {
-    animation: contentHide 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: contentHide 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   }
   
   &:focus {

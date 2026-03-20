@@ -21,22 +21,21 @@
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: var(--z-modal);
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(2px);
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.52);
   
   &[data-state='open'] {
-    animation: fadeIn 200ms ease;
+    animation: fadeIn 120ms ease;
   }
   
   &[data-state='closed'] {
-    animation: fadeOut 200ms ease;
+    animation: fadeOut 120ms ease;
   }
 }
 
 .content {
   position: fixed;
-  z-index: var(--z-modal);
+  z-index: 100000;
   background: var(--color-surface, #ffffff);
   box-shadow: var(--shadow-xl);
   top: 0;
@@ -46,11 +45,11 @@
   flex-direction: column;
 
   &[data-state='open'] {
-    animation: slideInRight 300ms cubic-bezier(0.16, 1, 0.3, 1);
+    animation: slideInRight 200ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   
   &[data-state='closed'] {
-    animation: slideOutRight 200ms cubic-bezier(0.16, 1, 0.3, 1);
+    animation: slideOutRight 150ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 }
 
