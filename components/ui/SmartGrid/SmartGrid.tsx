@@ -65,10 +65,10 @@ export function SmartGrid<TData>({
     return () => window.removeEventListener('mouseup', onMouseUp);
   }, [isDragging]);
 
-  // Draft state for the trailing empty row
   const [draftRow, setDraftRow] = React.useState<Record<string, unknown>>({});
   const [draftEditing, setDraftEditing] = React.useState<string | null>(null);
   const draftRowRef = React.useRef(draftRow);
+  const firstDraftCellRef = React.useRef<HTMLInputElement | HTMLSelectElement | null>(null);
 
   // Sorting state
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -157,6 +157,13 @@ export function SmartGrid<TData>({
       onAddRow(targetDraft);
       setDraftRow({});
       draftRowRef.current = {};
+      
+      // Auto-focus the first cell of the newly cleared draft row for continuous entry
+      setTimeout(() => {
+        if (firstDraftCellRef.current) {
+          firstDraftCellRef.current.focus();
+        }
+      }, 50);
     }
   }, [onAddRow]);
 
@@ -404,6 +411,8 @@ export function SmartGrid<TData>({
               const colId = col.id;
               const isPinned = col.getIsPinned();
               const style: React.CSSProperties = { width: col.getSize() };
+              const isFirstDataCol = i === (leafColumns[0]?.id === '_select' ? 1 : 0);
+
               if (isPinned === 'left') {
                 style.position = 'sticky';
                 style.left = col.getStart('left') + ROW_NUM_W;
@@ -423,6 +432,7 @@ export function SmartGrid<TData>({
                 return (
                   <div key={colId} className={cn(styles.td, styles.draftCell)} style={style}>
                     <select
+                      ref={isFirstDataCol ? firstDraftCellRef as React.Ref<HTMLSelectElement> : undefined}
                       style={{
                         width: '100%', height: '100%',
                         border: 'none', background: 'transparent', outline: 'none',
@@ -454,10 +464,10 @@ export function SmartGrid<TData>({
                         }
                         // Delayed commit so native Select logic finishes updating onChange
                         if (e.key === 'Enter') {
-                          setTimeout(() => commitDraftRow(), 0);
+                          setTimeout(() => commitDraftRow(), 50);
                         }
                         if (e.key === 'Tab' && !e.shiftKey && i === leafColumns.length - 1) {
-                          setTimeout(() => commitDraftRow(), 0);
+                          setTimeout(() => commitDraftRow(), 50);
                         }
                       }}
                     >
@@ -477,6 +487,7 @@ export function SmartGrid<TData>({
                   style={style}
                 >
                   <input
+                    ref={isFirstDataCol ? firstDraftCellRef as React.Ref<HTMLInputElement> : undefined}
                     style={{
                       width: '100%', height: '100%',
                       border: 'none', background: 'transparent', outline: 'none',
