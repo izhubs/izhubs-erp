@@ -341,9 +341,11 @@ export function SmartGrid<TData>({
                       onBlur={() => setDraftEditing(null)}
                       onKeyDown={(e) => {
                         e.stopPropagation();
-                        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) e.stopPropagation();
+                        // Let native Select handle Enter/Arrows
+                        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) e.stopPropagation();
                         if (e.key === 'Escape') { setDraftRow({}); setDraftEditing(null); }
-                        if (e.key === 'Enter') { e.preventDefault(); commitDraftRow(); }
+                        // For SELECT fields, we only submit the draft row via Tab on the last column.
+                        // Enter is reserved for interacting with the native dropdown.
                         if (e.key === 'Tab' && !e.shiftKey && i === leafColumns.length - 1) {
                           e.preventDefault();
                           commitDraftRow();

@@ -88,8 +88,8 @@ export function EditableCell<TData>({ context }: EditableCellProps<TData>) {
           }}
           onBlur={commit}
           onKeyDown={(e) => {
-            // Stop grid from hijacking arrow keys while dropdown is open
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            // Stop grid from hijacking arrow/enter keys while dropdown is open
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
               e.stopPropagation();
             }
             if (e.key === 'Escape') {
