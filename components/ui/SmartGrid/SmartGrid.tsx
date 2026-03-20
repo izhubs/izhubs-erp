@@ -11,10 +11,10 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { ArrowDownWideNarrow, ArrowUpNarrowWide } from 'lucide-react';
+import { ArrowDownWideNarrow, ArrowUpNarrowWide, Trash2 } from 'lucide-react';
 import styles from './SmartGrid.module.scss';
 import { cn, getColumnLetter } from './utils';
-import { useGridKeyboard } from './useGridKeyboard';
+import { useGridKeyboard, type CellCoordinates } from './useGridKeyboard';
 
 interface SmartGridProps<TData> {
   data: TData[];
@@ -24,6 +24,7 @@ interface SmartGridProps<TData> {
   updateData?: (rowIndex: number, columnId: string, value: unknown) => void;
   /** Called when the trailing empty row is committed with data */
   onAddRow?: (draft: Record<string, unknown>) => void;
+  onDeleteRows?: (keys: string[]) => void;
   pinnedColumns?: string[];
 }
 
@@ -34,6 +35,7 @@ export function SmartGrid<TData>({
   onRowSelectionChange,
   updateData,
   onAddRow,
+  onDeleteRows,
   pinnedColumns,
 }: SmartGridProps<TData>) {
   const scrollRef = React.useRef<HTMLDivElement>(null);
@@ -41,8 +43,27 @@ export function SmartGrid<TData>({
 
   const isSelectionEnabled = onRowSelectionChange !== undefined || rowSelection !== undefined;
 
-  const { activeCell, setActiveCell, isEditing, setIsEditing, handleKeyDown } =
-    useGridKeyboard(data.length, isSelectionEnabled ? columns.length + 1 : columns.length, isSelectionEnabled ? 1 : 0);
+  // Context Menu & Drag State
+  const [contextMenu, setContextMenu] = React.useState<{ x: number; y: number; rowId: string } | null>(null);
+  const [isDragging, setIsDragging] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleClick = () => setContextMenu(null);
+    window.addEventListener('click', handleClick);
+    // Also close on context menu outside
+    window.addEventListener('contextmenu', handleClick);
+    return () => {
+      window.removeEventListener('click', handleClick);
+      window.removeEventListener('contextmenu', handleClick);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (!isDragging) return;
+    const onMouseUp = () => setIsDragging(false);
+    window.addEventListener('mouseup', onMouseUp);
+    return () => window.removeEventListener('mouseup', onMouseUp);
+  }, [isDragging]);
 
   // Draft state for the trailing empty row
   const [draftRow, setDraftRow] = React.useState<Record<string, unknown>>({});
@@ -67,6 +88,27 @@ export function SmartGrid<TData>({
     };
     return [selectionCol, ...columns];
   }, [columns, isSelectionEnabled]);
+
+  const handleDeleteSelection = React.useCallback((start: CellCoordinates, end: CellCoordinates) => {
+    if (!start || !end || !updateData) return;
+    const minRow = Math.min(start.row, end.row);
+    const maxRow = Math.max(start.row, end.row);
+    const minCol = Math.min(start.col, end.col);
+    const maxCol = Math.max(start.col, end.col);
+
+    for (let r = minRow; r <= maxRow; r++) {
+      for (let c = minCol; c <= maxCol; c++) {
+        const colDef = finalColumns[c];
+        const colId = (colDef as any)?.id || (colDef as any)?.accessorKey;
+        if (colId && colId !== '_select') {
+          updateData(r, colId, '');
+        }
+      }
+    }
+  }, [finalColumns, updateData]);
+
+  const { activeCell, setActiveCell, selectionEndCell, setSelectionEndCell, isEditing, setIsEditing, handleKeyDown } =
+    useGridKeyboard(data.length, isSelectionEnabled ? columns.length + 1 : columns.length, isSelectionEnabled ? 1 : 0, handleDeleteSelection);
 
   const finalPinned = React.useMemo(() => {
     const pins = pinnedColumns ? [...pinnedColumns] : [];
@@ -255,6 +297,13 @@ export function SmartGrid<TData>({
                   transform: `translateY(${virtualRow.start}px)`,
                   width: totalWidth,
                 }}
+                onContextMenu={(e) => {
+                  if (onDeleteRows) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setContextMenu({ x: e.clientX, y: e.clientY, rowId: String((row.original as any).id) });
+                  }
+                }}
               >
                 {/* Row number — NOT clickable/editable */}
                 <div
@@ -265,7 +314,19 @@ export function SmartGrid<TData>({
                 </div>
 
                 {row.getVisibleCells().map((cell, colIndex) => {
-                  const isActive = activeCell?.row === virtualRow.index && activeCell?.col === colIndex;
+                  const rIdx = virtualRow.index;
+                  const cIdx = colIndex;
+                  const isActive = activeCell?.row === rIdx && activeCell?.col === cIdx;
+                  
+                  let inSelection = false;
+                  if (activeCell && selectionEndCell) {
+                    const minR = Math.min(activeCell.row, selectionEndCell.row);
+                    const maxR = Math.max(activeCell.row, selectionEndCell.row);
+                    const minC = Math.min(activeCell.col, selectionEndCell.col);
+                    const maxC = Math.max(activeCell.col, selectionEndCell.col);
+                    inSelection = (rIdx >= minR && rIdx <= maxR) && (cIdx >= minC && cIdx <= maxC);
+                  }
+
                   const isPinned = cell.column.getIsPinned();
                   const style: React.CSSProperties = { width: cell.column.getSize() };
                   if (isPinned === 'left') {
@@ -277,8 +338,20 @@ export function SmartGrid<TData>({
                   return (
                     <div
                       key={cell.id}
-                      className={cn(styles.td, isActive && styles.activeCell)}
+                      className={cn(styles.td, isActive && styles.activeCell, inSelection && styles.rangeSelectedCell)}
                       style={style}
+                      onMouseDown={(e) => {
+                        if (e.button !== 0) return; // Only left click
+                        if (isEditing) return; // Don't drag start if editing
+                        setActiveCell({ row: rIdx, col: colIndex });
+                        setSelectionEndCell(null);
+                        setIsDragging(true);
+                      }}
+                      onMouseEnter={() => {
+                        if (isDragging && !isEditing) {
+                          setSelectionEndCell({ row: rIdx, col: colIndex });
+                        }
+                      }}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </div>
@@ -403,6 +476,39 @@ export function SmartGrid<TData>({
           </div>
         )}
       </div>
+
+      {/* ── CONTEXT MENU ──────────────────────────────────── */}
+      {contextMenu && onDeleteRows && (
+        <div
+          style={{
+            position: 'fixed',
+            top: contextMenu.y,
+            left: contextMenu.x,
+            zIndex: 9999,
+            backgroundColor: 'var(--color-bg-surface)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 6,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            padding: 4,
+            minWidth: 140,
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            className="btn btn-ghost"
+            style={{ width: '100%', justifyContent: 'flex-start', color: 'var(--color-danger)', fontSize: 13, gap: 8, padding: '6px 10px' }}
+            onClick={() => {
+              if (confirm('Xóa dòng đã chọn?')) {
+                onDeleteRows([contextMenu.rowId]);
+              }
+              setContextMenu(null);
+            }}
+          >
+            <Trash2 size={14} />
+            Xóa dòng
+          </button>
+        </div>
+      )}
     </div>
   );
 }

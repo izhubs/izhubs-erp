@@ -41,6 +41,7 @@
   color: var(--color-text);
   font-family: inherit;
   outline: none;
+  user-select: none;
 }
 
 .bodyRow {
@@ -95,6 +96,11 @@
 // Slightly tinted to hint it's a new-row area
 .draftCell {
   background-color: color-mix(in srgb, var(--color-primary, #f97316) 4%, var(--color-bg-surface));
+}
+
+// ── Range Selection ───────────────────────────────────────────────
+.rangeSelectedCell {
+  background-color: color-mix(in srgb, var(--color-primary, #f97316) 12%, var(--color-bg-surface)) !important;
 }
 
 // ── Column Resizer ───────────────────────────────────────────────
