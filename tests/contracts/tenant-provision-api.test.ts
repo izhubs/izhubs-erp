@@ -4,15 +4,19 @@ import { DELETE as resetRoute } from '../../app/api/v1/tenant/reset-demo-data/ro
 
 jest.mock('../../core/engine/rbac', () => ({
   withPermission: jest.fn((perm, handler) => async (req: NextRequest) => {
-    // Mock a valid admin claims object
-    const mockClaims = { sub: 'user-1', role: 'admin', email: 'admin@test.com', type: 'access' };
+    // Mock a valid admin claims object — tenantId required for reset-demo-data route
+    const mockClaims = { sub: 'user-1', role: 'admin', email: 'admin@test.com', type: 'access', tenantId: 'tenant-123' };
     return handler(req, mockClaims);
   }),
 }));
 
 jest.mock('../../core/engine/tenant', () => ({
   provisionTenant: jest.fn().mockResolvedValue({ tenantId: 'tenant-123' }),
-  resetDemoData: jest.fn().mockResolvedValue({ success: true, count: 50 }),
+}));
+
+// reset-demo-data route uses deleteDemoTenant from core/engine/demo (not tenant)
+jest.mock('../../core/engine/demo', () => ({
+  deleteDemoTenant: jest.fn().mockResolvedValue(undefined),
 }));
 
 describe('@qa - API Contract Tests: Tenant Provisioning', () => {

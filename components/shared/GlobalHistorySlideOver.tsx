@@ -70,10 +70,10 @@ export function GlobalHistorySlideOver({ open, onOpenChange }: { open: boolean; 
             </div>
           </div>
 
-          <div style={{ padding: '24px 16px' }}>
+          <div style={{ padding: '12px 8px' }}>
             <ActivityTimeline 
               entityType={filterType === 'all' ? undefined : filterType} 
-              // entityId is omitted so it fetches global history
+              isOpen={open}
             />
           </div>
         </IzSheetBody>

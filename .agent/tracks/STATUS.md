@@ -28,7 +28,7 @@ _Last updated: 2026-03-18 (Session 14 — UI Layer, Chart Widgets, Pipeline Mult
 | 2026-03-16 | tenant-id-migration | ✅ done | migration 008 — tenant_id on all tables, default=1 |
 | 2026-03-16 | docker-dev-simplify | ✅ done | Redis commented out dev compose — uncomment when BullMQ needed |
 | 2026-03-16 | multi-role-perspective | ✅ done | docs/multi-role-perspective.md — CEO/Manager/Rep/Ops views |
-| 2026-03-18 | gumroad-templates | ⏸ PAUSED | Packages built in `dist/gumroad/` (5 ZIPs ready). Needs: screenshots + Gumroad listing upload. Listing copy in `docs/gumroad/`. Resume when ready to publish. |
+| 2026-03-18 | gumroad-templates | ⬇️ DEFERRED post-MVP | Packages built in `dist/gumroad/` (5 ZIPs ready). Needs: screenshots + Gumroad listing upload. Listing copy in `docs/gumroad/`. **Deferred 2026-03-20 — resume after core MVP is stable.** |
 
 ## 🏗️ v0.2 — Import + MCP (1 month)
 
@@ -40,7 +40,7 @@ _Last updated: 2026-03-18 (Session 14 — UI Layer, Chart Widgets, Pipeline Mult
 | 2026-03-16 | agency-vertical-polish | planning | Stage names, project tracking fields, retainer deal type |
 | 2026-03-17 | pipeline-views | ✅ done | Multi-view: Kanban / Table (sortable) / Funnel (stage-order bars) + localStorage persistence |
 | 2026-03-17 | sales-frameworks | planning | AIDA, BANT, MEDDIC, SPIN framework templates per industry |
-| 2026-03-19 | onboarding-ui | planning | Onboarding Wizard UI (Register, Industry Selection, Provisioning) |
+| 2026-03-19 | onboarding-ui | ⬇️ DEFERRED post-MVP | Onboarding Wizard UI (Register, Industry Selection, Provisioning). **Deferred 2026-03-20 — focus on core stability first.** |
 | 2026-03-19 | json-template-engine | planning | Export/Import whole tenant configuration to JSON file (Freelancer OS enabler) |
 | 2026-03-19 | embeddable-lead-form | planning | Viral Loop Web-to-Lead Form Generator (iframe module) |
 | 2026-03-19 | smart-grid | planning | Spreadsheet-Style Grid: post-import review + standalone Sheet View per entity |

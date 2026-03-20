@@ -37,7 +37,7 @@
 .content {
   position: fixed;
   z-index: var(--z-modal);
-  background: var(--color-bg-surface);
+  background: var(--color-surface, #ffffff);
   box-shadow: var(--shadow-xl);
   top: 0;
   right: 0;

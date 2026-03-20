@@ -20,26 +20,38 @@ export interface AuditLog {
 interface Props {
   entityType?: string;
   entityId?: string;
+  /** Pass `open` from the parent slide-over to trigger refetch when panel opens */
+  isOpen?: boolean;
 }
 
-export function ActivityTimeline({ entityType, entityId }: Props = {}) {
-  const { data: logs, isLoading, error } = useQuery({
+export function ActivityTimeline({ entityType, entityId, isOpen }: Props = {}) {
+  const { data: logs, isLoading, error, refetch } = useQuery({
     queryKey: ['audit-logs', entityType || 'all', entityId || 'all'],
     queryFn: async () => {
       const qs = new URLSearchParams();
       if (entityType) qs.set('entityType', entityType);
-      if (entityId) qs.set('entityId', entityId);
-      
+      if (entityId)   qs.set('entityId', entityId);
       const res = await fetch(`/api/v1/audit-logs?${qs.toString()}`);
       if (!res.ok) throw new Error('Failed to fetch logs');
       const json = await res.json();
       return json.data as AuditLog[];
-    }
+    },
+    // Refresh every 30s while tab is visible — balanced between freshness and performance
+    refetchInterval: 30_000,
+    refetchIntervalInBackground: false,
+    staleTime: 0,           // Always refetch when component mounts
   });
 
-  if (isLoading) return <div className="p-6 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>Loading timeline...</div>;
-  if (error) return <div className="p-6 text-center text-sm text-red-500">Error loading timeline.</div>;
-  if (!logs || logs.length === 0) return <div className="p-6 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>No historical activity recorded yet.</div>;
+  // Refetch immediately when panel opens so user sees the latest changes right away
+  const prevOpen = React.useRef(isOpen);
+  React.useEffect(() => {
+    if (isOpen && !prevOpen.current) refetch();
+    prevOpen.current = isOpen;
+  }, [isOpen, refetch]);
+
+  if (isLoading) return <div style={{ padding: '12px 0', textAlign: 'center', fontSize: '13px', color: 'var(--color-text-muted)' }}>Loading timeline...</div>;
+  if (error)     return <div style={{ padding: '12px 0', textAlign: 'center', fontSize: '13px', color: 'var(--color-danger)' }}>Error loading timeline.</div>;
+  if (!logs || logs.length === 0) return <div style={{ padding: '24px 0', textAlign: 'center', fontSize: '13px', color: 'var(--color-text-muted)' }}>No historical activity recorded yet.</div>;
 
   // Fields to skip — internal/technical metadata
   const SKIP_FIELDS = new Set([

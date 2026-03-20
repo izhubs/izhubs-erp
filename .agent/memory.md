@@ -3,10 +3,10 @@
 ## Current Status
 
 **Phase**: v0.1 Foundation MVP — **Core foundation complete (RLS + TanStack Query + Radix UI + react-hook-form)**
-**Last updated**: 2026-03-19 (Session 16 — IzUI Component Library Complete)
-**Health**: ✅ TypeScript clean | ✅ 74/74 contract tests passing | ✅ DB migrated (migrations squash 001) | ✅ RLS enabled
-**Last work**: Session 16 — Finalized the IzUI Component Library (Phases 1-13). Added Recharts (Pie/Line/Bar), MetricCards, Accordion, ActivityTimeline, FileUpload, and Kanban presentational layout. Wrote `docs/IzUI_Usage_Guide.md` enforcing SCSS Modules + Radix UI (no Tailwind).
-**Remote**: `https://github.com/izhubs/izhubs-erp` (branch: master, head: ~3e0f8a2)
+**Last updated**: 2026-03-20 (Session 17 — Dashboard Bug Fix + TS Errors)
+**Health**: ✅ TypeScript clean | ✅ 76/76 contract tests passing | ✅ DB migrated (migrations squash 001) | ✅ RLS enabled
+**Last work**: Session 17 — Fixed critical dashboard blank content (infinite redirect loop in Next.js RedirectBoundary). Moved real dashboard content to `/dashboard/page.tsx`, root `/` now redirects to `/dashboard`. Fixed 10 TypeScript errors in `tenant.ts`, `rbac.ts`, `provision/route.ts`, `reset-demo-data/route.ts` and their tests. Replaced broken `/contracts` page (missing `getTenantId`) with polished Coming Soon placeholder. Added global `error.tsx` boundary to surface server component crashes.
+**Remote**: `https://github.com/izhubs/izhubs-erp` (branch: master, head: a6172e6)
 
 ### 🎯 Target Persona (confirmed 2026-03-16)
 **Agency owner / Freelancer** — runs agency hoặc freelance, 1-5 người, tech-savvy vibe coder. Đang dùng **Airtable, Notion, hoặc Google Sheets** để track clients/deals nhưng đã outgrown. Found izhubs trên GitHub/Show HN. Phải self-serve hoàn toàn. Sẵn sàng trả $29 cho template tốt.
@@ -290,9 +290,11 @@ npm run typecheck; npm run test:contracts
 
 ## Active Backlog (v0.1) — SHIP FIRST
 > **Rule**: v0.1 must be done BEFORE anything else. No v0.2 work until v0.1 is complete.
-1. **Gumroad templates** ← **BLOCKER #1 (revenue)** — Package Agency + Freelancer seed as Gumroad pack $29 each
+1. **Gumroad templates** — ⬇️ **DEFERRED post-MVP** (2026-03-20): 5 ZIPs ready in `dist/gumroad/`. Resume when screenshots + listing upload are prioritized.
 2. **README GIF demo** — screen recording showing import + pipeline in action
 3. **Community launch** — Show HN post + GitHub release
+
+> ⬇️ **DEFERRED post-MVP (2026-03-20)**: `onboarding-ui` (3-step wizard) and `gumroad-templates` (revenue upload) both moved to after core MVP is stable. See STATUS.md for details.
 
 ## Done in v0.1 (session 8)
 - ✅ Migration 008: tenant_id on all tables (default=1, future multi-tenant ready)

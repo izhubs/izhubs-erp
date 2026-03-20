@@ -1,8 +1,7 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/core/engine/db';
 import { ApiResponse } from '@/core/engine/response';
-import { getTenantId } from '@/core/engine/auth/server-context';
-
+import { withPermission, type Claims } from '@/core/engine/rbac';
 import { z } from 'zod';
 
 const QuerySchema = z.object({
@@ -11,22 +10,22 @@ const QuerySchema = z.object({
   limit: z.coerce.number().min(1).max(100).default(50),
 });
 
-export async function GET(req: NextRequest) {
+const DEFAULT_TENANT = '00000000-0000-0000-0000-000000000001';
+
+async function auditLogsHandler(req: NextRequest, claims: Claims) {
   try {
-    const tenantId = await getTenantId(); 
+    // Read tenantId directly from JWT claims — reliable even for API routes
+    // (middleware doesn't run for /api/* routes so x-tenant-id header is never set)
+    const tenantId = claims.tenantId ?? DEFAULT_TENANT;
+
     const url = new URL(req.url);
-    
-    // Zod Validation per backend.mdc Rules
     const parsed = QuerySchema.safeParse(Object.fromEntries(url.searchParams.entries()));
-    if (!parsed.success) {
-      return ApiResponse.validationError(parsed.error);
-    }
+    if (!parsed.success) return ApiResponse.validationError(parsed.error);
 
     const { entityType, entityId, limit } = parsed.data;
 
-    // Build dynamic query — filter by tenant_id on audit_log directly
     const conditions = ['a.tenant_id = $1'];
-    const params: any[] = [tenantId];
+    const params: unknown[] = [tenantId];
     let paramCount = 1;
 
     if (entityType) {
@@ -34,7 +33,6 @@ export async function GET(req: NextRequest) {
       conditions.push(`a.entity_type = $${paramCount}`);
       params.push(entityType);
     }
-
     if (entityId) {
       paramCount++;
       conditions.push(`a.entity_id = $${paramCount}`);
@@ -44,7 +42,8 @@ export async function GET(req: NextRequest) {
     const { rows } = await db.query(`
       SELECT 
         a.id, a.action, a.entity_type, a.entity_id, a.before, a.after, a.created_at,
-        u.name as author_name, u.avatar_url as author_avatar
+        u.name   AS author_name,
+        u.avatar_url AS author_avatar
       FROM audit_log a
       LEFT JOIN users u ON a.user_id = u.id
       WHERE ${conditions.join(' AND ')}
@@ -52,21 +51,23 @@ export async function GET(req: NextRequest) {
       LIMIT $${paramCount + 1}
     `, [...params, limit]);
 
-    // Format the response safely
-    const formattedRows = rows.map(r => ({
-      id: r.id,
-      action: r.action,
-      entity_type: r.entity_type,
-      entity_id: r.entity_id,
-      before: r.before || {},
-      after: r.after || {},
-      created_at: r.created_at,
-      author_name: r.author_name || 'System Auto',
-      author_avatar: r.author_avatar
+    const data = rows.map(r => ({
+      id:            r.id,
+      action:        r.action,
+      entity_type:   r.entity_type,
+      entity_id:     r.entity_id,
+      before:        r.before  || {},
+      after:         r.after   || {},
+      created_at:    r.created_at,
+      author_name:   r.author_name   || 'System',
+      author_avatar: r.author_avatar || null,
     }));
 
-    return ApiResponse.success(formattedRows);
+    return ApiResponse.success(data);
   } catch (error) {
     return ApiResponse.serverError(error, 'audit-logs.GET');
   }
 }
+
+// Use withPermission to validate JWT and populate claims (including tenantId)
+export const GET = withPermission('deals:read', auditLogsHandler);

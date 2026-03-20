@@ -18,17 +18,30 @@ export const db = {
    */
   query: async (text: string, params?: unknown[]) => {
     const ctx = getRequestContext();
-    if (!ctx) return pool.query(text, params);
 
-    // Use dedicated client to guarantee SET LOCAL applies before the query
+    // For write operations within a request context: wrap in transaction so
+    // SET LOCAL persists long enough for the PostgreSQL trigger to read it.
+    const firstWord = text.trimStart().slice(0, 6).toUpperCase();
+    const isWrite = firstWord === 'INSERT' || firstWord === 'UPDATE' || firstWord === 'DELETE';
+
+    if (!ctx || !isWrite) {
+      // Reads (SELECT) and out-of-request writes: fast path — no transaction overhead
+      return pool.query(text, params);
+    }
+
+    // Write within request: BEGIN/COMMIT + SET LOCAL so trigger captures user identity
     const client = await pool.connect();
     try {
-      await client.query(`SET LOCAL audit.current_user_id = '${ctx.userId}'`);
-      await client.query(`SET LOCAL app.current_tenant_id = '${ctx.tenantId}'`);
-      return await client.query(text, params);
+      await client.query('BEGIN');
+      if (ctx.userId)   await client.query(`SET LOCAL audit.current_user_id   = '${ctx.userId}'`);
+      if (ctx.tenantId) await client.query(`SET LOCAL app.current_tenant_id  = '${ctx.tenantId}'`);
+      const result = await client.query(text, params);
+      await client.query('COMMIT');
+      return result;
+    } catch (err) {
+      await client.query('ROLLBACK').catch(() => {});
+      throw err;
     } finally {
-      await client.query('RESET audit.current_user_id').catch(() => {});
-      await client.query('RESET app.current_tenant_id').catch(() => {});
       client.release();
     }
   },
