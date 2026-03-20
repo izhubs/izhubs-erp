@@ -336,13 +336,23 @@ export function SmartGrid<TData>({
                     }}
                     placeholder={isEditingThis ? '' : '…'}
                     value={String(val)}
-                    onFocus={() => setDraftEditing(colId)}
+                    onFocus={() => {
+                      setDraftEditing(colId);
+                      setActiveCell(null); // Stop grid from handling grid keys
+                    }}
                     onChange={(e) => setDraftRow(prev => ({ ...prev, [colId]: e.target.value }))}
-                    onBlur={commitDraftRow}
+                    onBlur={() => setDraftEditing(null)}
                     onKeyDown={(e) => {
-                      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.stopPropagation();
+                      e.stopPropagation(); // Stop bubbling to Grid
                       if (e.key === 'Escape') { setDraftRow({}); setDraftEditing(null); }
-                      if (e.key === 'Enter') { commitDraftRow(); }
+                      if (e.key === 'Enter') { 
+                        e.preventDefault(); 
+                        commitDraftRow(); 
+                      }
+                      if (e.key === 'Tab' && !e.shiftKey && i === leafColumns.length - 1) {
+                        e.preventDefault();
+                        commitDraftRow();
+                      }
                     }}
                   />
                 </div>
