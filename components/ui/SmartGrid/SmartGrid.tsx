@@ -101,7 +101,8 @@ export function SmartGrid<TData>({
         const colDef = finalColumns[c];
         const colId = (colDef as any)?.id || (colDef as any)?.accessorKey;
         if (colId && colId !== '_select') {
-          updateData(r, colId, '');
+          // Send null instead of '' so it doesn't fail Zod validation for things like .email()
+          updateData(r, colId, null);
         }
       }
     }
@@ -319,16 +320,38 @@ export function SmartGrid<TData>({
                   const isActive = activeCell?.row === rIdx && activeCell?.col === cIdx;
                   
                   let inSelection = false;
+                  let isSelectionTop = false;
+                  let isSelectionBottom = false;
+                  let isSelectionLeft = false;
+                  let isSelectionRight = false;
+
                   if (activeCell && selectionEndCell) {
                     const minR = Math.min(activeCell.row, selectionEndCell.row);
                     const maxR = Math.max(activeCell.row, selectionEndCell.row);
                     const minC = Math.min(activeCell.col, selectionEndCell.col);
                     const maxC = Math.max(activeCell.col, selectionEndCell.col);
-                    inSelection = (rIdx >= minR && rIdx <= maxR) && (cIdx >= minC && cIdx <= maxC);
+                    if (rIdx >= minR && rIdx <= maxR && cIdx >= minC && cIdx <= maxC) {
+                      inSelection = true;
+                      if (rIdx === minR) isSelectionTop = true;
+                      if (rIdx === maxR) isSelectionBottom = true;
+                      if (cIdx === minC) isSelectionLeft = true;
+                      if (cIdx === maxC) isSelectionRight = true;
+                    }
                   }
 
                   const isPinned = cell.column.getIsPinned();
                   const style: React.CSSProperties = { width: cell.column.getSize() };
+
+                  // Build boundary shadow
+                  if (inSelection && (isSelectionTop || isSelectionBottom || isSelectionLeft || isSelectionRight)) {
+                    const shadow = [];
+                    if (isSelectionTop) shadow.push('inset 0 1px 0 0 var(--color-primary)');
+                    if (isSelectionBottom) shadow.push('inset 0 -1px 0 0 var(--color-primary)');
+                    if (isSelectionLeft) shadow.push('inset 1px 0 0 0 var(--color-primary)');
+                    if (isSelectionRight) shadow.push('inset -1px 0 0 0 var(--color-primary)');
+                    style.boxShadow = shadow.join(', ');
+                  }
+
                   if (isPinned === 'left') {
                     style.position = 'sticky';
                     style.left = cell.column.getStart('left') + ROW_NUM_W;
