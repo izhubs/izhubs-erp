@@ -2,11 +2,11 @@
 
 ## Current Status
 
-**Phase**: v0.1 Foundation MVP — **Core foundation complete (RLS + TanStack Query + Radix UI + react-hook-form)**
-**Last updated**: 2026-03-20 (Session 17 — Dashboard Bug Fix + TS Errors)
-**Health**: ✅ TypeScript clean | ✅ 76/76 contract tests passing | ✅ DB migrated (migrations squash 001) | ✅ RLS enabled
-**Last work**: Session 17 — Fixed critical dashboard blank content (infinite redirect loop in Next.js RedirectBoundary). Moved real dashboard content to `/dashboard/page.tsx`, root `/` now redirects to `/dashboard`. Fixed 10 TypeScript errors in `tenant.ts`, `rbac.ts`, `provision/route.ts`, `reset-demo-data/route.ts` and their tests. Replaced broken `/contracts` page (missing `getTenantId`) with polished Coming Soon placeholder. Added global `error.tsx` boundary to surface server component crashes.
-**Remote**: `https://github.com/izhubs/izhubs-erp` (branch: master, head: a6172e6)
+**Phase**: v0.1 Foundation MVP — **Audit log live + Demo ephemeral users**
+**Last updated**: 2026-03-20 (Session 18 — Audit Log + Ephemeral Demo Users + UI Polish)
+**Health**: ✅ TypeScript clean | ✅ contract tests passing | ✅ DB migrations 001→015 | ✅ Audit triggers live on 7 tables
+**Last work**: Session 18 — Fixed audit log system end-to-end: (1) Ephemeral demo users: mỗi demo-login tạo tenant riêng + user riêng (is_demo=true, expires_at=+24h), cascade DELETE dọn sạch sau 24h hoặc khi Reset. (2) Trigger `trg_audit` active trên deals/contacts/companies/notes/activities/service_packages/custom_field_definitions, ghi user_id đúng nhờ `db.query()` dùng BEGIN/COMMIT+SET LOCAL. (3) Audit log API đổi sang `withPermission` để đọc tenantId từ JWT claims (middleware không chạy trên api routes). (4) GlobalHistorySlideOver: fix entityType plural ('deals' không phải 'deal'), refetchInterval 30s, refetch khi panel mở. (5) ActivityTimeline: diff rendering đẹp, inline styles. (6) DealSlideOver: inline styles (bỏ dangerouslySetInnerHTML), IzSheet background fix (--color-surface). (7) Performance: db.query chỉ wrap BEGIN/COMMIT cho INSERT/UPDATE/DELETE, không wrap SELECT. (8) UI: Toast z-index 9999, padding-top 64px; Modal/Sheet overlay z-index 99999+100000 che toàn bộ màn hình kể cả header; bỏ backdrop-filter blur (gây lag).
+**Remote**: `https://github.com/izhubs/izhubs-erp` (branch: master, head: 2c171f0)
 
 ### 🎯 Target Persona (confirmed 2026-03-16)
 **Agency owner / Freelancer** — runs agency hoặc freelance, 1-5 người, tech-savvy vibe coder. Đang dùng **Airtable, Notion, hoặc Google Sheets** để track clients/deals nhưng đã outgrown. Found izhubs trên GitHub/Show HN. Phải self-serve hoàn toàn. Sẵn sàng trả $29 cho template tốt.
