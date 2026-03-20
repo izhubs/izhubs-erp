@@ -149,9 +149,9 @@ export function SmartGrid<TData>({
   });
 
   // Commit draft row when focus leaves and has data
-  const commitDraftRow = React.useCallback((forceDraft?: Record<string, unknown>) => {
+  const commitDraftRow = React.useCallback(() => {
     setDraftEditing(null);
-    const targetDraft = forceDraft ?? draftRowRef.current;
+    const targetDraft = draftRowRef.current;
     const hasData = Object.values(targetDraft).some(v => v !== '' && v != null);
     if (hasData && onAddRow) {
       onAddRow(targetDraft);
@@ -438,15 +438,14 @@ export function SmartGrid<TData>({
                       }}
                       onChange={(e) => {
                         const newVal = e.target.value;
-                        setDraftRow(prev => {
-                          const updated = { ...prev, [colId]: newVal };
-                          draftRowRef.current = updated;
-                          return updated;
-                        });
+                        // Synchronous ref update so timeouts catch it instantly!
+                        draftRowRef.current = { ...draftRowRef.current, [colId]: newVal };
+                        setDraftRow(draftRowRef.current);
                       }}
                       onBlur={() => setDraftEditing(null)}
                       onKeyDown={(e) => {
                         e.stopPropagation();
+                        // Allow native select keys to work normally
                         if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) e.stopPropagation();
                         if (e.key === 'Escape') { 
                           setDraftRow({}); 
@@ -455,10 +454,10 @@ export function SmartGrid<TData>({
                         }
                         // Delayed commit so native Select logic finishes updating onChange
                         if (e.key === 'Enter') {
-                          setTimeout(() => commitDraftRow(draftRowRef.current), 0);
+                          setTimeout(() => commitDraftRow(), 0);
                         }
                         if (e.key === 'Tab' && !e.shiftKey && i === leafColumns.length - 1) {
-                          setTimeout(() => commitDraftRow(draftRowRef.current), 0);
+                          setTimeout(() => commitDraftRow(), 0);
                         }
                       }}
                     >
@@ -494,11 +493,9 @@ export function SmartGrid<TData>({
                     }}
                     onChange={(e) => {
                       const newVal = e.target.value;
-                      setDraftRow(prev => {
-                        const updated = { ...prev, [colId]: newVal };
-                        draftRowRef.current = updated;
-                        return updated;
-                      });
+                      // Synchronous ref update
+                      draftRowRef.current = { ...draftRowRef.current, [colId]: newVal };
+                      setDraftRow(draftRowRef.current);
                     }}
                     onBlur={() => setDraftEditing(null)}
                     onKeyDown={(e) => {
@@ -510,11 +507,11 @@ export function SmartGrid<TData>({
                       }
                       if (e.key === 'Enter') { 
                         e.preventDefault(); 
-                        commitDraftRow(draftRowRef.current); 
+                        commitDraftRow(); 
                       }
                       if (e.key === 'Tab' && !e.shiftKey && i === leafColumns.length - 1) {
                         e.preventDefault();
-                        commitDraftRow(draftRowRef.current);
+                        commitDraftRow();
                       }
                     }}
                   />
