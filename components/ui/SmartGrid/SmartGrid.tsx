@@ -39,8 +39,10 @@ export function SmartGrid<TData>({
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const headerRef = React.useRef<HTMLDivElement>(null);
 
+  const isSelectionEnabled = onRowSelectionChange !== undefined || rowSelection !== undefined;
+
   const { activeCell, setActiveCell, isEditing, setIsEditing, handleKeyDown } =
-    useGridKeyboard(data.length, columns.length);
+    useGridKeyboard(data.length, isSelectionEnabled ? columns.length + 1 : columns.length, isSelectionEnabled ? 1 : 0);
 
   // Draft state for the trailing empty row
   const [draftRow, setDraftRow] = React.useState<Record<string, unknown>>({});
@@ -48,8 +50,6 @@ export function SmartGrid<TData>({
 
   // Sorting state
   const [sorting, setSorting] = React.useState<SortingState>([]);
-
-  const isSelectionEnabled = onRowSelectionChange !== undefined || rowSelection !== undefined;
 
   const finalColumns = React.useMemo(() => {
     if (!isSelectionEnabled) return columns;

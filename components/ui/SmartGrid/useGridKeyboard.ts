@@ -2,7 +2,7 @@ import { useState, useCallback, KeyboardEvent } from 'react';
 
 export type CellCoordinates = { row: number; col: number } | null;
 
-export function useGridKeyboard(rowCount: number, colCount: number) {
+export function useGridKeyboard(rowCount: number, colCount: number, firstEditableCol: number = 0) {
   const [activeCell, setActiveCell] = useState<CellCoordinates>(null);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -36,11 +36,11 @@ export function useGridKeyboard(rowCount: number, colCount: number) {
             } else {
               // Tab commits, navigates to next cell, and REMAINS in edit mode
               if (e.shiftKey) {
-                if (col > 0)       setActiveCell({ row, col: col - 1 });
-                else if (row > 0)  setActiveCell({ row: row - 1, col: colCount - 1 });
+                if (col > firstEditableCol) setActiveCell({ row, col: col - 1 });
+                else if (row > 0)           setActiveCell({ row: row - 1, col: colCount - 1 });
               } else {
                 if (col < colCount - 1) setActiveCell({ row, col: col + 1 });
-                else setActiveCell({ row: Math.min(row + 1, rowCount - 1), col: 0 });
+                else setActiveCell({ row: Math.min(row + 1, rowCount - 1), col: firstEditableCol });
               }
             }
             break;
@@ -73,11 +73,11 @@ export function useGridKeyboard(rowCount: number, colCount: number) {
         case 'Tab':
           e.preventDefault();
           if (e.shiftKey) {
-            if (col > 0)       setActiveCell({ row, col: col - 1 });
-            else if (row > 0)  setActiveCell({ row: row - 1, col: colCount - 1 });
+            if (col > firstEditableCol) setActiveCell({ row, col: col - 1 });
+            else if (row > 0)           setActiveCell({ row: row - 1, col: colCount - 1 });
           } else {
             if (col < colCount - 1) setActiveCell({ row, col: col + 1 });
-            else setActiveCell({ row: Math.min(row + 1, rowCount - 1), col: 0 });
+            else setActiveCell({ row: Math.min(row + 1, rowCount - 1), col: firstEditableCol });
           }
           break;
         case 'Enter':
@@ -92,7 +92,7 @@ export function useGridKeyboard(rowCount: number, colCount: number) {
           break;
       }
     },
-    [activeCell, isEditing, rowCount, colCount],
+    [activeCell, isEditing, rowCount, colCount, firstEditableCol],
   );
 
   return { activeCell, setActiveCell, isEditing, setIsEditing, handleKeyDown };
