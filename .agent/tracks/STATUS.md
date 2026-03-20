@@ -89,6 +89,7 @@ _Last updated: 2026-03-18 (Session 14 — UI Layer, Chart Widgets, Pipeline Mult
 | 2026-03-18 | nextjs-v15-upgrade | planning ⏳ | Upgrade Next.js 14→15: webpackMemoryOptimizations, React 19, fetch cache fix |
 | 2026-03-18 | airtable-import | deferred ⬇️ | Moved from v0.2 — API integration after MCP Server ships |
 | 2026-03-18 | notion-import | deferred ⬇️ | Moved from v0.2 — Notion API/CSV after MCP Server ships |
+| 2026-03-20 | smartgrid-v2 | planning | Premium grid: Relational Combobox, Offline Batch Sync, Formatting Masks, Column Dnd |
 
 ## 🚀 v0.4+ — Scale (6 months)
 

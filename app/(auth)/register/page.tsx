@@ -2,103 +2,109 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+
+import { IzForm } from '@/components/ui/IzForm';
+import { IzFormInput } from '@/components/ui/IzFormInput';
+import { IzAsyncButton } from '@/components/ui/IzAsyncButton';
+import { IzCard, IzCardHeader, IzCardTitle, IzCardDescription, IzCardContent, IzCardFooter } from '@/components/ui/IzCard';
+
+const registerSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Email is invalid or missing'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+type RegisterData = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
-  
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const form = useForm<RegisterData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { name: '', email: '', password: '' },
+  });
+
+  const onSubmit = async (data: RegisterData) => {
     setError('');
-    setLoading(true);
 
-    try {
-      const res = await fetch('/api/v1/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
-      });
+    const res = await fetch('/api/v1/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
 
-      const json = await res.json();
-      
-      if (!res.ok) {
-        throw new Error(json.error || 'Failed to register');
-      }
-
-      // Automatically redirect to login or login them directly
-      router.push('/login?redirect=/dashboard');
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    const json = await res.json();
+    
+    if (!res.ok) {
+      throw new Error(json.error || 'Failed to register');
     }
+
+    // Automatically redirect to login or login them directly
+    router.push('/login?redirect=/dashboard');
+  };
+
+  const handleAsyncError = (err: unknown) => {
+    setError(err instanceof Error ? err.message : 'An unexpected error occurred');
   };
 
   return (
-    <div className="card" style={{ width: '100%', maxWidth: 400 }}>
-      <h1 style={{ fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--space-2)' }}>Register</h1>
-      <p className="text-muted" style={{ marginBottom: 'var(--space-6)' }}>Create a new workspace member account</p>
+    <IzCard style={{ width: '100%', maxWidth: 400 }}>
+      <IzCardHeader style={{ paddingBottom: 'var(--space-2)' }}>
+        <IzCardTitle style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 700 }}>Register</IzCardTitle>
+        <IzCardDescription>Create a new workspace member account</IzCardDescription>
+      </IzCardHeader>
 
-      {error && (
-        <div style={{ padding: 'var(--space-3)', background: 'var(--color-danger-bg)', color: 'var(--color-danger)', borderRadius: 'var(--radius)', marginBottom: 'var(--space-4)', fontSize: 'var(--font-size-sm)' }}>
-          {error}
-        </div>
-      )}
+      <IzCardContent>
+        {error && (
+          <div style={{ padding: 'var(--space-3)', background: 'var(--color-danger-bg)', color: 'var(--color-danger)', borderRadius: 'var(--radius)', marginBottom: 'var(--space-4)', fontSize: 'var(--font-size-sm)' }}>
+            {error}
+          </div>
+        )}
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-        <div>
-          <label style={{ display: 'block', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-1)' }}>Name</label>
-          <input 
-            className="input" 
-            type="text" 
-            placeholder="John Doe" 
-            id="name" 
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+        <IzForm form={form} onSubmit={onSubmit} className="flex flex-col gap-4">
+          <IzFormInput
+            name="name"
+            label="Name"
+            type="text"
+            placeholder="John Doe"
             required
-            disabled={loading}
           />
-        </div>
-        <div>
-          <label style={{ display: 'block', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-1)' }}>Email</label>
-          <input 
-            className="input" 
-            type="email" 
-            placeholder="you@company.com" 
-            id="email" 
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+          <IzFormInput
+            name="email"
+            label="Email"
+            type="email"
+            placeholder="you@company.com"
             required
-            disabled={loading}
           />
-        </div>
-        <div>
-          <label style={{ display: 'block', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-1)' }}>Password</label>
-          <input 
-            className="input" 
-            type="password" 
-            placeholder="••••••••" 
-            id="password" 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+          <IzFormInput
+            name="password"
+            label="Password"
+            type="password"
+            placeholder="••••••••"
             required
-            minLength={8}
-            disabled={loading}
           />
-        </div>
-        <button className="btn btn-primary" type="submit" style={{ width: '100%', justifyContent: 'center' }} disabled={loading}>
-          {loading ? 'Registering...' : 'Register'}
-        </button>
-      </form>
+          <IzAsyncButton 
+            variant="default" 
+            type="submit" 
+            style={{ width: '100%', justifyContent: 'center', marginTop: 'var(--space-2)' }}
+            onError={handleAsyncError}
+          >
+            Register
+          </IzAsyncButton>
+        </IzForm>
+      </IzCardContent>
 
-      <div style={{ marginTop: 'var(--space-4)', textAlign: 'center', fontSize: 'var(--font-size-sm)' }}>
-        <a href="/login" className="text-muted" style={{ textDecoration: 'none' }}>Already have an account? Sign in</a>
-      </div>
-    </div>
+      <IzCardFooter style={{ justifyContent: 'center', paddingTop: 0 }}>
+        <div style={{ fontSize: 'var(--font-size-sm)' }}>
+          <Link href="/login" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>
+            Already have an account? Sign in
+          </Link>
+        </div>
+      </IzCardFooter>
+    </IzCard>
   );
 }

@@ -10,8 +10,11 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { X } from 'lucide-react';
-import * as Dialog from '@radix-ui/react-dialog';
+import { IzModal, IzModalContent, IzModalHeader, IzModalTitle, IzModalBody, IzModalFooter } from '@/components/ui/IzModal';
+import { IzForm } from '@/components/ui/IzForm';
+import { IzFormInput } from '@/components/ui/IzFormInput';
+import { IzFormSelect } from '@/components/ui/IzFormSelect';
+import { IzButton } from '@/components/ui/IzButton';
 import type { Deal, DealStage } from '@/core/schema/entities';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { apiFetch } from '@/lib/apiFetch';
@@ -66,37 +69,16 @@ const VO_STAGES: PipelineStage[] = [
 
 // ── Dynamic field renderer ───────────────────────────────────
 
-function DynamicField({
-  field,
-  register,
-}: {
-  field:    TemplateField;
-  register: ReturnType<typeof useForm<DealFormValues>>['register'];
-}) {
-  const fieldKey = `customFields.${field.key}` as Parameters<typeof register>[0];
+function DynamicField({ field }: { field: TemplateField }) {
+  const fieldKey = `customFields.${field.key}` as const;
 
   if (field.type === 'select' && field.options) {
-    return (
-      <label className="form-label">
-        {field.label}
-        <select className="form-control" defaultValue="" {...register(fieldKey)}>
-          <option value="">—</option>
-          {field.options.map(o => <option key={o} value={o}>{o}</option>)}
-        </select>
-      </label>
-    );
+    const opts = field.options.map(o => ({ label: o, value: o }));
+    return <IzFormSelect name={fieldKey} label={field.label} options={opts} />;
   }
 
-  return (
-    <label className="form-label">
-      {field.label}
-      <input
-        className="form-control"
-        type={field.type === 'date' ? 'date' : field.type === 'number' ? 'number' : 'text'}
-        {...register(fieldKey)}
-      />
-    </label>
-  );
+  const inputType = field.type === 'date' ? 'date' : field.type === 'number' ? 'number' : 'text';
+  return <IzFormInput name={fieldKey} label={field.label} type={inputType} />;
 }
 
 // ── Main component ───────────────────────────────────────────
@@ -113,12 +95,7 @@ export default function DealFormModal({
 
   const dealFields = customFields.filter(f => f.entity === 'deal');
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setError,
-  } = useForm<DealFormValues>({
+  const form = useForm<DealFormValues>({
     resolver: zodResolver(DealFormSchema) as import('react-hook-form').Resolver<DealFormValues>,
     defaultValues: {
       name:         '',
@@ -127,6 +104,8 @@ export default function DealFormModal({
       customFields: {},
     },
   });
+
+  const { formState: { errors, isSubmitting }, setError, handleSubmit } = form;
 
   const onSubmit = async (values: DealFormValues) => {
     const payload = {
@@ -147,83 +126,70 @@ export default function DealFormModal({
   };
 
   return (
-    <Dialog.Root open={true} onOpenChange={(open) => !open && onClose()}>
-      <Dialog.Portal>
-        <Dialog.Overlay className={styles.modalOverlay} />
-        <Dialog.Content className={styles.modal} aria-describedby={undefined}>
-          <div className={styles.modalHeader}>
-            <Dialog.Title className={styles.modalTitle}>{isVi ? 'Tạo deal mới' : 'New Deal'}</Dialog.Title>
-            <Dialog.Close asChild>
-              <button className={styles.modalClose} aria-label="Close"><X size={16} /></button>
-            </Dialog.Close>
-          </div>
+    <IzModal open={true} onOpenChange={(open) => !open && onClose()}>
+      <IzModalContent size="md">
+        <IzModalHeader>
+          <IzModalTitle>{isVi ? 'Tạo deal mới' : 'New Deal'}</IzModalTitle>
+        </IzModalHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className={styles.modalForm} noValidate>
+        <IzForm form={form} onSubmit={onSubmit}>
+          <IzModalBody className={styles.modalForm} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', padding: 'var(--space-5)' }}>
             {/* Deal name */}
-            <label className="form-label">
-              {isVi ? 'Tên deal *' : 'Deal name *'}
-              <input
-                className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-                {...register('name')}
-                placeholder={isVi ? 'VD: Công ty ABC — Gói Pro' : 'e.g. Acme Corp — Pro Package'}
-                autoFocus
-              />
-              {errors.name && <span className={styles.fieldError}>{errors.name.message}</span>}
-            </label>
+            <IzFormInput
+              name="name"
+              label={isVi ? 'Tên deal *' : 'Deal name *'}
+              placeholder={isVi ? 'VD: Công ty ABC — Gói Pro' : 'e.g. Acme Corp — Pro Package'}
+              required
+              autoFocus
+            />
 
-            <div className={styles.formRow}>
+            <div className={styles.formRow} style={{ display: 'flex', gap: 'var(--space-4)' }}>
               {/* Value */}
-              <label className="form-label" style={{ flex: 1 }}>
-                {isVi ? 'Giá trị (VND)' : 'Value (VND)'}
-                <input
-                  className="form-control"
+              <div style={{ flex: 1 }}>
+                <IzFormInput
+                  name="value"
+                  label={isVi ? 'Giá trị (VND)' : 'Value (VND)'}
                   type="number"
-                  min="0"
-                  step="1000"
-                  {...register('value', { valueAsNumber: true })}
                   placeholder="0"
                 />
-              </label>
+              </div>
 
               {/* Stage */}
-              <label className="form-label" style={{ flex: 1 }}>
-                {isVi ? 'Giai đoạn' : 'Stage'}
-                <select className="form-control" {...register('stage')}>
-                  {pipelineStages.map(s => (
-                    <option key={s.key} value={s.key}>{s.label}</option>
-                  ))}
-                </select>
-              </label>
+              <div style={{ flex: 1 }}>
+                <IzFormSelect
+                  name="stage"
+                  label={isVi ? 'Giai đoạn' : 'Stage'}
+                  options={pipelineStages.map(s => ({ label: s.label, value: s.key }))}
+                />
+              </div>
             </div>
 
             {/* Dynamic custom fields (deal entity) */}
             {dealFields.length > 0 && (
               <>
-                <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: 'var(--space-3) 0 var(--space-2)' }} />
-                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 var(--space-3)' }}>
+                <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: 'var(--space-1) 0 0' }} />
+                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 calc(-1 * var(--space-2))' }}>
                   {isVi ? 'Thông tin gói dịch vụ' : 'Service Details'}
                 </p>
                 {dealFields.map(f => (
-                  <DynamicField key={f.key} field={f} register={register} />
+                  <DynamicField key={f.key} field={f} />
                 ))}
               </>
             )}
 
-            {errors.root && <p className={styles.modalError}>{errors.root.message}</p>}
+            {errors.root && <p className={styles.modalError} style={{ color: 'var(--color-danger)' }}>{errors.root.message}</p>}
+          </IzModalBody>
 
-            <div className={styles.modalActions}>
-              <Dialog.Close asChild>
-                <button type="button" className="btn btn-ghost">
-                  {isVi ? 'Huỷ' : 'Cancel'}
-                </button>
-              </Dialog.Close>
-              <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-                {isSubmitting ? (isVi ? 'Đang tạo…' : 'Creating…') : (isVi ? 'Tạo deal' : 'Create Deal')}
-              </button>
-            </div>
-          </form>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+          <IzModalFooter>
+            <IzButton variant="ghost" type="button" onClick={onClose} disabled={isSubmitting}>
+              {isVi ? 'Huỷ' : 'Cancel'}
+            </IzButton>
+            <IzButton variant="default" type="submit" isLoading={isSubmitting}>
+              {isVi ? 'Tạo deal' : 'Create Deal'}
+            </IzButton>
+          </IzModalFooter>
+        </IzForm>
+      </IzModalContent>
+    </IzModal>
   );
 }

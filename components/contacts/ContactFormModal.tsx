@@ -10,8 +10,11 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { X } from 'lucide-react';
-import * as Dialog from '@radix-ui/react-dialog';
+import { IzModal, IzModalContent, IzModalHeader, IzModalTitle, IzModalBody, IzModalFooter } from '@/components/ui/IzModal';
+import { IzForm } from '@/components/ui/IzForm';
+import { IzFormInput } from '@/components/ui/IzFormInput';
+import { IzFormSelect } from '@/components/ui/IzFormSelect';
+import { IzButton } from '@/components/ui/IzButton';
 import type { Contact } from '@/core/schema/entities';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import styles from './contacts.module.scss';
@@ -48,42 +51,16 @@ interface Props {
 
 // ── Dynamic field renderer ───────────────────────────────────
 
-function DynamicField({
-  field, register, value,
-}: {
-  field: TemplateField;
-  register: ReturnType<typeof useForm<ContactFormValues>>['register'];
-  value?: string;
-}) {
+function DynamicField({ field }: { field: TemplateField }) {
   const fieldKey = `customFields.${field.key}` as const;
 
   if (field.type === 'select' && field.options) {
-    return (
-      <label className="form-label">
-        {field.label}
-        <select
-          className="form-control"
-          defaultValue={value ?? ''}
-          {...register(fieldKey as Parameters<typeof register>[0])}
-        >
-          <option value="">—</option>
-          {field.options.map(o => <option key={o} value={o}>{o}</option>)}
-        </select>
-      </label>
-    );
+    const opts = field.options.map(o => ({ label: o, value: o }));
+    return <IzFormSelect name={fieldKey} label={field.label} options={opts} />;
   }
 
-  return (
-    <label className="form-label">
-      {field.label}
-      <input
-        className="form-control"
-        type={field.type === 'date' ? 'date' : field.type === 'number' ? 'number' : 'text'}
-        defaultValue={value ?? ''}
-        {...register(fieldKey as Parameters<typeof register>[0])}
-      />
-    </label>
-  );
+  const inputType = field.type === 'date' ? 'date' : field.type === 'number' ? 'number' : 'text';
+  return <IzFormInput name={fieldKey} label={field.label} type={inputType} />;
 }
 
 // ── Main component ───────────────────────────────────────────
@@ -95,13 +72,7 @@ export default function ContactFormModal({ contact, onClose, onCreated, onUpdate
 
   const relevantFields = customFields.filter(f => f.entity === 'contact');
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-    setError,
-  } = useForm<ContactFormValues>({
+  const form = useForm<ContactFormValues>({
     resolver: zodResolver(ContactFormSchema),
     defaultValues: {
       name:  contact?.name  ?? '',
@@ -111,6 +82,8 @@ export default function ContactFormModal({ contact, onClose, onCreated, onUpdate
       customFields: (contact as unknown as { customFields?: Record<string, string> })?.customFields ?? {},
     },
   });
+
+  const { reset, formState: { errors, isSubmitting }, setError, handleSubmit } = form;
 
   useEffect(() => {
     if (contact) {
@@ -147,93 +120,71 @@ export default function ContactFormModal({ contact, onClose, onCreated, onUpdate
   };
 
   return (
-    <Dialog.Root open={true} onOpenChange={(open) => !open && onClose()}>
-      <Dialog.Portal>
-        <Dialog.Overlay className={styles.modalOverlay} />
-        <Dialog.Content className={styles.modal} aria-describedby={undefined}>
-          <div className={styles.modalHeader}>
-            <Dialog.Title className={styles.modalTitle}>
-              {isEdit
-                ? (isVi ? 'Chỉnh sửa liên hệ' : 'Edit Contact')
-                : (isVi ? 'Tạo liên hệ mới' : 'New Contact')}
-            </Dialog.Title>
-            <Dialog.Close asChild>
-              <button className={styles.modalClose} aria-label="Close"><X size={16} /></button>
-            </Dialog.Close>
-          </div>
+    <IzModal open={true} onOpenChange={(open) => !open && onClose()}>
+      <IzModalContent size="md">
+        <IzModalHeader>
+          <IzModalTitle>
+            {isEdit
+              ? (isVi ? 'Chỉnh sửa liên hệ' : 'Edit Contact')
+              : (isVi ? 'Tạo liên hệ mới' : 'New Contact')}
+          </IzModalTitle>
+        </IzModalHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className={styles.modalForm} noValidate>
+        <IzForm form={form} onSubmit={onSubmit}>
+          <IzModalBody className={styles.modalForm} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', padding: 'var(--space-5)' }}>
             {/* Core fields */}
-            <label className="form-label">
-              {isVi ? 'Tên *' : 'Name *'}
-              <input
-                className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-                {...register('name')}
-                placeholder={isVi ? 'Họ và tên' : 'Full name'}
-                autoFocus
-              />
-              {errors.name && <span className={styles.fieldError}>{errors.name.message}</span>}
-            </label>
+            <IzFormInput
+              name="name"
+              label={isVi ? 'Tên *' : 'Name *'}
+              placeholder={isVi ? 'Họ và tên' : 'Full name'}
+              required
+              autoFocus
+            />
 
-            <label className="form-label">
-              {isVi ? 'Email' : 'Email'}
-              <input
-                className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                type="email"
-                {...register('email')}
-                placeholder="email@company.com"
-              />
-              {errors.email && <span className={styles.fieldError}>{errors.email.message}</span>}
-            </label>
+            <IzFormInput
+              name="email"
+              label={isVi ? 'Email' : 'Email'}
+              type="email"
+              placeholder="email@company.com"
+            />
 
-            <div className={styles.formRow}>
-              <label className="form-label" style={{ flex: 1 }}>
-                {isVi ? 'Điện thoại' : 'Phone'}
-                <input className="form-control" {...register('phone')} placeholder="+84 9xx xxx xxx" />
-              </label>
-              <label className="form-label" style={{ flex: 1 }}>
-                {isVi ? 'Chức danh' : 'Title'}
-                <input className="form-control" {...register('title')} placeholder={isVi ? 'Giám đốc, Kế toán…' : 'CEO, Engineer…'} />
-              </label>
+            <div className={styles.formRow} style={{ display: 'flex', gap: 'var(--space-4)' }}>
+              <div style={{ flex: 1 }}>
+                <IzFormInput name="phone" label={isVi ? 'Điện thoại' : 'Phone'} placeholder="+84 9xx xxx xxx" />
+              </div>
+              <div style={{ flex: 1 }}>
+                <IzFormInput name="title" label={isVi ? 'Chức danh' : 'Title'} placeholder={isVi ? 'Giám đốc, Kế toán…' : 'CEO, Engineer…'} />
+              </div>
             </div>
 
             {/* Dynamic custom fields */}
             {relevantFields.length > 0 && (
               <>
-                <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: 'var(--space-3) 0 var(--space-2)' }} />
-                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 var(--space-3)' }}>
+                <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: 'var(--space-1) 0 0' }} />
+                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 calc(-1 * var(--space-2))' }}>
                   {isVi ? 'Thông tin bổ sung' : 'Additional Fields'}
                 </p>
                 {relevantFields.map(f => (
-                  <DynamicField
-                    key={f.key}
-                    field={f}
-                    register={register}
-                    value={(contact as unknown as { customFields?: Record<string, string> })?.customFields?.[f.key]}
-                  />
+                  <DynamicField key={f.key} field={f} />
                 ))}
               </>
             )}
 
-            {errors.root && <p className={styles.modalError}>{errors.root.message}</p>}
+            {errors.root && <p className={styles.modalError} style={{ color: 'var(--color-danger)' }}>{errors.root.message}</p>}
+          </IzModalBody>
 
-            <div className={styles.modalActions}>
-              <Dialog.Close asChild>
-                <button type="button" className="btn btn-ghost">
-                  {isVi ? 'Huỷ' : 'Cancel'}
-                </button>
-              </Dialog.Close>
-              <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-                {isSubmitting
-                  ? (isVi ? 'Đang lưu…' : 'Saving…')
-                  : isEdit
-                    ? (isVi ? 'Lưu thay đổi' : 'Save Changes')
-                    : (isVi ? 'Tạo liên hệ' : 'Create Contact')}
-              </button>
-            </div>
-          </form>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+          <IzModalFooter>
+            <IzButton variant="ghost" onClick={onClose} disabled={isSubmitting} type="button">
+              {isVi ? 'Huỷ' : 'Cancel'}
+            </IzButton>
+            <IzButton variant="default" type="submit" isLoading={isSubmitting}>
+              {isEdit
+                ? (isVi ? 'Lưu thay đổi' : 'Save Changes')
+                : (isVi ? 'Tạo liên hệ' : 'Create Contact')}
+            </IzButton>
+          </IzModalFooter>
+        </IzForm>
+      </IzModalContent>
+    </IzModal>
   );
 }
