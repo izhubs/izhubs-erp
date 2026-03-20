@@ -28,17 +28,20 @@ export function useGridKeyboard(rowCount: number, colCount: number) {
             e.preventDefault();
             // 1. Blur active input first → triggers onBlur → commits value in EditableCell
             (document.activeElement as HTMLElement | null)?.blur();
-            // 2. Exit editing
-            setIsEditing(false);
-            // 3. Navigate
+            
+            // 2. Navigate and manage Edit state
             if (e.key === 'Enter') {
+              setIsEditing(false); // Enter commits and exits edit mode
               setActiveCell({ row: Math.min(row + 1, rowCount - 1), col });
-            } else if (e.shiftKey) {
-              if (col > 0)       setActiveCell({ row, col: col - 1 });
-              else if (row > 0)  setActiveCell({ row: row - 1, col: colCount - 1 });
             } else {
-              if (col < colCount - 1) setActiveCell({ row, col: col + 1 });
-              else setActiveCell({ row: Math.min(row + 1, rowCount - 1), col: 0 });
+              // Tab commits, navigates to next cell, and REMAINS in edit mode
+              if (e.shiftKey) {
+                if (col > 0)       setActiveCell({ row, col: col - 1 });
+                else if (row > 0)  setActiveCell({ row: row - 1, col: colCount - 1 });
+              } else {
+                if (col < colCount - 1) setActiveCell({ row, col: col + 1 });
+                else setActiveCell({ row: Math.min(row + 1, rowCount - 1), col: 0 });
+              }
             }
             break;
           }
