@@ -11,6 +11,7 @@ interface IzMetricCardProps {
   description?: string;
   icon?: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export function IzMetricCard({
@@ -21,6 +22,7 @@ export function IzMetricCard({
   description,
   icon,
   className,
+  style,
 }: IzMetricCardProps) {
   const trendClass =
     trend === undefined
@@ -41,7 +43,7 @@ export function IzMetricCard({
       : Minus;
 
   return (
-    <div className={clsx(styles.card, className)}>
+    <div className={clsx(styles.card, className)} style={style}>
       {icon && <div className={styles.iconBox}>{icon}</div>}
       <p className={styles.label}>{label}</p>
       <p className={styles.value}>{value}</p>

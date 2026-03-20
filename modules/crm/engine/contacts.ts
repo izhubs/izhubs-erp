@@ -1,4 +1,4 @@
-import { db } from '@/core/engine/db';
+import { db, buildInsertQuery, buildUpdateQuery } from '@/core/engine/db';
 import { ContactSchema } from '@/core/schema/entities';
 import type { Contact } from '@/core/schema/entities';
 import { z } from 'zod';
@@ -87,35 +87,18 @@ export async function getContact(id: string): Promise<Contact | null> {
 }
 
 export async function createContact(input: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>): Promise<Contact> {
-  const result = await db.query(
-    `INSERT INTO contacts (name, email, phone, title, company_id, owner_id, custom_fields, status)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING ${COLUMNS}`,
-    [input.name, input.email, input.phone, input.title, input.companyId, input.ownerId, input.customFields ?? {}, input.status ?? 'lead']
-  );
+  const query = buildInsertQuery('contacts', { ...input, customFields: input.customFields ?? {} }, COLUMNS);
+  const result = await db.query(query.text, query.values);
   const contact = ContactSchema.parse(result.rows[0]);
   await eventBus.emit('contact.created', { contact });
   return contact;
 }
 
 export async function updateContact(id: string, input: Partial<Omit<Contact, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Contact | null> {
-  const setClauses: string[] = [];
-  const values: unknown[] = [];
-  let idx = 1;
+  const query = buildUpdateQuery('contacts', input, 'id', id, COLUMNS);
+  if (!query) return getContact(id);
 
-  for (const [key, value] of Object.entries(input)) {
-    const col = key.replace(/[A-Z]/g, l => `_${l.toLowerCase()}`);
-    setClauses.push(`${col} = $${idx++}`);
-    values.push(value);
-  }
-  if (setClauses.length === 0) return getContact(id);
-
-  setClauses.push(`updated_at = NOW()`);
-  values.push(id);
-
-  const result = await db.query(
-    `UPDATE contacts SET ${setClauses.join(', ')} WHERE id = $${idx} AND deleted_at IS NULL RETURNING ${COLUMNS}`,
-    values
-  );
+  const result = await db.query(query.text, query.values);
   if (result.rowCount === 0) return null;
   const contact = ContactSchema.parse(result.rows[0]);
   await eventBus.emit('contact.updated', { contact, changes: input });

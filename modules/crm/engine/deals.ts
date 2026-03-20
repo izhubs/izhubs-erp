@@ -1,4 +1,4 @@
-import { db } from '@/core/engine/db';
+import { db, buildInsertQuery, buildUpdateQuery } from '@/core/engine/db';
 import { DealSchema, DealStageSchema } from '@/core/schema/entities';
 import type { Deal, DealStage } from '@/core/schema/entities';
 import { eventBus } from '@/core/engine/event-bus';
@@ -70,37 +70,21 @@ export async function getDeal(id: string): Promise<Deal | null> {
 }
 
 export async function createDeal(input: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>): Promise<Deal> {
-  const result = await db.query(
-    `INSERT INTO deals (name, value, stage, contact_id, company_id, owner_id, closed_at, custom_fields)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING ${COLUMNS}`,
-    [input.name, input.value, input.stage, input.contactId, input.companyId, input.ownerId, input.closedAt, input.customFields ?? {}]
-  );
+  const query = buildInsertQuery('deals', { ...input, customFields: input.customFields ?? {} }, COLUMNS);
+  const result = await db.query(query.text, query.values);
   const deal = DealSchema.parse(result.rows[0]);
   await eventBus.emit('deal.created', { deal });
   return deal;
 }
 
 export async function updateDeal(id: string, input: Partial<Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Deal | null> {
-  const setClauses: string[] = [];
-  const values: unknown[] = [];
-  let idx = 1;
+  const query = buildUpdateQuery('deals', input, 'id', id, COLUMNS);
+  if (!query) return getDeal(id);
 
-  for (const [key, value] of Object.entries(input)) {
-    const col = key.replace(/[A-Z]/g, l => `_${l.toLowerCase()}`);
-    setClauses.push(`${col} = $${idx++}`);
-    values.push(value);
-  }
-  if (setClauses.length === 0) return getDeal(id);
   const previousDeal = await getDeal(id);
   if (!previousDeal) return null;
 
-  setClauses.push(`updated_at = NOW()`);
-  values.push(id);
-
-  const result = await db.query(
-    `UPDATE deals SET ${setClauses.join(', ')} WHERE id = $${idx} AND deleted_at IS NULL RETURNING ${COLUMNS}`,
-    values
-  );
+  const result = await db.query(query.text, query.values);
   if (result.rowCount === 0) return null;
   const deal = DealSchema.parse(result.rows[0]);
 

@@ -100,3 +100,61 @@ export const db = {
     }
   },
 };
+
+/**
+ * Builds a generic INSERT query dynamically mapping camelCase objects to snake_case columns.
+ * Undefined values are silently omitted to allow database DEFAULT specifications to fire.
+ * @param table - The table name
+ * @param data - The data object containing columns to insert
+ * @param returning - The columns to return (e.g. "id, name" or "*")
+ */
+export function buildInsertQuery(table: string, data: Record<string, unknown>, returning: string = '*'): { text: string; values: unknown[] } {
+  const columns: string[] = [];
+  const placeholders: string[] = [];
+  const values: unknown[] = [];
+  let idx = 1;
+
+  for (const [key, value] of Object.entries(data)) {
+    if (value !== undefined) {
+      columns.push(key.replace(/[A-Z]/g, l => `_${l.toLowerCase()}`));
+      placeholders.push(`$${idx++}`);
+      values.push(value);
+    }
+  }
+
+  return {
+    text: `INSERT INTO ${table} (${columns.join(', ')}) VALUES (${placeholders.join(', ')}) RETURNING ${returning}`,
+    values
+  };
+}
+
+/**
+ * Builds a generic UPDATE query dynamically mapping camelCase objects to snake_case columns.
+ * @param table - The table name to heavily update
+ * @param data - The fields mapped for patching
+ * @param whereCol - The condition identifier string (usually "id")
+ * @param whereVal - The condition target value to patch
+ * @param returning - The columns to return (e.g. "id, name" or "*")
+ */
+export function buildUpdateQuery(table: string, data: Record<string, unknown>, whereCol: string, whereVal: unknown, returning: string = '*'): { text: string; values: unknown[] } | null {
+  const setClauses: string[] = [];
+  const values: unknown[] = [];
+  let idx = 1;
+
+  for (const [key, value] of Object.entries(data)) {
+    if (value !== undefined) {
+      setClauses.push(`${key.replace(/[A-Z]/g, l => `_${l.toLowerCase()}`)} = $${idx++}`);
+      values.push(value);
+    }
+  }
+  
+  if (setClauses.length === 0) return null;
+
+  setClauses.push(`updated_at = NOW()`);
+  values.push(whereVal);
+
+  return {
+    text: `UPDATE ${table} SET ${setClauses.join(', ')} WHERE ${whereCol} = $${idx} AND deleted_at IS NULL RETURNING ${returning}`,
+    values
+  };
+}

@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { DashboardCharts } from '@/components/dashboard/DashboardCharts';
 import { verifyJwt } from '@/core/engine/auth/jwt';
 import { db } from '@/core/engine/db';
+import { IzMetricCard } from '@/components/ui/IzMetricCard';
+import { IzCard, IzCardHeader, IzCardTitle, IzCardContent } from '@/components/ui/IzCard';
 
 export const metadata = { title: 'Dashboard — izhubs ERP' };
 export const dynamic = 'force-dynamic';
@@ -206,36 +208,16 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      {/* KPI Cards — colored left border accent */}
+      {/* KPI Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-4)' }}>
         {kpis.map(kpi => (
           <Link key={kpi.labelKey} href={kpi.href} style={{ textDecoration: 'none' }}>
-            <div style={{
-              background: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border)',
-              borderLeft: `3px solid ${kpi.color}`,
-              borderRadius: 'var(--radius-lg)',
-              padding: 'var(--space-5)',
-              display: 'flex', alignItems: 'center', gap: 'var(--space-4)',
-              cursor: 'pointer',
-            }}>
-              <div style={{
-                width: 48, height: 48, borderRadius: 'var(--radius-md)',
-                background: `linear-gradient(135deg, ${kpi.color}30 0%, ${kpi.color}15 100%)`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0, fontSize: 22,
-              }}>
-                {kpi.icon}
-              </div>
-              <div>
-                <p style={{ margin: '0 0 2px', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-                  {t[kpi.labelKey]}
-                </p>
-                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-                  {kpi.value}
-                </div>
-              </div>
-            </div>
+            <IzMetricCard
+              label={t[kpi.labelKey]}
+              value={kpi.value}
+              icon={<span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: 'var(--radius-sm)', background: `linear-gradient(135deg, ${kpi.color}15 0%, ${kpi.color}05 100%)`, color: kpi.color, fontSize: 18 }}>{kpi.icon}</span>}
+              style={{ height: '100%', borderTop: `3px solid ${kpi.color}` }}
+            />
           </Link>
         ))}
       </div>
@@ -247,130 +229,136 @@ export default async function DashboardPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 'var(--space-5)' }}>
 
         {/* Pipeline Breakdown */}
-        <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-5)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)' }}>
+        <IzCard>
+          <IzCardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 'var(--space-4)' }}>
             <div>
-              <h2 style={{ margin: '0 0 2px', fontSize: 'var(--font-size-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)' }}>
+              <IzCardTitle style={{ margin: '0 0 2px', fontSize: 'var(--font-size-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)' }}>
                 {t.pipelineBreakdown}
-              </h2>
+              </IzCardTitle>
               <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>{deals.length} total deals</div>
             </div>
             <Link href="/deals" style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
               {t.viewPipeline} →
             </Link>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {stageCounts.map(s => (
-              <div key={s.key} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-                <span style={{ width: 10, height: 10, borderRadius: '3px', background: s.color, flexShrink: 0, boxShadow: `0 0 6px ${s.color}66` }} />
-                <span style={{ width: 130, fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>{s.label}</span>
-                <div style={{ flex: 1, height: 8, background: 'var(--color-bg-elevated)', borderRadius: 4, overflow: 'hidden' }}>
-                  <div style={{
-                    height: '100%',
-                    width: `${(s.count / maxCount) * 100}%`,
-                    background: `linear-gradient(90deg, ${s.color} 0%, ${s.color}99 100%)`,
-                    borderRadius: 4, minWidth: s.count > 0 ? 6 : 0,
-                  }} />
-                </div>
-                <span style={{ width: 22, textAlign: 'right', fontSize: 'var(--font-size-xs)', fontWeight: 800, color: s.count > 0 ? 'var(--color-text)' : 'var(--color-text-muted)' }}>
-                  {s.count}
-                </span>
-                {s.value > 0 && (
-                  <span style={{ fontSize: 10, color: 'var(--color-text-muted)', whiteSpace: 'nowrap', minWidth: 52, textAlign: 'right' }}>
-                    {formatVND(s.value)}đ
+          </IzCardHeader>
+          <IzCardContent>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {stageCounts.map(s => (
+                <div key={s.key} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                  <span style={{ width: 10, height: 10, borderRadius: '3px', background: s.color, flexShrink: 0, boxShadow: `0 0 6px ${s.color}66` }} />
+                  <span style={{ width: 130, fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>{s.label}</span>
+                  <div style={{ flex: 1, height: 8, background: 'var(--color-bg-elevated)', borderRadius: 4, overflow: 'hidden' }}>
+                    <div style={{
+                      height: '100%',
+                      width: `${(s.count / maxCount) * 100}%`,
+                      background: `linear-gradient(90deg, ${s.color} 0%, ${s.color}99 100%)`,
+                      borderRadius: 4, minWidth: s.count > 0 ? 6 : 0,
+                    }} />
+                  </div>
+                  <span style={{ width: 22, textAlign: 'right', fontSize: 'var(--font-size-xs)', fontWeight: 800, color: s.count > 0 ? 'var(--color-text)' : 'var(--color-text-muted)' }}>
+                    {s.count}
                   </span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+                  {s.value > 0 && (
+                    <span style={{ fontSize: 10, color: 'var(--color-text-muted)', whiteSpace: 'nowrap', minWidth: 52, textAlign: 'right' }}>
+                      {formatVND(s.value)}đ
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </IzCardContent>
+        </IzCard>
 
         {/* Top 5 Customers */}
-        <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-5)', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-5)' }}>
-            <h2 style={{ margin: 0, fontSize: 'var(--font-size-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)' }}>
+        <IzCard style={{ display: 'flex', flexDirection: 'column' }}>
+          <IzCardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 'var(--space-4)' }}>
+            <IzCardTitle style={{ margin: 0, fontSize: 'var(--font-size-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)' }}>
               {t.topCustomers}
-            </h2>
+            </IzCardTitle>
             <Link href="/contacts" style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
               {t.viewAll} →
             </Link>
-          </div>
-          {topCustomers.length === 0 ? (
-            <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', margin: 0 }}>{t.noDeals}</p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
-              {topCustomers.map((d, i) => (
-                <div key={d.id} style={{
-                  display: 'flex', alignItems: 'center', gap: 'var(--space-3)',
-                  padding: '6px 10px',
-                  borderRadius: 'var(--radius-md)',
-                  background: i === 0 ? 'linear-gradient(90deg, rgba(99,102,241,0.1) 0%, transparent 100%)' : 'transparent',
-                }}>
-                  <span style={{
-                    width: 22, height: 22, borderRadius: '50%',
-                    background: i === 0 ? 'var(--color-primary)' : i === 1 ? '#94a3b8' : i === 2 ? '#f97316' : 'var(--color-bg-elevated)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 10, fontWeight: 800, color: i < 3 ? '#fff' : 'var(--color-text-muted)', flexShrink: 0,
+          </IzCardHeader>
+          <IzCardContent style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            {topCustomers.length === 0 ? (
+              <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', margin: 0 }}>{t.noDeals}</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+                {topCustomers.map((d, i) => (
+                  <div key={d.id} style={{
+                    display: 'flex', alignItems: 'center', gap: 'var(--space-3)',
+                    padding: '6px 10px',
+                    borderRadius: 'var(--radius-md)',
+                    background: i === 0 ? 'linear-gradient(90deg, rgba(99,102,241,0.05) 0%, transparent 100%)' : 'transparent',
                   }}>
-                    {i + 1}
-                  </span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 600, fontSize: 'var(--font-size-xs)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.name}</div>
-                    <div style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>
-                      {(d.customFields as Record<string, unknown>)?.goi_dich_vu as string ?? d.stage}
+                    <span style={{
+                      width: 22, height: 22, borderRadius: '50%',
+                      background: i === 0 ? 'var(--color-primary)' : i === 1 ? '#94a3b8' : i === 2 ? '#f97316' : 'var(--color-bg-elevated)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 10, fontWeight: 800, color: i < 3 ? '#fff' : 'var(--color-text-muted)', flexShrink: 0,
+                    }}>
+                      {i + 1}
+                    </span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, fontSize: 'var(--font-size-xs)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.name}</div>
+                      <div style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>
+                        {(d.customFields as Record<string, unknown>)?.goi_dich_vu as string ?? d.stage}
+                      </div>
                     </div>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--color-primary)', flexShrink: 0, background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: 4 }}>
+                      {formatVND(d.value)}đ
+                    </span>
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--color-primary)', flexShrink: 0, background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: 4 }}>
-                    {formatVND(d.value)}đ
-                  </span>
+                ))}
+              </div>
+            )}
+          </IzCardContent>
+        </IzCard>
+      </div>
+
+      {/* Recent Activity */}
+      <IzCard>
+        <IzCardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 'var(--space-4)' }}>
+          <IzCardTitle style={{ margin: 0, fontSize: 'var(--font-size-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)' }}>
+            {t.recentActivity}
+          </IzCardTitle>
+          <Link href="/contacts" style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
+            {t.viewAll} →
+          </Link>
+        </IzCardHeader>
+        <IzCardContent>
+          {recentContacts.length === 0 ? (
+            <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', margin: 0 }}>{t.noContacts}</p>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 'var(--space-3)' }}>
+              {recentContacts.map(c => (
+                <div key={c.id} style={{
+                  display: 'flex', alignItems: 'center', gap: 'var(--space-3)',
+                  padding: 'var(--space-3)',
+                  background: 'var(--color-bg-elevated)',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--color-border)',
+                }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: '50%',
+                    background: `linear-gradient(135deg, ${nameColor(c.name)} 0%, ${nameColor(c.name)}dd 100%)`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 12, fontWeight: 700, color: '#fff', flexShrink: 0,
+                  }}>
+                    {initials(c.name)}
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontWeight: 600, fontSize: 'var(--font-size-sm)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
+                    {c.title && (
+                      <div style={{ fontSize: 11, color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title}</div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div style={{ background: 'var(--color-bg-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-5)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
-          <h2 style={{ margin: 0, fontSize: 'var(--font-size-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)' }}>
-            {t.recentActivity}
-          </h2>
-          <Link href="/contacts" style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
-            {t.viewAll} →
-          </Link>
-        </div>
-        {recentContacts.length === 0 ? (
-          <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', margin: 0 }}>{t.noContacts}</p>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 'var(--space-3)' }}>
-            {recentContacts.map(c => (
-              <div key={c.id} style={{
-                display: 'flex', alignItems: 'center', gap: 'var(--space-3)',
-                padding: 'var(--space-3)',
-                background: 'var(--color-bg-elevated)',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--color-border)',
-              }}>
-                <div style={{
-                  width: 34, height: 34, borderRadius: '50%',
-                  background: `linear-gradient(135deg, ${nameColor(c.name)} 0%, ${nameColor(c.name)}bb 100%)`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 11, fontWeight: 800, color: '#fff', flexShrink: 0,
-                }}>
-                  {initials(c.name)}
-                </div>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontWeight: 600, fontSize: 'var(--font-size-xs)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
-                  {c.title && (
-                    <div style={{ fontSize: 10, color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title}</div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+        </IzCardContent>
+      </IzCard>
     </div>
   );
 }
