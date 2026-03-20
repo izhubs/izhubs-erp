@@ -6,12 +6,14 @@
 // Persists selected view in localStorage.
 // =============================================================
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { useReactTable, getCoreRowModel, getSortedRowModel, createColumnHelper, SortingState } from '@tanstack/react-table';
 import type { Deal, DealStage } from '@/core/schema/entities';
 import { PIPELINE_STAGES, type PipelineStageConfig } from '@/core/config/pipeline';
-import Badge from '@/components/shared/Badge';
+import { IzTable } from '@/components/ui/IzTable';
+import { IzBadge, IzBadgeVariant } from '@/components/ui/IzBadge';
 import { apiFetch } from '@/lib/apiFetch';
 
 // Kanban is already complex — keep lazy
@@ -32,70 +34,60 @@ const VIEW_LABELS: Record<ViewMode, string> = {
 
 // ---- Table View ------------------------------------------------
 function TableView({ deals, onDealClick, stages }: { deals: Deal[]; onDealClick: (d: Deal) => void; stages: PipelineStageConfig[] }) {
-  const [sortKey, setSortKey] = useState<keyof Deal>('createdAt');
-  const [sortAsc, setSortAsc] = useState(false);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const stageMap = useMemo(() => Object.fromEntries(stages.map(s => [s.id, s])), [stages]);
 
-  const sorted = [...deals].sort((a, b) => {
-    const av = a[sortKey]; const bv = b[sortKey];
-    if (av == null) return 1; if (bv == null) return -1;
-    return sortAsc
-      ? (av > bv ? 1 : -1)
-      : (av < bv ? 1 : -1);
+  const STAGE_VARIANT: Record<string, IzBadgeVariant> = {
+    won: 'success', lost: 'destructive', active: 'success',
+    renewal: 'warning', lead: 'secondary', proposal: 'default',
+  };
+
+  const columnHelper = createColumnHelper<Deal>();
+  const columns = useMemo(() => [
+    columnHelper.accessor('name', {
+      header: 'Tên deal',
+      cell: info => <span style={{ fontWeight: 500 }}>{info.getValue()}</span>,
+    }),
+    columnHelper.accessor('stage', {
+      header: 'Stage',
+      cell: info => {
+        const val = info.getValue();
+        return (
+          <IzBadge variant={STAGE_VARIANT[val] ?? 'secondary'} dot>
+            {stageMap[val]?.label ?? val}
+          </IzBadge>
+        );
+      }
+    }),
+    columnHelper.accessor('value', {
+      header: 'Giá trị',
+      cell: info => <span style={{ fontWeight: 600 }}>{formatVnd(info.getValue())}</span>,
+    }),
+    columnHelper.accessor('createdAt', {
+      header: 'Ngày tạo',
+      cell: info => <span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-xs)' }}>
+        {new Date(info.getValue() ?? '').toLocaleDateString('vi-VN')}
+      </span>,
+    }),
+  ], [stageMap]);
+
+  const table = useReactTable({
+    data: deals,
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   });
 
-  const toggleSort = (key: keyof Deal) => {
-    if (sortKey === key) setSortAsc(p => !p);
-    else { setSortKey(key); setSortAsc(true); }
-  };
-
-  const SortTh = ({ k, label }: { k: keyof Deal; label: string }) => (
-    <th
-      onClick={() => toggleSort(k)}
-      style={{ cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}
-    >
-      {label} {sortKey === k ? (sortAsc ? '↑' : '↓') : ''}
-    </th>
-  );
-
-  const stageMap = Object.fromEntries(stages.map(s => [s.id, s]));
-  const STAGE_VARIANT: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = {
-    won: 'success', lost: 'danger', active: 'info',
-    renewal: 'warning', lead: 'neutral', proposal: 'primary' as 'info',
-  };
-
   return (
-    <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-      <table className="table">
-        <thead>
-          <tr>
-            <SortTh k="name" label="Tên deal" />
-            <SortTh k="stage" label="Stage" />
-            <SortTh k="value" label="Giá trị" />
-            <th>Ngày tạo</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sorted.map(d => (
-            <tr key={d.id} style={{ cursor: 'pointer' }} onClick={() => onDealClick(d)}>
-              <td style={{ fontWeight: 500 }}>{d.name}</td>
-              <td>
-                <Badge variant={STAGE_VARIANT[d.stage] ?? 'neutral'}>
-                  {stageMap[d.stage]?.label ?? d.stage}
-                </Badge>
-              </td>
-              <td style={{ fontWeight: 600 }}>{formatVnd(d.value)}</td>
-              <td style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-xs)' }}>
-                {new Date(d.createdAt ?? '').toLocaleDateString('vi-VN')}
-              </td>
-            </tr>
-          ))}
-          {sorted.length === 0 && (
-            <tr><td colSpan={4} style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: 'var(--space-8)' }}>
-              Không có deals nào
-            </td></tr>
-          )}
-        </tbody>
-      </table>
+    <div style={{ background: 'var(--color-bg-surface)', borderRadius: 'var(--radius)', border: '1px solid var(--color-border)', overflow: 'hidden' }}>
+      <IzTable 
+        table={table} 
+        isEmpty={deals.length === 0}
+        onRowClick={onDealClick}
+        emptyProps={{ title: 'Không có deals nào', description: 'Chưa có dữ liệu nào trong bảng này.' }}
+      />
     </div>
   );
 }
