@@ -7,8 +7,11 @@ import {
   flexRender,
   ColumnDef,
   RowSelectionState,
+  SortingState,
+  getSortedRowModel,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { ArrowDownWideNarrow, ArrowUpNarrowWide } from 'lucide-react';
 import styles from './SmartGrid.module.scss';
 import { cn, getColumnLetter } from './utils';
 import { useGridKeyboard } from './useGridKeyboard';
@@ -21,6 +24,7 @@ interface SmartGridProps<TData> {
   updateData?: (rowIndex: number, columnId: string, value: unknown) => void;
   /** Called when the trailing empty row is committed with data */
   onAddRow?: (draft: Record<string, unknown>) => void;
+  pinnedColumns?: string[];
 }
 
 export function SmartGrid<TData>({
@@ -30,6 +34,7 @@ export function SmartGrid<TData>({
   onRowSelectionChange,
   updateData,
   onAddRow,
+  pinnedColumns,
 }: SmartGridProps<TData>) {
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const headerRef = React.useRef<HTMLDivElement>(null);
@@ -40,6 +45,9 @@ export function SmartGrid<TData>({
   // Draft state for the trailing empty row
   const [draftRow, setDraftRow] = React.useState<Record<string, unknown>>({});
   const [draftEditing, setDraftEditing] = React.useState<string | null>(null);
+
+  // Sorting state
+  const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const isSelectionEnabled = onRowSelectionChange !== undefined || rowSelection !== undefined;
 
@@ -60,13 +68,24 @@ export function SmartGrid<TData>({
     return [selectionCol, ...columns];
   }, [columns, isSelectionEnabled]);
 
+  const finalPinned = React.useMemo(() => {
+    const pins = pinnedColumns ? [...pinnedColumns] : [];
+    if (isSelectionEnabled && !pins.includes('_select')) {
+      pins.unshift('_select');
+    }
+    return { left: pins };
+  }, [pinnedColumns, isSelectionEnabled]);
+
   const table = useReactTable({
     data,
     columns: finalColumns,
-    state: { rowSelection },
+    state: { rowSelection, columnPinning: finalPinned, sorting },
     enableRowSelection: isSelectionEnabled,
     onRowSelectionChange,
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    columnResizeMode: 'onChange',
     meta: { updateData, activeCell, setActiveCell, isEditing, setIsEditing },
   });
 
@@ -125,7 +144,8 @@ export function SmartGrid<TData>({
     e.preventDefault();
     const text = e.clipboardData.getData('text/plain');
     if (!text) return;
-    text.split('\n').forEach((rowData, rIdx) => {
+    text.split(/\r?\n/).forEach((rowData, rIdx) => {
+      if (!rowData.trim()) return; // skip empty rows
       const targetRow = activeCell.row + rIdx;
       if (targetRow >= data.length) return;
       rowData.split('\t').forEach((val, cIdx) => {
@@ -152,22 +172,62 @@ export function SmartGrid<TData>({
           <div className={styles.headerRow}>
             <div className={styles.frozenColumn}
               style={{ width: ROW_NUM_W, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} />
-            {leafColumns.map((col, i) => (
-              <div key={`chr-${col.id}`} className={styles.th} style={{ width: col.getSize() }}>
-                {getColumnLetter(i)}
-              </div>
-            ))}
+            {leafColumns.map((col, i) => {
+              const isPinned = col.getIsPinned();
+              const style: React.CSSProperties = { width: col.getSize() };
+              if (isPinned === 'left') {
+                style.position = 'sticky';
+                style.left = col.getStart('left') + ROW_NUM_W;
+                style.zIndex = Math.max(2, 10 - i);
+                style.backgroundColor = 'var(--color-bg-hover)';
+              }
+              return (
+                <div key={`chr-${col.id}`} className={styles.th} style={style}>
+                  {getColumnLetter(i)}
+                </div>
+              );
+            })}
           </div>
           {/* field name row */}
           {table.getHeaderGroups().map(hg => (
             <div key={hg.id} className={styles.headerRow}>
               <div className={styles.frozenColumn}
                 style={{ width: ROW_NUM_W, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} />
-              {hg.headers.map(header => (
-                <div key={header.id} className={styles.th} style={{ width: header.getSize() }}>
-                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                </div>
-              ))}
+              {hg.headers.map((header, i) => {
+                const isPinned = header.column.getIsPinned();
+                const style: React.CSSProperties = { width: header.getSize(), position: 'relative' };
+                if (isPinned === 'left') {
+                  style.position = 'sticky';
+                  style.left = header.column.getStart('left') + ROW_NUM_W;
+                  style.zIndex = Math.max(3, 10 - i);
+                  style.backgroundColor = 'var(--color-bg-hover)';
+                }
+                return (
+                  <div key={header.id} className={styles.th} style={style}>
+                    <div
+                      onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
+                      style={{
+                        cursor: header.column.getCanSort() ? 'pointer' : 'default',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+                        width: '100%', height: '100%', userSelect: 'none'
+                      }}
+                      title={header.column.getCanSort() ? "Click to sort" : undefined}
+                    >
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.column.getIsSorted() === 'asc' ? <ArrowUpNarrowWide size={12} opacity={0.7} /> : null}
+                      {header.column.getIsSorted() === 'desc' ? <ArrowDownWideNarrow size={12} opacity={0.7} /> : null}
+                    </div>
+                    {/* Resizer handle */}
+                    {header.column.getCanResize() && (
+                      <div
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                        className={cn(styles.resizer, header.column.getIsResizing() ? styles.isResizing : '')}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>
@@ -206,11 +266,19 @@ export function SmartGrid<TData>({
 
                 {row.getVisibleCells().map((cell, colIndex) => {
                   const isActive = activeCell?.row === virtualRow.index && activeCell?.col === colIndex;
+                  const isPinned = cell.column.getIsPinned();
+                  const style: React.CSSProperties = { width: cell.column.getSize() };
+                  if (isPinned === 'left') {
+                    style.position = 'sticky';
+                    style.left = cell.column.getStart('left') + ROW_NUM_W;
+                    style.zIndex = isActive ? 3 : 2;
+                    style.backgroundColor = 'var(--color-bg-surface)';
+                  }
                   return (
                     <div
                       key={cell.id}
                       className={cn(styles.td, isActive && styles.activeCell)}
-                      style={{ width: cell.column.getSize() }}
+                      style={style}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </div>
@@ -232,14 +300,22 @@ export function SmartGrid<TData>({
               {data.length + 1}
             </div>
 
-            {/* Selection placeholder (if enabled) */}
-            {isSelectionEnabled && (
-              <div className={styles.td} style={{ width: 32 }} />
-            )}
-
-            {/* Editable cells for data columns */}
-            {dataColumns.map(col => {
+            {/* Editable cells or placeholders for columns */}
+            {leafColumns.map((col, i) => {
               const colId = col.id;
+              const isPinned = col.getIsPinned();
+              const style: React.CSSProperties = { width: col.getSize() };
+              if (isPinned === 'left') {
+                style.position = 'sticky';
+                style.left = col.getStart('left') + ROW_NUM_W;
+                style.zIndex = 2;
+                style.backgroundColor = 'var(--color-bg-surface)'; // override if draftCell doesn't supply one or needs to be opaque
+              }
+
+              if (colId === '_select') {
+                return <div key={colId} className={styles.td} style={style} />;
+              }
+
               const isEditingThis = draftEditing === colId;
               const val = draftRow[colId] ?? '';
 
@@ -247,7 +323,7 @@ export function SmartGrid<TData>({
                 <div
                   key={colId}
                   className={cn(styles.td, styles.draftCell)}
-                  style={{ width: col.getSize() }}
+                  style={style}
                 >
                   <input
                     style={{

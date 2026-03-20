@@ -382,8 +382,8 @@ export default function ImportPage() {
               {result.errors.slice(0, 5).map((e, i) => <div key={i}>{e}</div>)}
             </div>
           )}
-          <button className="btn btn-primary" onClick={() => router.push(entityType === 'contacts' ? '/contacts' : '/pipeline')}>
-            View {entityType} →
+          <button className="btn btn-primary" onClick={() => router.push(entityType === 'contacts' ? '/contacts/sheet' : '/deals/sheet')}>
+            Xem dữ liệu trên Sheet →
           </button>
         </div>
       )}

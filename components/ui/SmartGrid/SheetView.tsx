@@ -28,6 +28,7 @@ export interface SheetViewProps<TData = any> {
   canCreate?: boolean;
   /** Show bulk delete button (tie to 'delete' permission) */
   canDelete?: boolean;
+  pinnedColumns?: string[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,6 +44,7 @@ export function SheetView<TData = any>({
   toolbarExtra,
   canCreate = false,
   canDelete = false,
+  pinnedColumns,
 }: SheetViewProps<TData>) {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
@@ -106,6 +108,7 @@ export function SheetView<TData = any>({
             rowSelection={rowSelection}
             onRowSelectionChange={setRowSelection}
             onAddRow={canCreate ? onAddRow : undefined}
+            pinnedColumns={pinnedColumns}
           />
         )}
       </div>

@@ -66,6 +66,7 @@ export default function DealsSheetPage() {
         onDeleteRows={(ids) => deleteMutation.mutate(ids)}
         canCreate={canCreate}
         canDelete={canDelete}
+        pinnedColumns={['name']}
         toolbarExtra={
           <Link href="/deals" className="btn btn-ghost" style={{ fontSize: 'var(--font-size-sm)' }}>
             ← Pipeline

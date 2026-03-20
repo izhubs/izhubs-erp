@@ -54,6 +54,7 @@ export default function ContactsSheetPage() {
         onDeleteRows={(ids) => deleteMutation.mutate(ids)}
         canCreate={canCreate}
         canDelete={canDelete}
+        pinnedColumns={['name']}
         toolbarExtra={
           <Link href="/contacts" className="btn btn-ghost" style={{ fontSize: 'var(--font-size-sm)' }}>
             ← Danh sách
