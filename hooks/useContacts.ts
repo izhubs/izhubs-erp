@@ -93,8 +93,18 @@ export function useCreateContact() {
       if (!res.ok) throw new Error(json.error ?? 'Failed to create contact');
       return json.data ?? json;
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: contactKeys.all });
+    onSuccess: (newContact) => {
+      qc.setQueriesData<{ data: Contact[]; total: number }>(
+        { queryKey: contactKeys.all },
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            data: [...old.data, newContact],
+            total: (old.total || old.data.length) + 1,
+          };
+        }
+      );
     },
   });
 }

@@ -69,7 +69,19 @@ export function useCreateDeal() {
       if (!res.ok) throw new Error(json.error ?? 'Failed to create deal');
       return json.data ?? json;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: dealKeys.all }),
+    onSuccess: (newDeal) => {
+      qc.setQueriesData<{ data: Deal[]; total: number }>(
+        { queryKey: dealKeys.all },
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            data: [...old.data, newDeal],
+            total: (old.total || old.data.length) + 1,
+          };
+        }
+      );
+    },
   });
 }
 
