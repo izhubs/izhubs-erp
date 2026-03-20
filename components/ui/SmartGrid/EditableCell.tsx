@@ -98,9 +98,9 @@ export function EditableCell<TData>({ context }: EditableCellProps<TData>) {
             }
           }}
         >
-          <option value="" disabled>-- Chọn --</option>
+          <option value="" disabled style={{ color: 'var(--color-text)', background: 'var(--color-bg-surface)' }}>-- Chọn --</option>
           {colMeta.options?.map(opt => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
+            <option key={opt.value} value={opt.value} style={{ color: 'var(--color-text)', background: 'var(--color-bg-surface)' }}>{opt.label}</option>
           ))}
         </select>
       );
