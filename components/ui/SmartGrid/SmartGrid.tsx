@@ -68,6 +68,7 @@ export function SmartGrid<TData>({
   // Draft state for the trailing empty row
   const [draftRow, setDraftRow] = React.useState<Record<string, unknown>>({});
   const [draftEditing, setDraftEditing] = React.useState<string | null>(null);
+  const draftRowRef = React.useRef(draftRow);
 
   // Sorting state
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -148,14 +149,16 @@ export function SmartGrid<TData>({
   });
 
   // Commit draft row when focus leaves and has data
-  const commitDraftRow = React.useCallback(() => {
+  const commitDraftRow = React.useCallback((forceDraft?: Record<string, unknown>) => {
     setDraftEditing(null);
-    const hasData = Object.values(draftRow).some(v => v !== '' && v != null);
+    const targetDraft = forceDraft ?? draftRowRef.current;
+    const hasData = Object.values(targetDraft).some(v => v !== '' && v != null);
     if (hasData && onAddRow) {
-      onAddRow(draftRow);
+      onAddRow(targetDraft);
       setDraftRow({});
+      draftRowRef.current = {};
     }
-  }, [draftRow, onAddRow]);
+  }, [onAddRow]);
 
   // Sync horizontal scroll: body → header
   const handleBodyScroll = React.useCallback(() => {
@@ -433,18 +436,29 @@ export function SmartGrid<TData>({
                         setDraftEditing(colId);
                         setActiveCell(null);
                       }}
-                      onChange={(e) => setDraftRow(prev => ({ ...prev, [colId]: e.target.value }))}
+                      onChange={(e) => {
+                        const newVal = e.target.value;
+                        setDraftRow(prev => {
+                          const updated = { ...prev, [colId]: newVal };
+                          draftRowRef.current = updated;
+                          return updated;
+                        });
+                      }}
                       onBlur={() => setDraftEditing(null)}
                       onKeyDown={(e) => {
                         e.stopPropagation();
-                        // Let native Select handle Enter/Arrows
-                        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) e.stopPropagation();
-                        if (e.key === 'Escape') { setDraftRow({}); setDraftEditing(null); }
-                        // For SELECT fields, we only submit the draft row via Tab on the last column.
-                        // Enter is reserved for interacting with the native dropdown.
+                        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) e.stopPropagation();
+                        if (e.key === 'Escape') { 
+                          setDraftRow({}); 
+                          draftRowRef.current = {};
+                          setDraftEditing(null); 
+                        }
+                        // Delayed commit so native Select logic finishes updating onChange
+                        if (e.key === 'Enter') {
+                          setTimeout(() => commitDraftRow(draftRowRef.current), 0);
+                        }
                         if (e.key === 'Tab' && !e.shiftKey && i === leafColumns.length - 1) {
-                          e.preventDefault();
-                          commitDraftRow();
+                          setTimeout(() => commitDraftRow(draftRowRef.current), 0);
                         }
                       }}
                     >
@@ -478,18 +492,29 @@ export function SmartGrid<TData>({
                       setDraftEditing(colId);
                       setActiveCell(null); // Stop grid from handling grid keys
                     }}
-                    onChange={(e) => setDraftRow(prev => ({ ...prev, [colId]: e.target.value }))}
+                    onChange={(e) => {
+                      const newVal = e.target.value;
+                      setDraftRow(prev => {
+                        const updated = { ...prev, [colId]: newVal };
+                        draftRowRef.current = updated;
+                        return updated;
+                      });
+                    }}
                     onBlur={() => setDraftEditing(null)}
                     onKeyDown={(e) => {
                       e.stopPropagation(); // Stop bubbling to Grid
-                      if (e.key === 'Escape') { setDraftRow({}); setDraftEditing(null); }
+                      if (e.key === 'Escape') { 
+                        setDraftRow({}); 
+                        draftRowRef.current = {};
+                        setDraftEditing(null); 
+                      }
                       if (e.key === 'Enter') { 
                         e.preventDefault(); 
-                        commitDraftRow(); 
+                        commitDraftRow(draftRowRef.current); 
                       }
                       if (e.key === 'Tab' && !e.shiftKey && i === leafColumns.length - 1) {
                         e.preventDefault();
-                        commitDraftRow();
+                        commitDraftRow(draftRowRef.current);
                       }
                     }}
                   />

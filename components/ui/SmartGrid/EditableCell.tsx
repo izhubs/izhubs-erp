@@ -83,8 +83,13 @@ export function EditableCell<TData>({ context }: EditableCellProps<TData>) {
           style={{ ...INPUT_STYLE, cursor: 'pointer' }}
           value={String(value ?? '')}
           onChange={(e) => {
-            setValue(e.target.value);
-            // Optionally auto-commit on select for better UX, or just let onBlur handle it
+            const newVal = e.target.value;
+            setValue(newVal);
+            // Auto commit immediately for select dropdowns
+            if (meta?.updateData && newVal !== initialValue) {
+              meta.updateData(rowIndex, column.id, newVal);
+            }
+            meta?.setIsEditing?.(false);
           }}
           onBlur={commit}
           onKeyDown={(e) => {
@@ -95,6 +100,7 @@ export function EditableCell<TData>({ context }: EditableCellProps<TData>) {
             if (e.key === 'Escape') {
               setValue(initialValue);
               e.currentTarget.onblur = null;
+              meta?.setIsEditing?.(false);
             }
           }}
         >
