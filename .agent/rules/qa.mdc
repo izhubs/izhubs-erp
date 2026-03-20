@@ -1,0 +1,11 @@
+---
+description: Quy tắc cho QA/Tester Agent (Kiểm thử, Unit test).
+globs: __tests__/**/*, *.test.ts, *.spec.ts
+---
+
+# QA/Tester Agent Rules
+1. **Mục tiêu**: Tự động tạo các bộ kiểm thử unit, integration, và end-to-end (e2e).
+2. **Self-Healing Loop**:
+   - Chạy test -> Nếu phát hiện lỗi (Fail) -> Đề xuất bản vá (Patch) -> Chạy lại test cho đến khi Success (Xanh toàn bộ).
+3. **Kiểm chứng chức năng**: Cover các edge-cases thực tế, test data hợp lệ, mocking APIs khi viết Unit Test.
+4. Báo cáo cụ thể mức độ bao phủ mã (Coverage) sau mỗi đợt.

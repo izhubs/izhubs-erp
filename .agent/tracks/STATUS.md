@@ -71,8 +71,8 @@ _Last updated: 2026-03-18 (Session 14 — UI Layer, Chart Widgets, Pipeline Mult
 | 2.5 | fts-search | ✅ done | migration 006 — tsvector + GIN + immutable_unaccent triggers. Search API upgraded. |
 | 3.1 | ui-wrapper-layer | ✅ done | components/providers/QueryProvider.tsx + hooks/index.ts barrel |
 | 3.2 | radix-ui-adopt | ✅ done | @radix-ui/react-dialog + select + popover + toast installed. Dialog.tsx abstraction. |
-| 3.3 | react-hook-form | ✅ done | react-hook-form + @hookform/resolvers installed. Forms pending refactor. |
-| 3.4 | form-refactor | ⏳ pending | Replace ContactFormModal + DealFormModal with Dialog.tsx + useForm + zodResolver |
+| 3.3 | react-hook-form | ✅ done | react-hook-form + @hookform/resolvers installed. |
+| 3.4 | form-refactor | ✅ done | Replace ContactFormModal + DealFormModal with Dialog.tsx + useForm + zodResolver |
 | 4.1 | tanstack-query | ✅ done | @tanstack/react-query — QueryProvider, useContacts, useDeals (optimistic updates) |
 | 4.2 | bullmq-csv-queue | ✅ done | BullMQ queue (import-queue.ts) + standalone worker (scripts/workers/import-worker.ts). Start: tsx scripts/workers/import-worker.ts |
 | 4.3 | postgres-fts | ✅ done | tsvector + GIN + unaccent triggers on contacts + deals (see 2.5) |

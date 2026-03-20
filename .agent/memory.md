@@ -113,6 +113,7 @@ npm run typecheck; npm run test:contracts
 
 ### AI / Agent Layer
 - `.agent/memory.md`, `STATUS.md`, 3 sprints of tracks (SPEC.md per track)
+- **Multi-Agent Strategy**: Đã thiết lập `.agent/rules/*.mdc` cho 6 Personas (PM, Architecture, Backend, Frontend, QA, UI/UX). Bắt buộc sử dụng Artifacts (Implementation Plan, Walkthrough, Browser Recording). Khuyến khích sử dụng Agent Manager và chạy song song qua Duplicate Workspace.
 - Skills: clean-code, conductor, typescript-expert, etc.
 - Workflows: morning-start, feature-cycle, git-workflow, rollback, add-feature
 - PWA: manifest.json + service worker
@@ -127,6 +128,15 @@ npm run typecheck; npm run test:contracts
 - Soft-delete: All entities use `deleted_at` flag — nothing is physically removed from DB (migration 004)
 - Core engine layer: `core/engine/contacts.ts`, `core/engine/deals.ts` — only these may query the DB directly
 - `ApiResponse` factory: `core/engine/response.ts` — ALL API routes must use this, never `NextResponse.json()` directly
+
+### Session 17 — 2026-03-20 (Complete UI Overhaul to IzUI & UX Polish)
+- **IzUI Refactoring Complete**: Refactored `DealSlideOver`, `ContactSlideOver`, `CustomFieldsManager`, and `NotesList` to strictly use `IzInput`, `IzButton`, and `IzSheet`. Removed all legacy Boostrap-like `.form-control` and `.btn` classes from the codebase.
+- **Smooth Animations & Layout Fixes**: 
+  - Created `IzSheet` component wrapping Radix Dialog for buttery smooth CSS slide-in animations.
+  - Set `modal={false}` on SlideOvers and implemented `scrollbar-gutter: stable` + `[data-scroll-locked] { padding-right: 0 !important }` globally in `globals.scss` to structurally eliminate the "janky board layout shift" when opening panels.
+- **Stitch Google Admin UX Design**: Redesigned SlideOvers based on Google Stitch MCP recommendations. Replaced chunky stacked Label/Input layouts with an elegant side-by-side (inline) property list featuring borderless inputs and subtle typography (`text-subtle`).
+- **Metadata Info Boxes**: Upgraded the generic `Created At` / `Updated At` labels into a dedicated, aesthetic info-box placed at the bottom of sheets.
+- **Test Suite Resolution**: Solved ESM errors (`jose`) and Next.js dynamic context errors (`next/headers`) by configuring Jest stubbing. The entire unit test suite (`npm run test`) passes 100%.
 
 ### Session 16 — 2026-03-19 (IzUI Component Library Finalization & Virtual Office Template)
 - **IzUI Master Roadmap Completed**: All 13 phases of the component library are done natively with SCSS Modules and Radix UI primitives.

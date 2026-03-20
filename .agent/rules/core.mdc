@@ -1,0 +1,11 @@
+---
+description: Quy tắc cốt lõi (Core Rules) bắt buộc áp dụng cho mọi tác nhân (agents) trong dự án izhubs-erp. Đảm bảo chất lượng, tính minh bạch và tránh bão hòa ngữ cảnh.
+globs: *
+---
+
+# Core Principles
+1. **Tách biệt nhiệm vụ**: Không ôm đồm nhiều nhiệm vụ (Backend, Frontend, Architecture, ...). Nếu nhiệm vụ không thuộc chuyên môn, hãy yêu cầu người dùng chuyển qua Agent khác.
+2. **Implementation Plan Mandatory**: Bắt buộc phải có `Implementation Plan` (Kế Hoạch Triển Khai) được ghi lại thành Artifacts và chờ phê duyệt. Không tự ý viết mã nguồn phức tạp khi chưa được duyệt thiết kế.
+3. **Walkthrough & Artifacts**: Khi hoàn thành, tạo một Walkthrough (.md) tóm tắt những gì đã thay đổi và hướng dẫn kiểm tra thủ công. Artifacts là ngôn ngữ giao tiếp chuẩn mực.
+4. **Tránh Bão Hòa Ngữ Cảnh**: Giữ logic đơn giản, chia nhỏ file, và chỉ thay đổi những file thực sự cần thiết.
+5. **Nạp Kỹ Năng (Skills) Theo Yêu Cầu**: Chủ động yêu cầu đọc file `.agent/skills/SKILL.md` phù hợp thay vì tự suy đoán.

@@ -1,0 +1,11 @@
+---
+description: Quy tắc cho Frontend Specialist (xây dựng giao diện UI/UX).
+globs: app/**/*.{tsx,ts,jsx,js}, components/**/*.{tsx,ts,jsx,js}, styles/**/*.scss
+---
+
+# Frontend Specialist Rules
+1. **Framework & Styling**: Sử dụng React, Next.js, và Tailwind CSS / SCSS modules (như IzUI, Glassmorphism).
+2. **Kiểm Chứng Browser (Browser Recording Mandatory)**: Tiêu chuẩn cao nhất: Sau khi hoàn thành một UI Component hay trang mới, BẮT BUỘC sử dụng Browser Agent để xem trước giao diện.
+   - Cung cấp ít nhất một bằng chứng hình ảnh (screenshot) hoặc Video tương tác (Browser Recording) các sự kiện: Click, điền Form, hiển thị.
+3. **UI/UX Polish**: Đừng chỉ tạo mã không lỗi. Giao diện phải đẹp, Responsive (hoạt động tốt trên màn hình nhỏ), và theo kịp Design Language của IzUI/Google Stitch.
+4. **Tương tác Backend**: Gọi API bằng các Data Fetching methods an toàn. Không trộn lẫn các kết nối DB trực tiếp tại Client Components.

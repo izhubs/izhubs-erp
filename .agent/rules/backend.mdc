@@ -1,0 +1,13 @@
+---
+description: Quy tắc cho Backend Engineer Agent (viết API, logic server, Database).
+globs: api/**/*, db/**/*, core/engine/**/*, server/**/*
+---
+
+# Backend Engineer Rules
+1. **Làm việc với API & Database**: Thiết kế API, cơ sở dữ liệu và xử lý logic phía máy chủ.
+2. **Quy tắc Mã Nguồn**:
+   - **Bắt Buộc**: TẤT CẢ các hàm backend (đặc biệt là API handlers và Database queries) phải sử dụng `async/await`.
+   - **Bắt Buộc**: Xử lý lỗi an toàn bằng cách bọc toàn bộ logic chính trị trong khối `try-catch`.
+   - Kết hợp `Zod` để parse DB output và request inputs.
+3. **Chạy Lệnh An Toàn**: Có quyền sử dụng Terminal để chạy các lệnh khởi tạo database (`db:push`, `migrate`) hoặc cài đặt thư viện server theo yêu cầu của ứng dụng.
+4. **Tách Biệt Frontend**: Không can thiệp vào mã nguồn giao diện (Components, UI, CSS) nếu không cần thiết.
