@@ -21,21 +21,25 @@ const FormFieldSchema = z.object({
 export type FormField = z.infer<typeof FormFieldSchema>;
 
 export const IzFormSchema = z.object({
-  id:          z.string().uuid(),
-  tenantId:    z.string().uuid(),
-  name:        z.string(),
-  description: z.string().nullable(),
-  fields:      z.array(FormFieldSchema),
-  isActive:    z.boolean(),
-  createdAt:   z.coerce.date(),
+  id:              z.string().uuid(),
+  tenantId:        z.string().uuid(),
+  name:            z.string(),
+  description:     z.string().nullable(),
+  fields:          z.array(FormFieldSchema),
+  isActive:        z.boolean(),
+  webhookUrl:      z.string().nullable().default(null),
+  autoConvertLead: z.boolean().default(false),
+  createdAt:       z.coerce.date(),
 });
 
 export type IzForm = z.infer<typeof IzFormSchema>;
 
 export const CreateFormSchema = z.object({
-  name:        z.string().min(1).max(200),
-  description: z.string().optional(),
-  fields:      z.array(FormFieldSchema).min(1, 'Cần ít nhất 1 field'),
+  name:            z.string().min(1).max(200),
+  description:     z.string().optional(),
+  fields:          z.array(FormFieldSchema).min(1, 'At least 1 field required'),
+  webhookUrl:      z.string().url().optional().or(z.literal('')),
+  autoConvertLead: z.boolean().optional(),
 });
 
 export const UpdateFormSchema = CreateFormSchema.partial().extend({
@@ -65,7 +69,9 @@ export async function listForms(tenantId: string): Promise<IzForm[]> {
   const res = await db.query(
     `SELECT
        id, tenant_id AS "tenantId", name, description,
-       fields, is_active AS "isActive", created_at AS "createdAt"
+       fields, is_active AS "isActive",
+       webhook_url AS "webhookUrl", auto_convert_lead AS "autoConvertLead",
+       created_at AS "createdAt"
      FROM iz_forms
      WHERE tenant_id = $1 AND deleted_at IS NULL
      ORDER BY created_at DESC`,
@@ -79,7 +85,9 @@ export async function getForm(tenantId: string, formId: string): Promise<IzForm 
   const res = await db.query(
     `SELECT
        id, tenant_id AS "tenantId", name, description,
-       fields, is_active AS "isActive", created_at AS "createdAt"
+       fields, is_active AS "isActive",
+       webhook_url AS "webhookUrl", auto_convert_lead AS "autoConvertLead",
+       created_at AS "createdAt"
      FROM iz_forms
      WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
     [formId, tenantId]
@@ -93,7 +101,9 @@ export async function getFormPublic(formId: string): Promise<IzForm | null> {
   const res = await db.query(
     `SELECT
        id, tenant_id AS "tenantId", name, description,
-       fields, is_active AS "isActive", created_at AS "createdAt"
+       fields, is_active AS "isActive",
+       webhook_url AS "webhookUrl", auto_convert_lead AS "autoConvertLead",
+       created_at AS "createdAt"
      FROM iz_forms
      WHERE id = $1 AND deleted_at IS NULL AND is_active = true`,
     [formId]
@@ -108,12 +118,14 @@ export async function createForm(
   data: z.infer<typeof CreateFormSchema>
 ): Promise<IzForm> {
   const res = await db.query(
-    `INSERT INTO iz_forms (tenant_id, name, description, fields)
-     VALUES ($1, $2, $3, $4)
+    `INSERT INTO iz_forms (tenant_id, name, description, fields, webhook_url, auto_convert_lead)
+     VALUES ($1, $2, $3, $4, $5, $6)
      RETURNING
        id, tenant_id AS "tenantId", name, description,
-       fields, is_active AS "isActive", created_at AS "createdAt"`,
-    [tenantId, data.name, data.description ?? null, JSON.stringify(data.fields)]
+       fields, is_active AS "isActive",
+       webhook_url AS "webhookUrl", auto_convert_lead AS "autoConvertLead",
+       created_at AS "createdAt"`,
+    [tenantId, data.name, data.description ?? null, JSON.stringify(data.fields), data.webhookUrl || null, data.autoConvertLead ?? false]
   );
   return IzFormSchema.parse(res.rows[0]);
 }
@@ -132,6 +144,8 @@ export async function updateForm(
   if (data.description !== undefined) { fields.push(`description = $${idx++}`); values.push(data.description); }
   if (data.fields      !== undefined) { fields.push(`fields = $${idx++}`);      values.push(JSON.stringify(data.fields)); }
   if (data.isActive    !== undefined) { fields.push(`is_active = $${idx++}`);   values.push(data.isActive); }
+  if (data.webhookUrl  !== undefined) { fields.push(`webhook_url = $${idx++}`); values.push(data.webhookUrl || null); }
+  if (data.autoConvertLead !== undefined) { fields.push(`auto_convert_lead = $${idx++}`); values.push(data.autoConvertLead); }
 
   if (fields.length === 0) return getForm(tenantId, formId);
 
@@ -176,7 +190,28 @@ export async function submitForm(
        ip_address AS "ipAddress", submitted_at AS "submittedAt"`,
     [formId, form.tenantId, JSON.stringify(data), ipAddress ?? null]
   );
-  return IzFormSubmissionSchema.parse(res.rows[0]);
+  const submission = IzFormSubmissionSchema.parse(res.rows[0]);
+
+  // ── Side-effects (async, non-blocking) ──
+  // Auto-convert to Contact
+  if (form.autoConvertLead) {
+    convertToContact(form.tenantId, submission.id).catch(err =>
+      console.error('[izForm] Auto-convert lead failed:', err)
+    );
+  }
+  // Fire webhook
+  if (form.webhookUrl) {
+    fireWebhook(form.webhookUrl, {
+      event: 'form.submission',
+      formId: form.id,
+      formName: form.name,
+      submission: { id: submission.id, data, submittedAt: submission.submittedAt },
+    }).catch(err =>
+      console.error('[izForm] Webhook failed:', err)
+    );
+  }
+
+  return submission;
 }
 
 /** Get all submissions for a form */
@@ -233,4 +268,43 @@ export async function convertToContact(
   );
 
   return { contactId };
+}
+
+/** Fire outbound webhook (Zapier/Make compatible) */
+async function fireWebhook(url: string, payload: Record<string, unknown>): Promise<void> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'User-Agent': 'izhubs-erp/1.0' },
+      body: JSON.stringify({ ...payload, timestamp: new Date().toISOString() }),
+      signal: controller.signal,
+    });
+    console.log(`[izForm] Webhook fired to ${url} — status ${res.status}`);
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+/** Send a test webhook payload */
+export async function sendTestWebhook(url: string, formName: string): Promise<{ status: number }> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'User-Agent': 'izhubs-erp/1.0' },
+      body: JSON.stringify({
+        event: 'form.test',
+        formName,
+        submission: { id: 'test-000', data: { name: 'Test User', email: 'test@example.com' }, submittedAt: new Date().toISOString() },
+        timestamp: new Date().toISOString(),
+      }),
+      signal: controller.signal,
+    });
+    return { status: res.status };
+  } finally {
+    clearTimeout(timeout);
+  }
 }

@@ -1,6 +1,6 @@
 # Track: AI Landing Page Builder Plugin
 **Created**: 2026-03-22
-**Status**: planning
+**Status**: in-progress
 **Priority**: high
 
 ## Summary
@@ -52,10 +52,10 @@ Hệ thống sử dụng kiến trúc Hybrid:
 - API giao tiếp với Cloudflare API (Wrangler/Pages + SaaS Domains).
 
 ## Implementation Phases
-- [ ] **Phase 1: Plugin Foundation**: DB migration `iz_landing_*`, Module manifest, App Store seed, Basic CRUD routes.
-- [ ] **Phase 2: AI Integration**: `core/engine/ai.ts`, System Prompt (Structure/Content), Zod Validation, Chat UI streaming.
-- [ ] **Phase 3: Renderer Microservice**: `landing-renderer` setup (Astro recursive build), BullMQ queue, pgvector layout library, Cloudflare deployment script.
-- [ ] **Phase 4: Domain & Publishing**: Custom Domain management, Cloudflare for SaaS integration, SSL automation.
+- [x] **Phase 1: Plugin Foundation**: DB migration `iz_landing_*`, Module manifest, App Store seed, Basic CRUD routes. UI Mockups (3 screens in Stitch project `2773881138219956173`).
+- [ ] ⬇️ **Phase 2: AI Integration** *(DEFERRED)*: `core/engine/ai.ts`, System Prompt (Structure/Content), Zod Validation, Chat UI streaming.
+- [ ] ⬇️ **Phase 3: Renderer Microservice** *(DEFERRED)*: `landing-renderer` setup (Astro recursive build), BullMQ queue, pgvector layout library, Cloudflare deployment script.
+- [ ] ⬇️ **Phase 4: Domain & Publishing** *(DEFERRED)*: Custom Domain management, Cloudflare for SaaS integration, SSL automation.
 
 ## Out of Scope
 - Trình kéo thả (Drag-and-Drop builder) UI truyền thống (như Ladipage/Elementor) — hệ thống CHỈ tạo bằng AI Prompt-to-Website (Vibe Code).

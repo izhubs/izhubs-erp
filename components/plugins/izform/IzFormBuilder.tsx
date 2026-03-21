@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { GripVertical, Trash2, ArrowRight, Smartphone, Monitor } from 'lucide-react';
+import { GripVertical, Trash2, ArrowRight, Smartphone, Monitor, Zap, Send } from 'lucide-react';
 import { IzButton } from '@/components/ui/IzButton';
 import { IzInput } from '@/components/ui/IzInput';
 import { IzTextarea } from '@/components/ui/IzTextarea';
@@ -57,6 +57,10 @@ export default function IzFormBuilder({ formId }: IzFormBuilderProps) {
   const [fetching, setFetching] = useState(isEditMode);
   const [error, setError] = useState<string | null>(null);
   const [previewDevice, setPreviewDevice] = useState<'mobile' | 'desktop'>('mobile');
+  const [webhookUrl, setWebhookUrl] = useState('');
+  const [autoConvertLead, setAutoConvertLead] = useState(false);
+  const [testingWebhook, setTestingWebhook] = useState(false);
+  const [webhookStatus, setWebhookStatus] = useState<string | null>(null);
 
   /* ── Fetch existing form for edit mode ── */
   useEffect(() => {
@@ -70,6 +74,8 @@ export default function IzFormBuilder({ formId }: IzFormBuilderProps) {
         setFormName(form.name);
         setFormDesc(form.description || '');
         setFields(form.fields);
+        setWebhookUrl(form.webhookUrl || '');
+        setAutoConvertLead(form.autoConvertLead || false);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load form');
       } finally {
@@ -113,6 +119,8 @@ export default function IzFormBuilder({ formId }: IzFormBuilderProps) {
           name: formName,
           description: formDesc || undefined,
           fields,
+          webhookUrl: webhookUrl || undefined,
+          autoConvertLead,
         }),
       });
       const json = await res.json();
@@ -224,6 +232,70 @@ export default function IzFormBuilder({ formId }: IzFormBuilderProps) {
 
         {/* Error */}
         {error && <p style={{ color: 'var(--color-status-error)', fontSize: '0.875rem' }}>{error}</p>}
+
+        {/* Settings — Webhook & Lead Routing */}
+        <IzCard className={styles.formDetailsCard}>
+          <IzCardContent>
+            <div className={styles.sectionTitle}>
+              <Zap size={14} style={{ display: 'inline', marginRight: '0.375rem' }} />
+              Integrations
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.formGroupLabel}>Webhook URL</label>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div style={{ flex: 1 }}>
+                  <IzInput
+                    value={webhookUrl}
+                    onChange={e => setWebhookUrl(e.target.value)}
+                    placeholder="https://hooks.zapier.com/hooks/catch/..."
+                  />
+                </div>
+                {webhookUrl && (
+                  <IzButton
+                    type="button"
+                    variant="outline"
+                    disabled={testingWebhook}
+                    isLoading={testingWebhook}
+                    onClick={async () => {
+                      setTestingWebhook(true);
+                      setWebhookStatus(null);
+                      try {
+                        const res = await fetch(`/api/v1/plugins/izform/forms/${formId || 'test'}/webhook-test`, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ url: webhookUrl }),
+                        });
+                        const json = await res.json();
+                        setWebhookStatus(res.ok ? `✅ Sent (${json.data?.status})` : `❌ Failed`);
+                      } catch {
+                        setWebhookStatus('❌ Error');
+                      } finally {
+                        setTestingWebhook(false);
+                        setTimeout(() => setWebhookStatus(null), 4000);
+                      }
+                    }}
+                  >
+                    <Send size={14} /> Test
+                  </IzButton>
+                )}
+              </div>
+              {webhookStatus && <span style={{ fontSize: '0.75rem', marginTop: '0.25rem' }}>{webhookStatus}</span>}
+              <span style={{ fontSize: '0.6875rem', color: 'var(--color-text-subtle)', marginTop: '0.25rem' }}>
+                Receives a POST with submission data on every new response.
+              </span>
+            </div>
+
+            <div className={styles.formGroup}>
+              <IzCheckbox
+                label="Auto-convert to Lead"
+                checked={autoConvertLead}
+                onChange={e => setAutoConvertLead(e.target.checked)}
+                description="Automatically create a Contact from form submissions"
+              />
+            </div>
+          </IzCardContent>
+        </IzCard>
 
         {/* Footer actions */}
         <div className={styles.footerActions}>

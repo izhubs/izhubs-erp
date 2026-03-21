@@ -1,16 +1,11 @@
 import { db } from '../core/engine/db';
 
 async function main() {
-  console.log("Expanding icon column length and translating...");
-  await db.query(`ALTER TABLE modules ALTER COLUMN icon TYPE VARCHAR(100)`);
-  
-  await db.query(`
-    UPDATE modules 
-    SET icon = 'ClipboardList',
-        version = '0.1.0'
-    WHERE id = 'izform'
-  `);
-  console.log("Done!");
+  console.log('Running migration 020...');
+  await db.query(`ALTER TABLE iz_forms ADD COLUMN IF NOT EXISTS webhook_url TEXT DEFAULT NULL`);
+  await db.query(`ALTER TABLE iz_forms ADD COLUMN IF NOT EXISTS auto_convert_lead BOOLEAN NOT NULL DEFAULT false`);
+  console.log('Migration 020 done — webhook_url + auto_convert_lead added');
   process.exit(0);
 }
-main().catch(console.error);
+
+main().catch(e => { console.error(e); process.exit(1); });
