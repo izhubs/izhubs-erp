@@ -60,26 +60,46 @@ async function fetchNavConfigFromDB(tenantId: string): Promise<NavConfig | null>
 
   // Fetch active non-core plugins and inject into sidebar
   const activePlugins = await db.query(
-    `SELECT m.id, m.name, m.icon
+    `SELECT m.id, m.name, m.icon, tm.config
      FROM modules m
      JOIN tenant_modules tm ON tm.module_id = m.id AND tm.tenant_id = $1
      WHERE tm.is_active = true AND m.category != 'core'`,
     [tenantId]
   );
 
-  const pluginNavItems: NavItem[] = activePlugins.rows.map(m => ({
-    id: `plugin-${m.id}`,
-    label: m.name.split('—')[0].trim(),
-    href: `/plugins/${m.id}`,
-    icon: m.icon || 'Package',
-    roles: ['admin', 'member'],
-  }));
+  const pluginNavItems: NavItem[] = activePlugins.rows.map(m => {
+    const allowedRoles = Array.isArray(m.config?.allowedRoles)
+      ? m.config.allowedRoles
+      : ['admin', 'member'];
+
+    let label = m.name.split('—')[0].trim();
+    let icon = m.icon || 'Package';
+
+    // UI-friendly overrides for known plugins
+    if (m.id === 'izform') {
+      label = 'Forms';
+      icon = 'ClipboardList'; // Must be a valid Lucide React icon name
+    }
+
+    return {
+      id: `plugin-${m.id}`,
+      label,
+      href: `/plugins/${m.id}`,
+      icon,
+      roles: allowedRoles,
+    };
+  });
 
   const sidebar = [...(navConfig.sidebar ?? []), ...pluginNavItems];
 
   // Merge theme_defaults (stored as separate column) into the NavConfig
   return { ...navConfig, sidebar, themeDefaults: themeDefaults ?? {} };
 }
+
+export const DEFAULT_BOTTOM_ITEMS: NavItem[] = [
+  { id: 'plugins',  label: 'Plugins',  href: '/settings/plugins', icon: 'Package',  roles: ['admin'] },
+  { id: 'settings', label: 'Settings', href: '/settings', icon: 'Settings', roles: ['admin'] },
+];
 
 /**
  * Get the NavConfig for a tenant, filtered by the user's role.
@@ -92,14 +112,13 @@ async function fetchNavConfigFromDB(tenantId: string): Promise<NavConfig | null>
 export async function getNavConfig(
   tenantId: string,
   userRole: string
-): Promise<NavConfig | null> {
+): Promise<(NavConfig & { bottomItems: NavItem[] }) | null> {
   // Cache the raw config (not role-filtered) so all roles share the same cache entry
   const getCachedConfig = unstable_cache(
     () => fetchNavConfigFromDB(tenantId),
-    [`nav-config-${tenantId}`],
+    [`nav-config-v2-${tenantId}`],
     {
       tags: [`nav-config-${tenantId}`],
-      revalidate: 0, // Always fresh — invalidate via revalidateTag() on industry change
     }
   );
 
@@ -107,12 +126,11 @@ export async function getNavConfig(
   if (!config) return null;
 
   // Apply role filter at call time (not cached, fast in-memory)
+  // bottomItems are always system defaults, completely ignoring DB template overrides
   return {
     ...config,
     sidebar: filterByRole(config.sidebar ?? [], userRole),
-    bottomItems: config.bottomItems
-      ? filterByRole(config.bottomItems, userRole)
-      : undefined,
+    bottomItems: filterByRole(DEFAULT_BOTTOM_ITEMS, userRole),
     dashboardLayout: {
       rows: (config.dashboardLayout?.rows ?? []).filter((row) => {
         if (!row.minRole) return true;

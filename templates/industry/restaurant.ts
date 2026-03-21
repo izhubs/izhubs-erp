@@ -54,10 +54,6 @@ const restaurantTemplate: IndustryTemplate = {
       { id: 'deals',      label: 'Đặt bàn',      href: '/deals',      icon: 'UtensilsCrossed', roles: ['admin', 'member'] },
       { id: 'import',     label: 'Import',       href: '/import',     icon: 'Upload',          roles: ['admin', 'member'] },
     ],
-    bottomItems: [
-      { id: 'plugins',    label: 'Plugins',      href: '/settings/plugins', icon: 'Package',         roles: ['admin'] },
-      { id: 'settings',   label: 'Cài đặt',      href: '/settings',   icon: 'Settings',        roles: ['admin'] },
-    ],
     dashboardLayout: {
       rows: [
         { colSpan: 12, widgetId: 'reservations-today' },

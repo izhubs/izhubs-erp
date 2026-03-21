@@ -54,11 +54,6 @@ const agencyTemplate: IndustryTemplate = {
       { id: 'contacts',   label: 'Contacts',     href: '/contacts',   icon: 'Users',           roles: ['admin', 'member'] },
       { id: 'deals',      label: 'Deals',        href: '/deals',      icon: 'Briefcase',       roles: ['admin', 'member'] },
       { id: 'import',     label: 'Import',       href: '/import',     icon: 'Upload',          roles: ['admin', 'member'] },
-      { id: 'izform',     label: 'izForm',       href: '/plugins/izform', icon: 'FileText',    roles: ['admin', 'member'] },
-    ],
-    bottomItems: [
-      { id: 'plugins',    label: 'Plugins',      href: '/settings/plugins', icon: 'Package',         roles: ['admin'] },
-      { id: 'settings',   label: 'Settings',     href: '/settings',   icon: 'Settings',        roles: ['admin'] },
     ],
     dashboardLayout: {
       rows: [

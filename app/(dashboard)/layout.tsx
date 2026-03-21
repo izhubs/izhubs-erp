@@ -1,29 +1,19 @@
 import AppLayout from '@/components/ui/AppLayout';
-import { getNavConfig } from '@/lib/nav-config';
+import { getNavConfig, DEFAULT_BOTTOM_ITEMS } from '@/lib/nav-config';
 import { cookies } from 'next/headers';
 import { verifyJwt } from '@/core/engine/auth/jwt';
 import { db } from '@/core/engine/db';
 import type { NavItem } from '@/templates/engine/template.schema';
 import { TourProvider } from '@/components/onboarding/TourContext';
-import { execSync } from 'child_process';
-
+import pkg from '@/package.json';
 
 export const dynamic = 'force-dynamic';
 
-// Default fallback nav — displayed when tenant has no industry set yet.
-// Mirrors the old hardcoded NAV_ITEMS so existing tenants see no regression.
-// Only show nav items that have real pages — hide stubs until features are built.
-// Stub pages (contracts, automation, reports, audit-log) will be re-added when ready.
 const DEFAULT_NAV: NavItem[] = [
   { id: 'dashboard',  label: 'Dashboard',  href: '/dashboard',  icon: 'LayoutDashboard', roles: ['admin', 'member', 'viewer'] },
   { id: 'contacts',   label: 'Contacts',   href: '/contacts',   icon: 'Users',           roles: ['admin', 'member'] },
   { id: 'deals',      label: 'Deals',      href: '/deals',      icon: 'Briefcase',       roles: ['admin', 'member'] },
   { id: 'import',     label: 'Import',     href: '/import',     icon: 'Upload',          roles: ['admin', 'member'] },
-];
-
-const DEFAULT_BOTTOM: NavItem[] = [
-  { id: 'plugins',  label: 'Plugins',  href: '/settings/plugins', icon: 'Package',  roles: ['admin'] },
-  { id: 'settings', label: 'Settings', href: '/settings', icon: 'Settings', roles: ['admin'] },
 ];
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -32,7 +22,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const token = cookieStore.get('hz_access')?.value;
 
   let navItems: NavItem[] = DEFAULT_NAV;
-  let bottomItems: NavItem[] = DEFAULT_BOTTOM;
+  let bottomItems: NavItem[] = DEFAULT_BOTTOM_ITEMS;
   let themeDefaults: Record<string, string> = {};
 
   if (token) {
@@ -54,7 +44,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
       if (navConfig) {
         navItems = navConfig.sidebar;
-        bottomItems = navConfig.bottomItems ?? DEFAULT_BOTTOM;
+        bottomItems = navConfig.bottomItems;
       }
       if (themeRes.rows[0]?.theme_defaults) {
         themeDefaults = themeRes.rows[0].theme_defaults as Record<string, string>;
@@ -65,17 +55,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
     }
   }
 
-  let version = '';
-  try {
-    const pkg = require('@/package.json');
-    version = pkg.version || '0.1.0';
-  } catch {
-    version = '0.1.0';
-  }
-
   return (
     <TourProvider>
-      <AppLayout navItems={navItems} bottomItems={bottomItems} themeDefaults={themeDefaults} version={version}>
+      <AppLayout navItems={navItems} bottomItems={bottomItems} themeDefaults={themeDefaults} version={pkg.version || '0.1.0'}>
         {children}
       </AppLayout>
     </TourProvider>

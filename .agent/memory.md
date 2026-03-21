@@ -325,6 +325,7 @@ npm run typecheck; npm run test:contracts
 - 🏗️ **onboarding-ui** — 3-step setup wizard (Register, Industry Selection, Provisioning)
 - 🏗️ **json-template-engine** — Complete Export/Import to `.izhubs.json` file for Gumroad package 
 - 🏗️ **embeddable-lead-form** — Viral loop lead generation (Powered by IZhubs iframe form)
+- 🏗️ **plugin-infrastructure** — Hoàn thiện kiến trúc Plugin UI route guard (RequireModule) và clean up hardcoded IDs.
 
 ## Planned v0.3 — Managed Cloud (3 months)
 - **tenant_id activated** — multi-tenant mode for managed hosting ($19/mo)

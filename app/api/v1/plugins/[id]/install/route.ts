@@ -2,8 +2,6 @@ import { activateModule, deactivateModule } from '@/core/engine/modules';
 import { withPermission } from '@/core/engine/rbac';
 import { ApiResponse, ErrorCodes } from '@/core/engine/response';
 
-const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000001';
-
 /**
  * POST /api/v1/plugins/[id]/install
  * Activate a plugin for the current tenant.
@@ -16,7 +14,10 @@ export const POST = withPermission('settings:manage', async (req, claims, ctx) =
       return ApiResponse.error('Plugin ID is required', 400, {}, ErrorCodes.VALIDATION_FAILED);
     }
 
-    const tenantId: string = claims.tenantId || DEFAULT_TENANT_ID;
+    const tenantId = claims.tenantId;
+    if (!tenantId) {
+      return ApiResponse.error('Giao dịch bị từ chối: Bắt buộc phải có tenantId', 403, {}, ErrorCodes.FORBIDDEN);
+    }
 
     await activateModule(tenantId, pluginId);
 
@@ -46,7 +47,10 @@ export const DELETE = withPermission('settings:manage', async (req, claims, ctx)
       return ApiResponse.error('Plugin ID is required', 400, {}, ErrorCodes.VALIDATION_FAILED);
     }
 
-    const tenantId: string = claims.tenantId || DEFAULT_TENANT_ID;
+    const tenantId = claims.tenantId;
+    if (!tenantId) {
+       return ApiResponse.error('Giao dịch bị từ chối: Bắt buộc phải có tenantId', 403, {}, ErrorCodes.FORBIDDEN);
+    }
 
     await deactivateModule(tenantId, pluginId);
 

@@ -43,11 +43,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Block anonymized (GDPR-erased) users
+    // Block anonymized (GDPR-erased) users
     if (await isAnonymized(user.id)) {
       return ApiResponse.error('Account no longer exists', 401);
     }
 
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    const payload = { sub: user.id, tenantId: user.tenant_id, email: user.email, role: user.role };
     const accessToken = await signJwt({ ...payload, type: 'access' }, '15m');
     const refreshToken = await signJwt({ ...payload, type: 'refresh' }, '7d');
 

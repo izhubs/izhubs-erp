@@ -9,6 +9,7 @@ import { z } from 'zod';
 
 const UserRowSchema = z.object({
   id: z.string().uuid(),
+  tenant_id: z.string().uuid().optional(),
   name: z.string(),
   email: z.string().email(),
   role: z.enum(['superadmin', 'admin', 'member', 'viewer']),
@@ -24,7 +25,7 @@ type UserWithHash = z.infer<typeof UserRowSchema>;
 
 export async function getUserByEmail(email: string): Promise<UserWithHash | null> {
   const result = await db.query(
-    `SELECT id, name, email, role, active, password_hash
+    `SELECT id, tenant_id, name, email, role, active, password_hash
      FROM users WHERE email = $1`,
     [email]
   );

@@ -93,8 +93,6 @@ export const DashboardWidgetRowSchema = z.object({
 
 export const NavConfigSchema = z.object({
   sidebar: z.array(NavItemSchema),
-  /** Items pinned to the bottom of the sidebar (e.g. Settings) */
-  bottomItems: z.array(NavItemSchema).optional(),
   dashboardLayout: z.object({
     rows: z.array(DashboardWidgetRowSchema),
   }),

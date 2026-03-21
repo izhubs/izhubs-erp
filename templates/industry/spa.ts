@@ -56,10 +56,6 @@ const spaTemplate: IndustryTemplate = {
       { id: 'deals',     label: 'Lịch hẹn',     href: '/deals',     icon: 'CalendarHeart',   roles: ['admin', 'member'] },
       { id: 'import',    label: 'Import',       href: '/import',    icon: 'Upload',          roles: ['admin', 'member'] },
     ],
-    bottomItems: [
-      { id: 'plugins',    label: 'Plugins',      href: '/settings/plugins', icon: 'Package',         roles: ['admin'] },
-      { id: 'settings',  label: 'Cài đặt',      href: '/settings',  icon: 'Settings',        roles: ['admin'] },
-    ],
     dashboardLayout: {
       rows: [
         { colSpan: 12, widgetId: 'appointments-today' },

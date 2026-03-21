@@ -140,6 +140,38 @@ export async function isModuleActive(tenantId: string, moduleId: string): Promis
 }
 
 /**
+ * Check if a module is active AND accessible by the given user role.
+ * Parses the `allowedRoles` array from the `config` JSONB column.
+ */
+const ROLE_HIERARCHY: Record<string, number> = {
+  viewer: 1,
+  member: 2,
+  admin: 3,
+  superadmin: 4,
+};
+
+export async function checkModuleAccess(tenantId: string, moduleId: string, role: string): Promise<boolean> {
+  const result = await db.query(
+    `SELECT is_active, config FROM tenant_modules
+     WHERE tenant_id = $1 AND module_id = $2`,
+    [tenantId, moduleId]
+  );
+  if (result.rows.length === 0) return false;
+  
+  if (!result.rows[0].is_active) return false;
+
+  const config = result.rows[0].config || {};
+  const allowedRoles = Array.isArray(config.allowedRoles) && config.allowedRoles.length > 0 
+    ? config.allowedRoles 
+    : ['admin', 'member'];
+  
+  const userLevel = ROLE_HIERARCHY[role] ?? 0;
+  const requireLevel = Math.min(...allowedRoles.map((r: string) => ROLE_HIERARCHY[r] ?? 99));
+
+  return userLevel >= requireLevel;
+}
+
+/**
  * Activate a module for a tenant.
  * Uses UPSERT to handle both first-install and re-activation.
  */
@@ -153,12 +185,21 @@ export async function activateModule(tenantId: string, moduleId: string): Promis
     throw new Error(`Module '${moduleId}' not found in registry`);
   }
 
-  await db.query(
-    `INSERT INTO tenant_modules (tenant_id, module_id, is_active, installed_at, updated_at)
-     VALUES ($1, $2, true, NOW(), NOW())
-     ON CONFLICT (tenant_id, module_id)
-     DO UPDATE SET is_active = true, installed_at = COALESCE(tenant_modules.installed_at, NOW()), updated_at = NOW()`,
+  const existingRes = await db.query(
+    'SELECT config FROM tenant_modules WHERE tenant_id = $1 AND module_id = $2',
     [tenantId, moduleId]
+  );
+  const config = existingRes.rows[0]?.config || {};
+  if (!config.allowedRoles) {
+    config.allowedRoles = ['admin', 'member'];
+  }
+
+  await db.query(
+    `INSERT INTO tenant_modules (tenant_id, module_id, is_active, installed_at, updated_at, config)
+     VALUES ($1, $2, true, NOW(), NOW(), $3)
+     ON CONFLICT (tenant_id, module_id)
+     DO UPDATE SET is_active = true, installed_at = COALESCE(tenant_modules.installed_at, NOW()), updated_at = NOW(), config = $3`,
+    [tenantId, moduleId, config]
   );
 
   // Invalidate cache immediately so next request gets fresh state

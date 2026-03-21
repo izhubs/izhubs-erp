@@ -18,6 +18,7 @@ interface Plugin {
   isOfficial: boolean;
   isActive: boolean;
   installedAt: string | null;
+  config?: Record<string, any>;
 }
 
 interface AppStoreProps {
@@ -33,7 +34,7 @@ const CATEGORIES: { key: string; label: string }[] = [
 ];
 
 export function AppStore({ initialPlugins }: AppStoreProps) {
-  const { plugins, install, uninstall } = usePlugins(initialPlugins);
+  const { plugins, install, uninstall, updateConfig } = usePlugins(initialPlugins);
   const [activeCategory, setActiveCategory] = useState('all');
   const [search, setSearch] = useState('');
 
@@ -93,6 +94,7 @@ export function AppStore({ initialPlugins }: AppStoreProps) {
                 {...p}
                 onInstall={install}
                 onUninstall={uninstall}
+                onUpdateConfig={updateConfig}
               />
             </div>
           ))}

@@ -14,15 +14,17 @@ interface PluginCardProps {
   icon: string | null;
   isOfficial: boolean;
   isActive: boolean;
+  config?: Record<string, any>;
   onInstall: (id: string) => Promise<void>;
   onUninstall: (id: string) => Promise<void>;
+  onUpdateConfig?: (id: string, config: Record<string, any>) => Promise<void>;
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
   core: 'Core',
-  finance: 'Tài chính',
-  operations: 'Vận hành',
-  communication: 'Liên lạc',
+  finance: 'Finance',
+  operations: 'Operations',
+  communication: 'Communication',
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -34,7 +36,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 export function PluginCard({
   id, name, description, version, category, icon,
-  isOfficial, isActive, onInstall, onUninstall,
+  isOfficial, isActive, config, onInstall, onUninstall, onUpdateConfig
 }: PluginCardProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,13 +51,61 @@ export function PluginCard({
         await onInstall(id);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Lỗi không xác định');
+      setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
   };
 
   const isCorePlugin = id === 'crm'; // core plugins cannot be uninstalled
+
+  const RolesSelector = () => {
+    if (!isActive || !onUpdateConfig) return null;
+    const currentRoles = Array.isArray(config?.allowedRoles) ? config.allowedRoles : ['admin', 'member'];
+    const rolesList = [
+      { id: 'admin', label: 'Admin' },
+      { id: 'member', label: 'Member' },
+      { id: 'guest', label: 'Guest' },
+    ];
+
+    const toggleRole = async (roleId: string) => {
+      const newRoles = currentRoles.includes(roleId) 
+        ? currentRoles.filter(r => r !== roleId)
+        : [...currentRoles, roleId];
+      
+      if (newRoles.length === 0) return;
+
+      try {
+        await onUpdateConfig(id, { allowedRoles: newRoles });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error updating roles');
+      }
+    };
+
+    return (
+      <div style={{ marginTop: '0.75rem', borderTop: '1px solid var(--color-border)', paddingTop: '0.75rem' }}>
+        <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: '0.5rem' }}>
+          Allowed roles:
+        </p>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          {rolesList.map(role => {
+            const isSelected = currentRoles.includes(role.id);
+            return (
+              <label key={role.id} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8rem', cursor: 'pointer' }}>
+                <input 
+                  type="checkbox" 
+                  checked={isSelected}
+                  onChange={() => toggleRole(role.id)}
+                  style={{ accentColor: 'var(--color-primary)', cursor: 'pointer' }}
+                />
+                {role.label}
+              </label>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className={`${styles.card} ${isActive ? styles.active : ''}`}>
@@ -86,13 +136,15 @@ export function PluginCard({
         <h3 className={styles.name}>{name}</h3>
         {description && <p className={styles.description}>{description}</p>}
         <span className={styles.version}>v{version}</span>
+        
+        <RolesSelector />
       </div>
 
       {/* Status + Action */}
       <div className={styles.footer}>
         <div className={styles.status}>
           <span className={`${styles.statusDot} ${isActive ? styles.dotActive : styles.dotInactive}`} />
-          <span className={styles.statusLabel}>{isActive ? 'Đang hoạt động' : 'Chưa cài đặt'}</span>
+          <span className={styles.statusLabel}>{isActive ? 'Active' : 'Not installed'}</span>
         </div>
 
         {error && <p className={styles.errorMsg}>{error}</p>}
@@ -102,9 +154,9 @@ export function PluginCard({
           className="w-full"
           onClick={handleToggle}
           disabled={loading || isCorePlugin}
-          title={isCorePlugin ? 'Plugin này không thể gỡ cài đặt' : undefined}
+          title={isCorePlugin ? 'Core plugins cannot be uninstalled' : undefined}
         >
-          {loading ? '...' : isActive ? (isCorePlugin ? '🔒 Bắt buộc' : 'Gỡ cài đặt') : 'Cài đặt'}
+          {loading ? '...' : isActive ? (isCorePlugin ? '🔒 Core' : 'Uninstall') : 'Install'}
         </IzButton>
       </div>
     </div>

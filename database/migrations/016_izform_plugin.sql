@@ -35,7 +35,7 @@ INSERT INTO modules (id, name, description, version, category, icon, is_official
 VALUES (
   'izform',
   'izForm — Lead Capture Forms',
-  'Tạo form thu thập lead và nhúng vào website ngoài bằng iframe.',
+  'Create custom lead capture forms and embed them into your marketing sites via iframe.',
   '1.0.0',
   'operations',
   '📋',

@@ -52,6 +52,7 @@ _Last updated: 2026-03-20 (Session 18 — Audit Log + Ephemeral Demo Users + UI 
 | 2026-03-20 | ui-polish-session18 | ✅ done | **Session 18** — Toast z-index 9999+padding-top 64px; Modal/Sheet overlay z-index 99999/100000 che toàn màn hình; bỏ backdrop-filter blur (gây lag); DealSlideOver inline styles fix transparent nền; IzSheet --color-surface fix. db.query chỉ wrap writes (SELECT không overhead). |
 | 2026-03-21 | dynamic-dashboard-engine | ✅ done | Dynamic Dashboard Engine PRD — DAR (D-A-R) framework, RBAC, BFF architecture, JSON configuration. Dashboard Roles Layout specs recorded for future blueprint seeds. |
 | 2026-03-21 | dynamic-dashboard-ui | planning | React implementation of D.A.R Dashboard UI from the JSON blueprints (Radar chart, priority matrix, firefighting tables, etc.). Refer to `dashboard_layouts_plan.md` |
+| 2026-03-22 | plugin-infrastructure | planning | Hoàn thiện kiến trúc UI và bảo mật cho màn hình Frontend của các Web Plugins bằng RequireModule guard. |
 
 ---
 

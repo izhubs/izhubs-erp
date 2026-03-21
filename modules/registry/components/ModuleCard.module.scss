@@ -1,6 +1,6 @@
 .card {
-  background: var(--hz-surface-2, #1e1e2e);
-  border: 1px solid var(--hz-border, rgba(255, 255, 255, 0.08));
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 1.25rem;
   display: flex;
@@ -9,15 +9,15 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
 
   &:hover {
-    border-color: var(--hz-primary, #6366f1);
+    border-color: var(--color-primary);
     box-shadow: 0 4px 20px rgba(99, 102, 241, 0.12);
     transform: translateY(-1px);
   }
 
   &.active {
-    border-color: var(--hz-primary, #6366f1);
-    background: var(--hz-surface-2, #1e1e2e);
-    box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.2);
+    border-color: var(--color-primary);
+    background: var(--color-surface);
+    box-shadow: 0 0 0 1px var(--color-primary);
   }
 }
 
@@ -56,20 +56,20 @@
 .name {
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--hz-text-primary, #e2e8f0);
+  color: var(--color-text-primary);
   margin: 0;
 }
 
 .description {
   font-size: 0.8rem;
-  color: var(--hz-text-muted, #94a3b8);
+  color: var(--color-text-muted);
   margin: 0;
   line-height: 1.4;
 }
 
 .version {
   font-size: 0.7rem;
-  color: var(--hz-text-muted, #94a3b8);
+  color: var(--color-text-subtle);
   font-family: monospace;
 }
 
@@ -79,7 +79,7 @@
   gap: 0.5rem;
   margin-top: auto;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--hz-border, rgba(255, 255, 255, 0.06));
+  border-top: 1px solid var(--color-border);
 }
 
 .status {
@@ -100,13 +100,13 @@
   }
 
   &.dotInactive {
-    background: var(--hz-text-muted, #64748b);
+    background: var(--color-text-muted);
   }
 }
 
 .statusLabel {
   font-size: 0.75rem;
-  color: var(--hz-text-muted, #94a3b8);
+  color: var(--color-text-muted);
 }
 
 .errorMsg {
