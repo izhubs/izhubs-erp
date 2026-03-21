@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { GripVertical, Trash2, ArrowRight } from 'lucide-react';
+import { GripVertical, Trash2, ArrowRight, Smartphone, Monitor } from 'lucide-react';
 import { IzButton } from '@/components/ui/IzButton';
 import { IzInput } from '@/components/ui/IzInput';
 import { IzTextarea } from '@/components/ui/IzTextarea';
@@ -39,17 +39,44 @@ const PLACEHOLDER_MAP: Record<string, string> = {
   select: 'Select an option',
 };
 
-export default function IzFormBuilder() {
+interface IzFormBuilderProps {
+  formId?: string;
+}
+
+export default function IzFormBuilder({ formId }: IzFormBuilderProps) {
   const router = useRouter();
-  const [formName, setFormName] = useState('Client Onboarding Survey');
-  const [formDesc, setFormDesc] = useState('Gather essential information for initial client strategy sessions.');
+  const isEditMode = !!formId;
+  const [formName, setFormName] = useState('');
+  const [formDesc, setFormDesc] = useState('');
   const [fields, setFields] = useState<FormField[]>([
     { id: 'f1', type: 'text', label: 'Full Name', required: true },
-    { id: 'f2', type: 'email', label: 'Primary Email', required: true },
-    { id: 'f3', type: 'number', label: 'Company Size', required: false },
+    { id: 'f2', type: 'email', label: 'Email', required: true },
+    { id: 'f3', type: 'phone', label: 'Phone', required: false },
   ]);
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(isEditMode);
   const [error, setError] = useState<string | null>(null);
+  const [previewDevice, setPreviewDevice] = useState<'mobile' | 'desktop'>('mobile');
+
+  /* ── Fetch existing form for edit mode ── */
+  useEffect(() => {
+    if (!formId) return;
+    (async () => {
+      try {
+        const res = await fetch(`/api/v1/plugins/izform/forms/${formId}`);
+        const json = await res.json();
+        if (!res.ok) throw new Error(json?.error?.message || 'Failed to load form');
+        const form = json.data;
+        setFormName(form.name);
+        setFormDesc(form.description || '');
+        setFields(form.fields);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load form');
+      } finally {
+        setFetching(false);
+      }
+    })();
+  }, [formId]);
 
   /* ── Field CRUD ── */
   const addField = () => {
@@ -69,13 +96,18 @@ export default function IzFormBuilder() {
     setFields(prev => prev.map(f => f.id === id ? { ...f, ...updates } : f));
   };
 
-  /* ── Submit ── */
+  /* ── Submit (Create or Update) ── */
   const handleSave = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/v1/plugins/izform/forms', {
-        method: 'POST',
+      const url = isEditMode
+        ? `/api/v1/plugins/izform/forms/${formId}`
+        : '/api/v1/plugins/izform/forms';
+      const method = isEditMode ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formName,
@@ -84,7 +116,7 @@ export default function IzFormBuilder() {
         }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.error?.message || 'Failed to create form');
+      if (!res.ok) throw new Error(json?.error?.message || 'Failed to save form');
       router.push('/plugins/izform');
       router.refresh();
     } catch (err) {
@@ -93,6 +125,14 @@ export default function IzFormBuilder() {
       setLoading(false);
     }
   };
+
+  if (fetching) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh', color: 'var(--color-text-subtle)' }}>
+        Loading form...
+      </div>
+    );
+  }
 
   return (
     <div className={styles.wrapper}>
@@ -208,54 +248,103 @@ export default function IzFormBuilder() {
           <div className={styles.blob2} />
         </div>
 
-        {/* Live badge */}
-        <div className={styles.liveBadge}>
-          <span className={styles.liveDot} />
-          <span className={styles.liveText}>Live Preview</span>
-        </div>
-
-        {/* Phone frame */}
-        <div className={styles.phoneFrame}>
-          <div className={styles.phoneNotch}>
-            <span className={styles.notchDot} />
-            <span className={styles.notchBar} />
+        {/* Top bar: badge + device toggle */}
+        <div className={styles.previewTopBar}>
+          <div className={styles.liveBadge}>
+            <span className={styles.liveDot} />
+            <span className={styles.liveText}>Live Preview</span>
           </div>
-
-          <div className={styles.phoneContent}>
-            {/* Title */}
-            <div>
-              <h3 className={styles.previewTitle}>
-                {formName || 'Untitled Form'}
-              </h3>
-              {formDesc && (
-                <p className={styles.previewDesc}>{formDesc}</p>
-              )}
-            </div>
-
-            {/* Preview fields */}
-            {fields.map(field => (
-              <div key={field.id} className={styles.previewField}>
-                <span className={styles.previewFieldLabel}>
-                  {field.label || 'Untitled'}{field.required ? ' *' : ''}
-                </span>
-                <input
-                  className={styles.previewFieldInput}
-                  disabled
-                  placeholder={PLACEHOLDER_MAP[field.type] || 'Enter value...'}
-                  type={field.type === 'email' ? 'email' : field.type === 'number' ? 'number' : 'text'}
-                />
-              </div>
-            ))}
-
-            {/* Submit button */}
-            <button className={styles.previewSubmitBtn} type="button" disabled>
-              Submit
-              <ArrowRight size={16} />
+          <div className={styles.deviceToggle}>
+            <button
+              className={`${styles.deviceBtn} ${previewDevice === 'mobile' ? styles.deviceBtnActive : ''}`}
+              onClick={() => setPreviewDevice('mobile')}
+              title="Mobile view"
+            >
+              <Smartphone size={16} />
+            </button>
+            <button
+              className={`${styles.deviceBtn} ${previewDevice === 'desktop' ? styles.deviceBtnActive : ''}`}
+              onClick={() => setPreviewDevice('desktop')}
+              title="Desktop view"
+            >
+              <Monitor size={16} />
             </button>
           </div>
-
-          <div className={styles.phoneHomeBar} />
         </div>
+
+        {/* Preview content - shared between both modes */}
+        {previewDevice === 'mobile' ? (
+          /* ── Mobile Phone Frame ── */
+          <div className={styles.phoneFrame}>
+            <div className={styles.phoneNotch}>
+              <span className={styles.notchDot} />
+              <span className={styles.notchBar} />
+            </div>
+            <div className={styles.phoneContent}>
+              <div>
+                <h3 className={styles.previewTitle}>{formName || 'Untitled Form'}</h3>
+                {formDesc && <p className={styles.previewDesc}>{formDesc}</p>}
+              </div>
+              {fields.map(field => (
+                <div key={field.id} className={styles.previewField}>
+                  <span className={styles.previewFieldLabel}>
+                    {field.label || 'Untitled'}{field.required ? ' *' : ''}
+                  </span>
+                  <input
+                    className={styles.previewFieldInput}
+                    disabled
+                    placeholder={PLACEHOLDER_MAP[field.type] || 'Enter value...'}
+                    type={field.type === 'email' ? 'email' : field.type === 'number' ? 'number' : 'text'}
+                  />
+                </div>
+              ))}
+              <button className={styles.previewSubmitBtn} type="button" disabled>
+                Submit <ArrowRight size={16} />
+              </button>
+            </div>
+            <div className={styles.phoneHomeBar} />
+          </div>
+        ) : (
+          /* ── Desktop Browser Frame ── */
+          <div className={styles.desktopFrame}>
+            <div className={styles.desktopTitleBar}>
+              <div className={styles.desktopDots}>
+                <span className={styles.dotRed} />
+                <span className={styles.dotYellow} />
+                <span className={styles.dotGreen} />
+              </div>
+              <div className={styles.desktopUrlBar}>
+                yoursite.com/forms/embed
+              </div>
+            </div>
+            <div className={styles.desktopContent}>
+              <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+                <div>
+                  <h3 className={styles.previewTitle}>{formName || 'Untitled Form'}</h3>
+                  {formDesc && <p className={styles.previewDesc}>{formDesc}</p>}
+                </div>
+                <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  {fields.map(field => (
+                    <div key={field.id} className={styles.previewField}>
+                      <span className={styles.previewFieldLabel}>
+                        {field.label || 'Untitled'}{field.required ? ' *' : ''}
+                      </span>
+                      <input
+                        className={styles.previewFieldInput}
+                        disabled
+                        placeholder={PLACEHOLDER_MAP[field.type] || 'Enter value...'}
+                        type={field.type === 'email' ? 'email' : field.type === 'number' ? 'number' : 'text'}
+                      />
+                    </div>
+                  ))}
+                  <button className={styles.previewSubmitBtn} type="button" disabled>
+                    Submit <ArrowRight size={16} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

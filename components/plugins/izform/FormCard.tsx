@@ -71,8 +71,11 @@ export function FormCard({ form }: Props) {
       </div>
 
       <div className={styles.formCardActions}>
+        <a href={`/plugins/izform/${form.id}/edit`} className={styles.viewLink}>
+          ✏️ Edit
+        </a>
         <a href={`/plugins/izform/${form.id}`} className={styles.viewLink}>
-          Xem submissions →
+          View submissions →
         </a>
       </div>
     </div>
