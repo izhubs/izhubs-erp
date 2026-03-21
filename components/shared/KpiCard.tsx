@@ -10,7 +10,7 @@ export type TrendDirection = 'up' | 'down' | 'neutral';
 
 export interface KpiCardProps {
   label: string;
-  value: string | number;
+  value: React.ReactNode;
   subLabel?: string;
   trend?: string;
   trendDirection?: TrendDirection;

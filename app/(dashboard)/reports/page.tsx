@@ -8,7 +8,7 @@ import { db } from '@/core/engine/db';
 import { getTenantId } from '@/core/engine/auth';
 import { PageHeader, KpiCard, Badge } from '@/components/shared';
 import { IzButton } from '@/components/ui/IzButton';
-import { formatMoney } from '@/lib/userTime';
+import { Money } from '@/components/shared/Money';
 
 export const metadata = { title: 'Reports & Analytics — izhubs ERP' };
 
@@ -99,7 +99,7 @@ export default async function ReportsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
         <KpiCard
           label="Revenue this month"
-          value={formatMoney(kpis.revenue_this_month)}
+          value={<Money value={kpis.revenue_this_month} />}
           trendDirection="up"
         />
         <KpiCard label="Deals won this month" value={String(kpis.won_this_month)} trendDirection="up" />
@@ -127,7 +127,7 @@ export default async function ReportsPage() {
                     <td><Badge variant="info">{STAGE_LABELS[s.stage] ?? s.stage}</Badge></td>
                     <td style={{ fontWeight: 600 }}>{s.count}</td>
                     <td style={{ color: 'var(--color-text-muted)' }}>
-                      {formatMoney(s.total_value)}
+                      <Money value={s.total_value} />
                     </td>
                   </tr>
                 ))}
@@ -152,7 +152,7 @@ export default async function ReportsPage() {
                   <div key={m.month}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-size-xs)', marginBottom: 4 }}>
                       <span style={{ color: 'var(--color-text-muted)' }}>{m.month}</span>
-                      <span style={{ fontWeight: 600 }}>{formatMoney(m.revenue)}</span>
+                      <span style={{ fontWeight: 600 }}><Money value={m.revenue} /></span>
                     </div>
                     <div style={{ background: 'var(--color-bg-hover)', borderRadius: 'var(--radius-full)', height: 6 }}>
                       <div style={{
@@ -187,7 +187,7 @@ export default async function ReportsPage() {
                   <td style={{ fontWeight: 500 }}>{d.name}</td>
                   <td style={{ color: 'var(--color-text-muted)' }}>{d.company ?? '—'}</td>
                   <td style={{ fontWeight: 600, color: 'var(--color-success)' }}>
-                    {formatMoney(d.value)}
+                    <Money value={d.value} />
                   </td>
                   <td style={{ color: 'var(--color-text-muted)' }}>{d.owner ?? '—'}</td>
                 </tr>

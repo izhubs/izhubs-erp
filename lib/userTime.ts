@@ -122,18 +122,22 @@ export function getTimezoneOffset(tz: Timezone): string {
 /**
  * Format a money amount in the user's preferred currency.
  * @example formatMoney(1500000) → "1.500.000 ₫"
+ * @example formatMoney(1500000, undefined, { compact: true }) → "1,5 Tr ₫"
  */
 export function formatMoney(
   amount: number | string | null | undefined,
   currency?: Currency,
+  opts?: { compact?: boolean }
 ): string {
   const n = Number(amount);
   if (isNaN(n)) return '—';
   const cur = currency ?? getUserCurrency();
   const meta = CURRENCIES.find(c => c.value === cur);
+  
   return new Intl.NumberFormat(meta?.locale ?? 'vi-VN', {
     style: 'currency',
     currency: cur,
-    maximumFractionDigits: cur === 'VND' || cur === 'JPY' ? 0 : 2,
+    notation: opts?.compact ? 'compact' : 'standard',
+    maximumFractionDigits: cur === 'VND' || cur === 'JPY' ? 0 : (opts?.compact ? 1 : 2),
   }).format(n);
 }

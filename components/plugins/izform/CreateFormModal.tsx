@@ -2,6 +2,13 @@
 
 import { useState } from 'react';
 import { IzButton } from '@/components/ui/IzButton';
+import { IzInput } from '@/components/ui/IzInput';
+import { IzSelect } from '@/components/ui/IzSelect';
+import { IzCheckbox } from '@/components/ui/IzCheckbox';
+import { 
+  IzModal, IzModalContent, IzModalHeader, 
+  IzModalTitle, IzModalBody, IzModalFooter 
+} from '@/components/ui/IzModal';
 import styles from './IzFormList.module.scss';
 
 type FieldType = 'text' | 'email' | 'phone' | 'textarea' | 'select';
@@ -85,94 +92,94 @@ export function CreateFormModal({ onClose, onCreated }: Props) {
   };
 
   return (
-    <div className={styles.modalOverlay}>
-      <div className={styles.modal}>
-        <div className={styles.modalHeader}>
-          <h2>Tạo Form mới</h2>
-          <button onClick={onClose} className={styles.closeBtn} aria-label="Đóng">✕</button>
-        </div>
+    <IzModal open={true} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <IzModalContent size="lg">
+        <IzModalHeader>
+          <IzModalTitle>Tạo Form mới</IzModalTitle>
+        </IzModalHeader>
 
-        <form onSubmit={handleSubmit} className={styles.modalBody}>
-          {/* Name */}
-          <div className={styles.formGroup}>
-            <label htmlFor="form-name">Tên form *</label>
-            <input
-              id="form-name"
-              type="text"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="VD: Đăng ký tư vấn miễn phí"
-              required
-            />
-          </div>
-
-          {/* Description */}
-          <div className={styles.formGroup}>
-            <label htmlFor="form-desc">Mô tả</label>
-            <input
-              id="form-desc"
-              type="text"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Mô tả ngắn cho form này"
-            />
-          </div>
-
-          {/* Fields */}
-          <div className={styles.fieldsSection}>
-            <div className={styles.fieldsHeader}>
-              <span>Fields ({fields.length})</span>
-              <IzButton type="button" variant="outline" onClick={addField}>+ Thêm field</IzButton>
+        <form onSubmit={handleSubmit}>
+          <IzModalBody className={styles.modalBody}>
+            {/* Name */}
+            <div className={styles.formGroup}>
+              <label htmlFor="form-name">Tên form *</label>
+              <IzInput
+                id="form-name"
+                type="text"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="VD: Đăng ký tư vấn miễn phí"
+                required
+              />
             </div>
 
-            {fields.map(field => (
-              <div key={field.id} className={styles.fieldRow}>
-                <input
-                  type="text"
-                  value={field.label}
-                  onChange={e => updateField(field.id, { label: e.target.value })}
-                  placeholder="Label"
-                  className={styles.fieldLabel}
-                />
-                <select
-                  value={field.type}
-                  onChange={e => updateField(field.id, { type: e.target.value as FieldType })}
-                  className={styles.fieldType}
-                >
-                  {FIELD_TYPES.map(t => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
-                  ))}
-                </select>
-                <label className={styles.requiredToggle}>
-                  <input
-                    type="checkbox"
+            {/* Description */}
+            <div className={styles.formGroup}>
+              <label htmlFor="form-desc">Mô tả</label>
+              <IzInput
+                id="form-desc"
+                type="text"
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                placeholder="Mô tả ngắn cho form này"
+              />
+            </div>
+
+            {/* Fields */}
+            <div className={styles.fieldsSection}>
+              <div className={styles.fieldsHeader}>
+                <span>Fields ({fields.length})</span>
+                <IzButton type="button" variant="outline" onClick={addField}>+ Thêm field</IzButton>
+              </div>
+
+              {fields.map(field => (
+                <div key={field.id} className={styles.fieldRow}>
+                  <IzInput
+                    type="text"
+                    value={field.label}
+                    onChange={e => updateField(field.id, { label: e.target.value })}
+                    placeholder="Label"
+                    wrapperClassName={styles.fieldLabel}
+                  />
+                  <div className={styles.fieldType}>
+                    <IzSelect
+                      options={FIELD_TYPES}
+                      value={FIELD_TYPES.find(t => t.value === field.type)}
+                      onChange={(val: any) => updateField(field.id, { type: val?.value as FieldType })}
+                      menuPosition="fixed"
+                    />
+                  </div>
+                  <IzCheckbox
+                    label="Bắt buộc"
                     checked={field.required}
                     onChange={e => updateField(field.id, { required: e.target.checked })}
+                    wrapperClassName={styles.requiredToggle}
                   />
-                  Bắt buộc
-                </label>
-                <button
-                  type="button"
-                  onClick={() => removeField(field.id)}
-                  className={styles.removeField}
-                  disabled={fields.length <= 1}
-                >
-                  🗑️
-                </button>
-              </div>
-            ))}
-          </div>
+                  <IzButton
+                    type="button"
+                    variant="ghost"
+                    onClick={() => removeField(field.id)}
+                    className={styles.removeField}
+                    disabled={fields.length <= 1}
+                    style={{ padding: '0.25rem' }}
+                  >
+                    🗑️
+                  </IzButton>
+                </div>
+              ))}
+            </div>
 
-          {error && <p className={styles.errorMsg}>{error}</p>}
+            {error && <p className={styles.errorMsg}>{error}</p>}
+          </IzModalBody>
 
-          <div className={styles.modalFooter}>
+          <IzModalFooter>
             <IzButton type="button" variant="outline" onClick={onClose}>Huỷ</IzButton>
             <IzButton type="submit" disabled={loading || !name}>
               {loading ? 'Đang tạo...' : 'Tạo Form'}
             </IzButton>
-          </div>
+          </IzModalFooter>
         </form>
-      </div>
-    </div>
+      </IzModalContent>
+    </IzModal>
   );
 }

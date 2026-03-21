@@ -8,8 +8,8 @@ import { verifyJwt } from '@/core/engine/auth/jwt';
 import { db } from '@/core/engine/db';
 import { IzMetricCard } from '@/components/ui/IzMetricCard';
 import { IzCard, IzCardHeader, IzCardTitle, IzCardContent } from '@/components/ui/IzCard';
-import { formatMoney } from '@/lib/userTime';
 import { getEffectiveRole } from '@/core/engine/auth/server-context';
+import { Money } from '@/components/shared/Money';
 
 export const metadata = { title: 'Dashboard — izhubs ERP' };
 export const dynamic = 'force-dynamic';
@@ -165,7 +165,7 @@ export default async function DashboardPage() {
   const mrr          = activeDeals.reduce((s, d) => s + d.value, 0);
 
   const kpis = [
-    { labelKey: 'mrr',           value: formatMoney(mrr),              icon: '💰', href: '/contracts', color: '#6366f1' },
+    { labelKey: 'mrr',           value: <Money value={mrr} />,              icon: '💰', href: '/contracts', color: '#6366f1' },
     { labelKey: 'activeClients', value: String(activeDeals.length),   icon: '✅', href: '/contracts', color: '#10b981' },
     { labelKey: 'renewalsDue',   value: String(renewalDeals.length),  icon: '🔔', href: '/deals',     color: '#f97316' },
     { labelKey: 'openDeals',     value: String(openDeals.length),     icon: '📊', href: '/deals',     color: '#60a5fa' },
@@ -222,112 +222,120 @@ export default async function DashboardPage() {
       </div>
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-4)' }}>
-        {kpis.map(kpi => (
-          <Link key={kpi.labelKey} href={kpi.href} style={{ textDecoration: 'none' }}>
-            <IzMetricCard
-              label={t[kpi.labelKey]}
-              value={kpi.value}
-              icon={<span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: 'var(--radius-sm)', background: `linear-gradient(135deg, ${kpi.color}15 0%, ${kpi.color}05 100%)`, color: kpi.color, fontSize: 18 }}>{kpi.icon}</span>}
-              style={{ height: '100%', borderTop: `3px solid ${kpi.color}` }}
-            />
-          </Link>
-        ))}
-      </div>
+      {showFullDashboard && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-4)' }}>
+          {kpis.map(kpi => (
+            <Link key={kpi.labelKey} href={kpi.href} style={{ textDecoration: 'none' }}>
+              <IzMetricCard
+                label={t[kpi.labelKey]}
+                value={kpi.value}
+                icon={<span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: 'var(--radius-sm)', background: `linear-gradient(135deg, ${kpi.color}15 0%, ${kpi.color}05 100%)`, color: kpi.color, fontSize: 18 }}>{kpi.icon}</span>}
+                style={{ height: '100%', borderTop: `3px solid ${kpi.color}` }}
+              />
+            </Link>
+          ))}
+        </div>
+      )}
 
       {/* Charts Row */}
-      <DashboardCharts arrData={arrData} revenueData={revenueData} />
+      {showCharts && <DashboardCharts arrData={arrData} revenueData={revenueData} />}
 
-      {/* Bottom Row: Pipeline Breakdown + Top Customers — 3:2 */}
-      <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 'var(--space-5)' }}>
+      {/* Bottom Row: Pipeline Breakdown + Top Customers */}
+      {(showPipelineDetails || showTopCustomers) && (
+        <div style={{ display: 'grid', gridTemplateColumns: showTopCustomers ? '3fr 2fr' : '1fr', gap: 'var(--space-5)' }}>
 
-        {/* Pipeline Breakdown */}
-        <IzCard>
-          <IzCardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 'var(--space-4)' }}>
-            <div>
-              <IzCardTitle style={{ margin: '0 0 2px', fontSize: 'var(--font-size-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)' }}>
-                {t.pipelineBreakdown}
-              </IzCardTitle>
-              <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>{deals.length} total deals</div>
-            </div>
-            <Link href="/deals" style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
-              {t.viewPipeline} →
-            </Link>
-          </IzCardHeader>
-          <IzCardContent>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {stageCounts.map(s => (
-                <div key={s.key} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-                  <span style={{ width: 10, height: 10, borderRadius: '3px', background: s.color, flexShrink: 0, boxShadow: `0 0 6px ${s.color}66` }} />
-                  <span style={{ width: 130, fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>{s.label}</span>
-                  <div style={{ flex: 1, height: 8, background: 'var(--color-bg-elevated)', borderRadius: 4, overflow: 'hidden' }}>
-                    <div style={{
-                      height: '100%',
-                      width: `${(s.count / maxCount) * 100}%`,
-                      background: `linear-gradient(90deg, ${s.color} 0%, ${s.color}99 100%)`,
-                      borderRadius: 4, minWidth: s.count > 0 ? 6 : 0,
-                    }} />
-                  </div>
-                  <span style={{ width: 22, textAlign: 'right', fontSize: 'var(--font-size-xs)', fontWeight: 800, color: s.count > 0 ? 'var(--color-text)' : 'var(--color-text-muted)' }}>
-                    {s.count}
-                  </span>
-                  {s.value > 0 && (
-                    <span style={{ fontSize: 10, color: 'var(--color-text-muted)', whiteSpace: 'nowrap', minWidth: 52, textAlign: 'right' }}>
-                      {abbrevMoney(s.value)}
-                    </span>
-                  )}
+          {/* Pipeline Breakdown */}
+          {showPipelineDetails && (
+            <IzCard>
+              <IzCardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 'var(--space-4)' }}>
+                <div>
+                  <IzCardTitle style={{ margin: '0 0 2px', fontSize: 'var(--font-size-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)' }}>
+                    {t.pipelineBreakdown}
+                  </IzCardTitle>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>{deals.length} total deals</div>
                 </div>
-              ))}
-            </div>
-          </IzCardContent>
-        </IzCard>
-
-        {/* Top 5 Customers */}
-        <IzCard style={{ display: 'flex', flexDirection: 'column' }}>
-          <IzCardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 'var(--space-4)' }}>
-            <IzCardTitle style={{ margin: 0, fontSize: 'var(--font-size-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)' }}>
-              {t.topCustomers}
-            </IzCardTitle>
-            <Link href="/contacts" style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
-              {t.viewAll} →
-            </Link>
-          </IzCardHeader>
-          <IzCardContent style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            {topCustomers.length === 0 ? (
-              <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', margin: 0 }}>{t.noDeals}</p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
-                {topCustomers.map((d, i) => (
-                  <div key={d.id} style={{
-                    display: 'flex', alignItems: 'center', gap: 'var(--space-3)',
-                    padding: '6px 10px',
-                    borderRadius: 'var(--radius-md)',
-                    background: i === 0 ? 'linear-gradient(90deg, rgba(99,102,241,0.05) 0%, transparent 100%)' : 'transparent',
-                  }}>
-                    <span style={{
-                      width: 22, height: 22, borderRadius: '50%',
-                      background: i === 0 ? 'var(--color-primary)' : i === 1 ? '#94a3b8' : i === 2 ? '#f97316' : 'var(--color-bg-elevated)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 10, fontWeight: 800, color: i < 3 ? '#fff' : 'var(--color-text-muted)', flexShrink: 0,
-                    }}>
-                      {i + 1}
-                    </span>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: 600, fontSize: 'var(--font-size-xs)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.name}</div>
-                      <div style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>
-                        {(d.customFields as Record<string, unknown>)?.goi_dich_vu as string ?? d.stage}
+                <Link href="/deals" style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
+                  {t.viewPipeline} →
+                </Link>
+              </IzCardHeader>
+              <IzCardContent>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {stageCounts.map(s => (
+                    <div key={s.key} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                      <span style={{ width: 10, height: 10, borderRadius: '3px', background: s.color, flexShrink: 0, boxShadow: `0 0 6px ${s.color}66` }} />
+                      <span style={{ width: 130, fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>{s.label}</span>
+                      <div style={{ flex: 1, height: 8, background: 'var(--color-bg-elevated)', borderRadius: 4, overflow: 'hidden' }}>
+                        <div style={{
+                          height: '100%',
+                          width: `${(s.count / maxCount) * 100}%`,
+                          background: `linear-gradient(90deg, ${s.color} 0%, ${s.color}99 100%)`,
+                          borderRadius: 4, minWidth: s.count > 0 ? 6 : 0,
+                        }} />
                       </div>
+                      <span style={{ width: 22, textAlign: 'right', fontSize: 'var(--font-size-xs)', fontWeight: 800, color: s.count > 0 ? 'var(--color-text)' : 'var(--color-text-muted)' }}>
+                        {s.count}
+                      </span>
+                      {s.value > 0 && (
+                        <span style={{ fontSize: 10, color: 'var(--color-text-muted)', whiteSpace: 'nowrap', minWidth: 52, textAlign: 'right' }}>
+                          {abbrevMoney(s.value)}
+                        </span>
+                      )}
                     </div>
-                    <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--color-primary)', flexShrink: 0, background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: 4 }}>
-                      {formatMoney(d.value)}
-                    </span>
+                  ))}
+                </div>
+              </IzCardContent>
+            </IzCard>
+          )}
+
+          {/* Top 5 Customers */}
+          {showTopCustomers && (
+            <IzCard style={{ display: 'flex', flexDirection: 'column' }}>
+              <IzCardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 'var(--space-4)' }}>
+                <IzCardTitle style={{ margin: 0, fontSize: 'var(--font-size-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)' }}>
+                  {t.topCustomers}
+                </IzCardTitle>
+                <Link href="/contacts" style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary)', textDecoration: 'none', fontWeight: 600 }}>
+                  {t.viewAll} →
+                </Link>
+              </IzCardHeader>
+              <IzCardContent style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                {topCustomers.length === 0 ? (
+                  <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', margin: 0 }}>{t.noDeals}</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+                    {topCustomers.map((d, i) => (
+                      <div key={d.id} style={{
+                        display: 'flex', alignItems: 'center', gap: 'var(--space-3)',
+                        padding: '6px 10px',
+                        borderRadius: 'var(--radius-md)',
+                        background: i === 0 ? 'linear-gradient(90deg, rgba(99,102,241,0.05) 0%, transparent 100%)' : 'transparent',
+                      }}>
+                        <span style={{
+                          width: 22, height: 22, borderRadius: '50%',
+                          background: i === 0 ? 'var(--color-primary)' : i === 1 ? '#94a3b8' : i === 2 ? '#f97316' : 'var(--color-bg-elevated)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: 10, fontWeight: 800, color: i < 3 ? '#fff' : 'var(--color-text-muted)', flexShrink: 0,
+                        }}>
+                          {i + 1}
+                        </span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontWeight: 600, fontSize: 'var(--font-size-xs)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.name}</div>
+                          <div style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>
+                            {(d.customFields as Record<string, unknown>)?.goi_dich_vu as string ?? d.stage}
+                          </div>
+                        </div>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--color-primary)', flexShrink: 0, background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: 4 }}>
+                          <Money value={d.value} />
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            )}
-          </IzCardContent>
-        </IzCard>
-      </div>
+                )}
+              </IzCardContent>
+            </IzCard>
+          )}
+        </div>
+      )}
 
       {/* Recent Activity */}
       <IzCard>

@@ -30,5 +30,10 @@ export function useCurrency() {
     [currency],
   );
 
-  return { currency, fmt };
+  const fmtCompact = useCallback(
+    (amount: number | string | null | undefined) => formatMoney(amount, currency, { compact: true }),
+    [currency],
+  );
+
+  return { currency, fmt, fmtCompact };
 }

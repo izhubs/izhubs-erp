@@ -5,7 +5,7 @@ import styles from './IzMetricCard.module.scss';
 
 interface IzMetricCardProps {
   label: string;
-  value: string | number;
+  value: React.ReactNode;
   trend?: number; // positive = up, negative = down, 0 = neutral
   trendLabel?: string;
   description?: string;

@@ -10,7 +10,7 @@ import { notFound } from 'next/navigation';
 import PageHeader from '@/components/shared/PageHeader';
 import Badge from '@/components/shared/Badge';
 import { IzButton } from '@/components/ui/IzButton';
-import { formatMoney } from '@/lib/userTime';
+import { Money } from '@/components/shared/Money';
 import type { Metadata } from 'next';
 
 interface Props {
@@ -172,7 +172,7 @@ export default async function CompanyDetailPage({ params }: Props) {
                     <tr key={d.id}>
                       <td style={{ fontWeight: 500 }}>{d.title}</td>
                       <td><Badge variant="info">{STAGE_LABEL[d.stage] ?? d.stage}</Badge></td>
-                      <td>{formatMoney(d.value)}</td>
+                      <td><Money value={d.value} /></td>
                     </tr>
                   ))}
                 </tbody>
@@ -183,7 +183,7 @@ export default async function CompanyDetailPage({ params }: Props) {
 
         {/* RIGHT — Quick Stats */}
         <aside style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-          <StatCard label="Total deal value" value={formatMoney(stats.total_value)} />
+          <StatCard label="Total deal value" value={<Money value={stats.total_value} />} />
           <StatCard label="Open deals" value={String(stats.open_deals)} />
           <StatCard label="Won deals" value={String(stats.won_deals)} />
           {Number(stats.expiring_30d) > 0 && (
@@ -208,7 +208,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function StatCard({ label, value, urgent }: { label: string; value: string; urgent?: boolean }) {
+function StatCard({ label, value, urgent }: { label: string; value: React.ReactNode; urgent?: boolean }) {
   return (
     <div className={`card`} style={{
       borderColor: urgent ? 'var(--color-danger)' : undefined,
