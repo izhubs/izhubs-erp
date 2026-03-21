@@ -4,6 +4,7 @@ import { useState } from 'react';
 import styles from './ModuleCard.module.scss';
 import { IzButton } from '@/components/ui/IzButton';
 import { IzBadge } from '@/components/ui/IzBadge';
+import { Icon } from '@/components/ui/Icon';
 
 interface PluginCardProps {
   id: string;
@@ -111,9 +112,9 @@ export function PluginCard({
     <div className={`${styles.card} ${isActive ? styles.active : ''}`}>
       {/* Header */}
       <div className={styles.header}>
-        <span className={styles.icon} role="img" aria-label={name}>
-          {icon ?? '📦'}
-        </span>
+        <div className={styles.icon}>
+          {icon && !icon.includes(' ') && icon.length > 2 ? <Icon name={icon as any} size={28} /> : <span>{icon ?? '📦'}</span>}
+        </div>
         <div className={styles.meta}>
           <IzBadge
             variant="secondary"

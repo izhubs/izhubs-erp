@@ -12,35 +12,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import {
-  LayoutDashboard, Users, Briefcase, FileText,
-  Activity, Settings, BarChart2, Zap,
-  ChevronLeft, ChevronRight, Upload, ShoppingCart,
-  Building2, CalendarHeart, UtensilsCrossed, Box,
-  Star, Globe, Headphones, Package, PieChart,
-  Layers, Bell, Lock, Database, Cpu,
-  LucideIcon,
-} from 'lucide-react';
 import type { NavItem } from '@/templates/engine/template.schema';
-
-// =============================================================
-// ICON_MAP — resolves Lucide icon name (string) → component.
-// Add entries here as new templates use new icons.
-// =============================================================
-const ICON_MAP: Record<string, LucideIcon> = {
-  LayoutDashboard, Users, Briefcase, FileText,
-  Activity, Settings, BarChart2, Zap,
-  Upload, ShoppingCart, Building2, CalendarHeart,
-  UtensilsCrossed, Box, Star, Globe, Headphones,
-  Package, PieChart, Layers, Bell, Lock,
-  Database, Cpu,
-};
-
-function NavIcon({ name, size = 18 }: { name: string; size?: number }) {
-  const Icon = ICON_MAP[name];
-  if (!Icon) return <span style={{ width: size, height: size, display: 'inline-block' }} />;
-  return <Icon size={size} />;
-}
+import { Icon } from '@/components/ui/Icon';
 
 // =============================================================
 
@@ -82,7 +55,7 @@ export default function Sidebar({
         onClick={onMobileClose}
       >
         <span className="nav-link__icon">
-          <NavIcon name={item.icon} />
+          <Icon name={item.icon} />
         </span>
         {!collapsed && (
           <span className="nav-link__label">
