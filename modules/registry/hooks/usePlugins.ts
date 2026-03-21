@@ -40,8 +40,11 @@ export function usePlugins(initialPlugins: PluginStatus[]): UsePluginsReturn {
         setPlugins(prev =>
           prev.map(p => p.id === pluginId ? { ...p, isActive: false, installedAt: null } : p)
         );
+        if (res.status === 403) {
+          throw new Error('Bạn không có quyền cài đặt Plugin (Yêu cầu quyền admin)');
+        }
         const err = await res.json();
-        throw new Error(err?.error?.message || 'Install failed');
+        throw new Error(typeof err?.error === 'string' ? err.error : (err?.error?.message || 'Lỗi cài đặt'));
       }
     } finally {
       setIsLoading(false);
@@ -62,8 +65,11 @@ export function usePlugins(initialPlugins: PluginStatus[]): UsePluginsReturn {
         setPlugins(prev =>
           prev.map(p => p.id === pluginId ? { ...p, isActive: true } : p)
         );
+        if (res.status === 403) {
+          throw new Error('Bạn không có quyền gỡ hoặc plugin này bắt buộc');
+        }
         const err = await res.json();
-        throw new Error(err?.error?.message || 'Uninstall failed');
+        throw new Error(typeof err?.error === 'string' ? err.error : (err?.error?.message || 'Lỗi gỡ plugin'));
       }
     } finally {
       setIsLoading(false);

@@ -1,0 +1,75 @@
+{
+  "role": "superadmin",
+  "industry": "virtual-office",
+  "grid": [
+    {
+      "id": "w_mrr",
+      "type": "SummaryCard",
+      "w": 3,
+      "title": "Monthly Recurring Revenue",
+      "icon": "💰",
+      "format": "currency",
+      "dataSource": { "endpoint": "/api/v1/metrics/mrr" }
+    },
+    {
+      "id": "w_active_clients",
+      "type": "SummaryCard",
+      "w": 3,
+      "title": "Active Clients",
+      "icon": "✅",
+      "format": "number",
+      "dataSource": { "endpoint": "/api/v1/metrics/clients?status=active" }
+    },
+    {
+      "id": "w_churn_rate",
+      "type": "SummaryCard",
+      "w": 3,
+      "title": "Churn Rate",
+      "icon": "📉",
+      "format": "percent",
+      "dataSource": { "endpoint": "/api/v1/metrics/churn" }
+    },
+    {
+      "id": "w_pipeline_val",
+      "type": "SummaryCard",
+      "w": 3,
+      "title": "Pipeline Value",
+      "icon": "📊",
+      "format": "currency",
+      "dataSource": { "endpoint": "/api/v1/metrics/pipeline_value" }
+    },
+    {
+      "id": "w_revenue_chart",
+      "type": "ChartWidget",
+      "w": 8,
+      "title": "Revenue Forecast & Services",
+      "chart_type": "bar",
+      "xKey": "month",
+      "yKeys": ["rent", "services"],
+      "dataSource": { "endpoint": "/api/v1/metrics/revenue_forecast" }
+    },
+    {
+      "id": "w_capacity_chart",
+      "type": "ChartWidget",
+      "w": 4,
+      "title": "Seat Capacity",
+      "chart_type": "donut",
+      "xKey": "type",
+      "yKeys": ["count"],
+      "dataSource": { "endpoint": "/api/v1/metrics/capacity" }
+    },
+    {
+      "id": "w_recent_won",
+      "type": "DataTableWidget",
+      "w": 12,
+      "title": "Latest Won Contracts",
+      "columns": [
+        { "header": "Client Name", "accessorKey": "name", "type": "text" },
+        { "header": "Package", "accessorKey": "package", "type": "status" },
+        { "header": "Value", "accessorKey": "value", "type": "currency" },
+        { "header": "Closed Date", "accessorKey": "closed_at", "type": "date" }
+      ],
+      "dataSource": { "endpoint": "/api/v1/deals?stage=won&limit=5" }
+    }
+  ]
+}

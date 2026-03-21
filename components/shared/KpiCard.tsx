@@ -43,7 +43,7 @@ export default function KpiCard({
         label={label}
         value={value}
         trend={toNumericTrend(trend, trendDirection)}
-        trendLabel={subLabel}
+        trendLabel={typeof subLabel === 'string' ? subLabel : undefined}
         icon={icon}
       />
     </div>

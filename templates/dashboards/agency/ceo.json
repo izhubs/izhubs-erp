@@ -1,0 +1,54 @@
+{
+  "role": "superadmin",
+  "industry": "agency",
+  "grid": [
+    {
+      "id": "w_agency_mrr",
+      "type": "SummaryCard",
+      "w": 4,
+      "title": "Agency Retainer (MRR)",
+      "icon": "💎",
+      "format": "currency",
+      "dataSource": { "endpoint": "/api/v1/metrics/agency_mrr" }
+    },
+    {
+      "id": "w_active_projects",
+      "type": "SummaryCard",
+      "w": 4,
+      "title": "Active Projects",
+      "icon": "⚡",
+      "format": "number",
+      "dataSource": { "endpoint": "/api/v1/metrics/projects?status=active" }
+    },
+    {
+      "id": "w_profit_margin",
+      "type": "SummaryCard",
+      "w": 4,
+      "title": "Est. Profit Margin",
+      "icon": "📈",
+      "format": "percent",
+      "color": "#10b981",
+      "dataSource": { "endpoint": "/api/v1/metrics/profit_margin" }
+    },
+    {
+      "id": "w_revenue_by_services",
+      "type": "ChartWidget",
+      "w": 6,
+      "title": "Revenue by Services",
+      "chart_type": "donut",
+      "xKey": "service",
+      "yKeys": ["revenue"],
+      "dataSource": { "endpoint": "/api/v1/metrics/revenue_services" }
+    },
+    {
+      "id": "w_pipeline_stages",
+      "type": "ChartWidget",
+      "w": 6,
+      "title": "Deal Pipeline Stages",
+      "chart_type": "bar",
+      "xKey": "stage",
+      "yKeys": ["value"],
+      "dataSource": { "endpoint": "/api/v1/metrics/pipeline_stages" }
+    }
+  ]
+}

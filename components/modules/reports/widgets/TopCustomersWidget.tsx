@@ -75,11 +75,11 @@ export async function TopCustomersWidget() {
                 <Money value={row.total_value} />
               </td>
               <td>
-                <IzBadge variant="info">{row.active_deals} deals</IzBadge>
+                <IzBadge variant="secondary">{row.active_deals} deals</IzBadge>
               </td>
               <td>
                 {Number(row.expiring_soon) > 0 ? (
-                  <Badge variant="warning">⚠ Sắp hết hạn</Badge>
+                  <IzBadge variant="warning">⚠ Sắp hết hạn</IzBadge>
                 ) : (
                   <span style={{ color: 'var(--color-text-subtle)', fontSize: 'var(--font-size-xs)' }}>—</span>
                 )}

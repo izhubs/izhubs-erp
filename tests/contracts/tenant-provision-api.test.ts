@@ -8,6 +8,7 @@ jest.mock('../../core/engine/rbac', () => ({
     const mockClaims = { sub: 'user-1', role: 'admin', email: 'admin@test.com', type: 'access', tenantId: 'tenant-123' };
     return handler(req, mockClaims);
   }),
+  getAuthClaims: jest.fn().mockResolvedValue({ sub: 'user-1', role: 'admin', email: 'admin@test.com', type: 'access', tenantId: 'tenant-123' }),
 }));
 
 jest.mock('../../core/engine/tenant', () => ({

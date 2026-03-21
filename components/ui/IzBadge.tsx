@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './IzBadge.module.scss';
 
-export type IzBadgeVariant = 'default' | 'secondary' | 'outline' | 'destructive' | 'success' | 'warning';
+export type IzBadgeVariant = 'default' | 'secondary' | 'outline' | 'destructive' | 'success' | 'warning' | 'info' | 'neutral' | 'purple';
 
 export interface IzBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: IzBadgeVariant;

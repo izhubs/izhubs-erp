@@ -3,63 +3,58 @@
   "industry": "agency",
   "grid": [
     {
-      "id": "w_active_projects",
+      "id": "w_project_health",
       "type": "SummaryCard",
-      "w": 3,
-      "title": "Active Projects",
-      "icon": "⚡",
-      "format": "number",
-      "dataSource": { "endpoint": "/api/v1/metrics/projects?status=active" }
-    },
-    {
-      "id": "w_mrr",
-      "type": "SummaryCard",
-      "w": 3,
-      "title": "Monthly Retainer",
-      "icon": "💰",
-      "format": "currency",
-      "dataSource": { "endpoint": "/api/v1/metrics/mrr" }
-    },
-    {
-      "id": "w_open_leads",
-      "type": "SummaryCard",
-      "w": 3,
-      "title": "Open Leads",
-      "icon": "🎯",
-      "format": "number",
-      "dataSource": { "endpoint": "/api/v1/metrics/deals?stage=lead" }
-    },
-    {
-      "id": "w_win_rate",
-      "type": "SummaryCard",
-      "w": 3,
-      "title": "Proposal Win Rate",
-      "icon": "🏆",
+      "w": 6,
+      "title": "Project Health (Cancel/Hold %)",
+      "icon": "⚠️",
       "format": "percent",
-      "dataSource": { "endpoint": "/api/v1/metrics/win_rate" }
+      "dataSource": { "endpoint": "/api/v1/metrics/project_health" }
     },
     {
-      "id": "w_revenue_chart",
+      "id": "w_task_overview",
+      "type": "SummaryCard",
+      "w": 6,
+      "title": "Overdue Tasks",
+      "icon": "🚨",
+      "format": "number",
+      "color": "#ef4444",
+      "dataSource": { "endpoint": "/api/v1/metrics/overdue_tasks" }
+    },
+    {
+      "id": "w_team_bottleneck",
       "type": "ChartWidget",
-      "w": 8,
-      "title": "Agency Revenue (YTD)",
+      "w": 6,
+      "title": "Team Bottleneck Radar (AM vs SEO vs Media)",
       "chart_type": "bar",
-      "xKey": "month",
-      "yKeys": ["revenue"],
-      "dataSource": { "endpoint": "/api/v1/metrics/revenue_ytd" }
+      "xKey": "team",
+      "yKeys": ["waiting", "overdue"],
+      "dataSource": { "endpoint": "/api/v1/metrics/team_bottleneck" }
     },
     {
-      "id": "w_recent_clients",
+      "id": "w_am_leaderboard",
+      "type": "DataTableWidget",
+      "w": 6,
+      "title": "AM Leaderboard",
+      "columns": [
+        { "header": "Star AM", "accessorKey": "name", "type": "text" },
+        { "header": "Completed", "accessorKey": "completed", "type": "number" },
+        { "header": "Overdue Needs Push", "accessorKey": "overdue", "type": "number" }
+      ],
+      "dataSource": { "endpoint": "/api/v1/metrics/am_leaderboard" }
+    },
+    {
+      "id": "w_firefighting",
       "type": "DataTableWidget",
       "w": 12,
-      "title": "Recent Client Signings",
+      "title": "Firefighting List (Overdue & Pending)",
       "columns": [
-        { "header": "Client Name", "accessorKey": "name", "type": "text" },
-        { "header": "Services", "accessorKey": "package", "type": "status" },
-        { "header": "Retainer", "accessorKey": "value", "type": "currency" },
-        { "header": "Start Date", "accessorKey": "closed_at", "type": "date" }
+        { "header": "Task Name", "accessorKey": "title", "type": "text" },
+        { "header": "Project", "accessorKey": "project", "type": "text" },
+        { "header": "Assignee", "accessorKey": "assignee", "type": "text" },
+        { "header": "Days Late", "accessorKey": "days_late", "type": "number" }
       ],
-      "dataSource": { "endpoint": "/api/v1/deals?stage=won&limit=5" }
+      "dataSource": { "endpoint": "/api/v1/metrics/firefighting_tasks" }
     }
   ]
 }

@@ -31,17 +31,17 @@ const TYPE_LABELS: Record<Activity['type'], string> = {
 };
 
 const TYPE_VARIANT: Record<Activity['type'], IzBadgeVariant> = {
-  task:    'primary',
-  call:    'info',
-  email:   'neutral',
+  task:    'default',
+  call:    'secondary',
+  email:   'outline',
   meeting: 'success',
-  note:    'neutral',
+  note:    'outline',
 };
 
 const PRIORITY_VARIANT: Record<string, IzBadgeVariant> = {
-  high:   'danger',
+  high:   'destructive',
   medium: 'warning',
-  low:    'neutral',
+  low:    'outline',
 };
 
 function TaskRow({
