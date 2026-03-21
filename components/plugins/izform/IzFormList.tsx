@@ -3,9 +3,8 @@
 import { useState } from 'react';
 import styles from './IzFormList.module.scss';
 import { IzButton } from '@/components/ui/IzButton';
-import { IzModal } from '@/components/ui/IzModal';
-import { CreateFormModal } from './CreateFormModal';
 import { FormCard } from './FormCard';
+import { useRouter } from 'next/navigation';
 
 interface IzFormData {
   id: string;
@@ -22,12 +21,7 @@ interface Props {
 
 export function IzFormListClient({ initialForms }: Props) {
   const [forms, setForms] = useState<IzFormData[]>(initialForms);
-  const [showCreate, setShowCreate] = useState(false);
-
-  const handleCreated = (newForm: IzFormData) => {
-    setForms(prev => [newForm, ...prev]);
-    setShowCreate(false);
-  };
+  const router = useRouter();
 
   return (
     <div className={styles.container}>
@@ -39,7 +33,7 @@ export function IzFormListClient({ initialForms }: Props) {
             {forms.length} form{forms.length !== 1 ? 's' : ''} — Tạo, nhúng và thu thập lead từ website của bạn
           </p>
         </div>
-        <IzButton onClick={() => setShowCreate(true)} id="izform-create-btn">
+        <IzButton onClick={() => router.push('/plugins/izform/create')} id="izform-create-btn">
           + Tạo Form
         </IzButton>
       </div>
@@ -50,7 +44,7 @@ export function IzFormListClient({ initialForms }: Props) {
           <div className={styles.emptyIcon}>📋</div>
           <h3>Chưa có form nào</h3>
           <p>Tạo form đầu tiên để bắt đầu thu thập lead từ website của bạn.</p>
-          <IzButton onClick={() => setShowCreate(true)}>Tạo Form đầu tiên</IzButton>
+          <IzButton onClick={() => router.push('/plugins/izform/create')}>Tạo Form đầu tiên</IzButton>
         </div>
       ) : (
         <div className={styles.grid}>
@@ -60,13 +54,7 @@ export function IzFormListClient({ initialForms }: Props) {
         </div>
       )}
 
-      {/* Create Modal */}
-      {showCreate && (
-        <CreateFormModal
-          onClose={() => setShowCreate(false)}
-          onCreated={handleCreated}
-        />
-      )}
+
     </div>
   );
 }
