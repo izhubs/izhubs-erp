@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server';
 import { db } from '@/core/engine/db';
 import { ApiResponse } from '@/core/engine/response';
 import { withPermission, type Claims } from '@/core/engine/rbac';
@@ -12,7 +11,7 @@ const QuerySchema = z.object({
 
 const DEFAULT_TENANT = '00000000-0000-0000-0000-000000000001';
 
-async function auditLogsHandler(req: NextRequest, claims: Claims) {
+async function auditLogsHandler(req: Request, claims: Claims) {
   try {
     // Read tenantId directly from JWT claims — reliable even for API routes
     // (middleware doesn't run for /api/* routes so x-tenant-id header is never set)

@@ -21,8 +21,11 @@ export async function provisionTenant(userId: string, config: ProvisionConfig) {
     ]);
     const tenantId = result.rows[0]?.id || 'tenant-xyz';
 
-    // 2. Map user to tenant
-    await db.query('UPDATE users SET tenant_id = $1 WHERE id = $2', [tenantId, userId]);
+    // 2. Map user to tenant + promote to superadmin (first person = workspace owner)
+    await db.query(
+      'UPDATE users SET tenant_id = $1, role = $2 WHERE id = $3',
+      [tenantId, 'superadmin', userId]
+    );
 
     // 3. Seed demo data if flag is true
     if (config.includeDemoData) {

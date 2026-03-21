@@ -1,10 +1,11 @@
 // =============================================================
-// izhubs ERP — Badge
-// Semantic badge component. Wraps .badge CSS class.
-// Variant drives color — always uses CSS variable tokens.
+// izhubs ERP — Badge (shim → IzBadge)
+// Keeps legacy BadgeVariant API; delegates rendering to IzBadge.
+// All call sites continue working without changes.
 // =============================================================
 
 import React from 'react';
+import { IzBadge, type IzBadgeVariant } from '@/components/ui/IzBadge';
 
 export type BadgeVariant =
   | 'success'
@@ -14,23 +15,29 @@ export type BadgeVariant =
   | 'primary'
   | 'neutral';
 
+/** Map legacy variant names to IzBadge variants */
+function toIzVariant(v: BadgeVariant): IzBadgeVariant {
+  const map: Record<BadgeVariant, IzBadgeVariant> = {
+    success: 'success',
+    warning: 'warning',
+    danger: 'destructive',
+    info: 'secondary',
+    primary: 'default',
+    neutral: 'outline',
+  };
+  return map[v];
+}
+
 interface BadgeProps {
   children: React.ReactNode;
   variant?: BadgeVariant;
-  /** Extra class for custom styling */
   className?: string;
 }
 
-export default function Badge({
-  children,
-  variant = 'neutral',
-  className = '',
-}: BadgeProps) {
-  const variantClass =
-    variant === 'neutral' ? '' : `badge-${variant}`;
+export default function Badge({ children, variant = 'neutral', className }: BadgeProps) {
   return (
-    <span className={`badge ${variantClass} ${className}`.trim()}>
+    <IzBadge variant={toIzVariant(variant)} className={className}>
       {children}
-    </span>
+    </IzBadge>
   );
 }

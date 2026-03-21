@@ -1,7 +1,14 @@
 'use client';
 
-import styles from './shared.module.scss';
+// =============================================================
+// izhubs ERP — Pagination (shim)
+// Keeps simple page/totalPages/onPageChange API.
+// Uses IzButton internally — no external dependency on IzPagination
+// which has an incompatible TanStack Table API.
+// =============================================================
+
 import { IzButton } from '@/components/ui/IzButton';
+import styles from './shared.module.scss';
 
 interface Props {
   page: number;

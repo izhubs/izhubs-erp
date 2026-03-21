@@ -1,6 +1,6 @@
 import { ApiResponse } from '../../../../../core/engine/response';
 import { provisionTenant } from '../../../../../core/engine/tenant';
-import { withPermission, type Claims } from '../../../../../core/engine/rbac';
+import { getAuthClaims } from '../../../../../core/engine/rbac';
 import { z } from 'zod';
 
 const ProvisionSchema = z.object({
@@ -8,17 +8,19 @@ const ProvisionSchema = z.object({
   includeDemoData: z.boolean().optional().default(false),
 });
 
-async function provisionHandler(req: Request, claims: Claims) {
-  try {
-    const userId = claims.sub;
-    if (!userId) {
-      return ApiResponse.error('Unauthorized', 401);
-    }
+export async function POST(req: Request) {
+  // Provision is a one-time self-setup: any authenticated user can call it.
+  // No RBAC permission needed — the engine prevents double-provisioning.
+  const claims = await getAuthClaims(req);
+  if (!claims) {
+    return ApiResponse.error('Unauthorized', 401);
+  }
 
+  try {
     const payload = await req.json();
     const config = ProvisionSchema.parse(payload);
 
-    const result = await provisionTenant(userId, {
+    const result = await provisionTenant(claims.sub, {
       templateId: config.templateId,
       includeDemoData: config.includeDemoData,
     });
@@ -34,5 +36,3 @@ async function provisionHandler(req: Request, claims: Claims) {
     return ApiResponse.serverError(error);
   }
 }
-
-export const POST = withPermission('settings:manage', provisionHandler);

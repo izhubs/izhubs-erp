@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { ModuleCard } from './ModuleCard';
-import { useModules } from '../hooks/useModules';
+import { PluginCard } from './PluginCard';
+import { usePlugins } from '../hooks/usePlugins';
 import styles from './AppStore.module.scss';
 import { IzInput } from '@/components/ui/IzInput';
 
-interface Module {
+interface Plugin {
   id: string;
   name: string;
   description: string | null;
@@ -19,7 +19,7 @@ interface Module {
 }
 
 interface AppStoreProps {
-  initialModules: Module[];
+  initialPlugins: Plugin[];
 }
 
 const CATEGORIES: { key: string; label: string }[] = [
@@ -30,30 +30,30 @@ const CATEGORIES: { key: string; label: string }[] = [
   { key: 'communication', label: 'Liên lạc' },
 ];
 
-export function AppStore({ initialModules }: AppStoreProps) {
-  const { modules, install, uninstall } = useModules(initialModules);
+export function AppStore({ initialPlugins }: AppStoreProps) {
+  const { plugins, install, uninstall } = usePlugins(initialPlugins);
   const [activeCategory, setActiveCategory] = useState('all');
   const [search, setSearch] = useState('');
 
   const filtered = useMemo(() => {
-    return modules.filter(m => {
-      const matchCat = activeCategory === 'all' || m.category === activeCategory;
-      const matchSearch = m.name.toLowerCase().includes(search.toLowerCase()) ||
-        (m.description?.toLowerCase().includes(search.toLowerCase()) ?? false);
+    return plugins.filter(p => {
+      const matchCat = activeCategory === 'all' || p.category === activeCategory;
+      const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
+        (p.description?.toLowerCase().includes(search.toLowerCase()) ?? false);
       return matchCat && matchSearch;
     });
-  }, [modules, activeCategory, search]);
+  }, [plugins, activeCategory, search]);
 
-  const activeCount = modules.filter(m => m.isActive).length;
+  const activeCount = plugins.filter(p => p.isActive).length;
 
   return (
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.pageHeader}>
         <div>
-          <h1 className={styles.title}>Quản lý Modules</h1>
+          <h1 className={styles.title}>Quản lý Plugins</h1>
           <p className={styles.subtitle}>
-            {activeCount}/{modules.length} modules đang hoạt động
+            {activeCount}/{plugins.length} plugins đang hoạt động
           </p>
         </div>
       </div>
@@ -78,25 +78,25 @@ export function AppStore({ initialModules }: AppStoreProps) {
         {/* Search */}
         <IzInput
           type="search"
-          placeholder="Tìm module..."
+          placeholder="Tìm plugin..."
           value={search}
           onChange={(e: { target: { value: string } }) => setSearch(e.target.value)}
-          id="module-search"
-          aria-label="Tìm kiếm module"
+          id="plugin-search"
+          aria-label="Tìm kiếm plugin"
         />
       </div>
 
       {/* Grid */}
       {filtered.length === 0 ? (
         <div className={styles.empty}>
-          <p>Không tìm thấy module nào.</p>
+          <p>Không tìm thấy plugin nào.</p>
         </div>
       ) : (
         <div className={styles.grid} role="list">
-          {filtered.map(m => (
-            <div key={m.id} role="listitem">
-              <ModuleCard
-                {...m}
+          {filtered.map(p => (
+            <div key={p.id} role="listitem">
+              <PluginCard
+                {...p}
                 onInstall={install}
                 onUninstall={uninstall}
               />

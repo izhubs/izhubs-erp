@@ -1,32 +1,31 @@
 // =============================================================
-// izhubs ERP — KpiCard
-// Self-contained KPI metric card for all dashboards.
-// Supports trend indicator, sparkline placeholder, and urgency badge.
-// Usage: <KpiCard label="MRR" value="485.000.000đ" trend="+12%" />
+// izhubs ERP — KpiCard (shim → IzMetricCard)
+// Preserves legacy KpiCardProps; delegates to IzMetricCard.
 // =============================================================
 
 import React from 'react';
-import styles from './KpiCard.module.scss';
+import { IzMetricCard } from '@/components/ui/IzMetricCard';
 
 export type TrendDirection = 'up' | 'down' | 'neutral';
 
 export interface KpiCardProps {
-  /** Metric label, e.g. "MRR (Doanh thu tháng)" */
   label: string;
-  /** Primary value to display */
   value: string | number;
-  /** Secondary label below value, e.g. "So với 433M tháng trước" */
   subLabel?: string;
-  /** Trend text, e.g. "+12%" or "3.2%" */
   trend?: string;
-  /** Direction of the trend — controls color */
   trendDirection?: TrendDirection;
-  /** When true, renders urgent red badge (e.g. contracts expiring) */
   urgent?: boolean;
-  /** Icon name (Lucide) rendered in the card corner */
   icon?: React.ReactNode;
-  /** Optional click handler */
   onClick?: () => void;
+}
+
+/** Convert legacy trend string + direction to IzMetricCard numeric trend */
+function toNumericTrend(trend?: string, direction?: TrendDirection): number | undefined {
+  if (!trend) return undefined;
+  const n = parseFloat(trend.replace(/[^0-9.-]/g, '')) || 0;
+  if (direction === 'up') return Math.abs(n);
+  if (direction === 'down') return -Math.abs(n);
+  return 0;
 }
 
 export default function KpiCard({
@@ -35,43 +34,18 @@ export default function KpiCard({
   subLabel,
   trend,
   trendDirection = 'neutral',
-  urgent = false,
   icon,
   onClick,
 }: KpiCardProps) {
-  const trendClass =
-    trendDirection === 'up'
-      ? styles.trendUp
-      : trendDirection === 'down'
-      ? styles.trendDown
-      : styles.trendNeutral;
-
   return (
-    <div
-      className={`${styles.kpiCard} ${urgent ? styles.urgent : ''} ${onClick ? styles.clickable : ''}`}
-      onClick={onClick}
-      role={onClick ? 'button' : undefined}
-      tabIndex={onClick ? 0 : undefined}
-    >
-      <div className={styles.header}>
-        <span className={styles.label}>{label}</span>
-        {icon && <span className={styles.icon}>{icon}</span>}
-      </div>
-
-      <div className={styles.value}>{value}</div>
-
-      <div className={styles.footer}>
-        {subLabel && <span className={styles.subLabel}>{subLabel}</span>}
-        {trend && (
-          <span className={`${styles.trend} ${trendClass}`}>
-            {trendDirection === 'up' && '↑ '}
-            {trendDirection === 'down' && '↓ '}
-            {trend}
-          </span>
-        )}
-      </div>
-
-      {urgent && <div className={styles.urgentBar} aria-hidden />}
+    <div onClick={onClick} style={{ cursor: onClick ? 'pointer' : undefined }}>
+      <IzMetricCard
+        label={label}
+        value={value}
+        trend={toNumericTrend(trend, trendDirection)}
+        trendLabel={subLabel}
+        icon={icon}
+      />
     </div>
   );
 }

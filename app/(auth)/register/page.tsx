@@ -40,7 +40,9 @@ export default function RegisterPage() {
     const json = await res.json();
     
     if (!res.ok) {
-      throw new Error(json.error || 'Failed to register');
+      const message = json.error?.message ?? json.error ?? 'Failed to register';
+      setError(typeof message === 'string' ? message : 'Failed to register');
+      return;
     }
 
     // Automatically redirect to onboarding flow for new users

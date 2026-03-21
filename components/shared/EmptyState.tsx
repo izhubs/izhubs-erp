@@ -1,69 +1,23 @@
 // =============================================================
-// izhubs ERP — EmptyState
-// Generic empty state card: icon, title, description, CTA.
-// Used when DataTable has 0 rows or a module has no data.
+// izhubs ERP — EmptyState (shim → IzEmptyState)
+// Preserves legacy props API; delegates to IzEmptyState.
 // =============================================================
 
 import React from 'react';
+import { IzEmptyState } from '@/components/ui/IzEmptyState';
 
 interface EmptyStateProps {
-  /** Main icon — pass an SVG or Lucide icon component */
   icon?: React.ReactNode;
   title: string;
   description?: string;
-  /** Primary call-to-action button */
+  /** Primary call-to-action — rendered below description */
   action?: React.ReactNode;
 }
 
-export default function EmptyState({
-  icon,
-  title,
-  description,
-  action,
-}: EmptyStateProps) {
+export default function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 'var(--space-12) var(--space-8)',
-        gap: 'var(--space-3)',
-        textAlign: 'center',
-      }}
-    >
-      {icon && (
-        <div
-          style={{
-            color: 'var(--color-text-subtle)',
-            opacity: 0.5,
-            marginBottom: 'var(--space-2)',
-          }}
-        >
-          {icon}
-        </div>
-      )}
-      <h3
-        style={{
-          fontSize: 'var(--font-size-lg)',
-          fontWeight: 600,
-          color: 'var(--color-text)',
-        }}
-      >
-        {title}
-      </h3>
-      {description && (
-        <p
-          style={{
-            fontSize: 'var(--font-size-sm)',
-            color: 'var(--color-text-muted)',
-            maxWidth: 400,
-          }}
-        >
-          {description}
-        </p>
-      )}
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <IzEmptyState icon={icon} title={title} description={description} />
       {action && <div style={{ marginTop: 'var(--space-4)' }}>{action}</div>}
     </div>
   );

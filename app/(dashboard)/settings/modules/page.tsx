@@ -4,23 +4,23 @@ import { AppStore } from '@/modules/registry/components/AppStore';
 const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000001';
 
 export const metadata = {
-  title: 'Modules — izhubs ERP',
-  description: 'Quản lý và cài đặt các modules mở rộng cho izhubs ERP',
+  title: 'Plugins — izhubs ERP',
+  description: 'Quản lý và cài đặt các plugins mở rộng cho izhubs ERP',
 };
 
 /**
- * Server Component — fetch modules server-side for fast initial render.
+ * Server Component — fetch plugins server-side for fast initial render.
  * AppStore is a Client Component that handles interactive install/uninstall.
  */
-export default async function ModulesPage() {
-  const modules = await getTenantModules(DEFAULT_TENANT_ID);
+export default async function PluginsPage() {
+  const plugins = await getTenantModules(DEFAULT_TENANT_ID);
 
   // Serialize dates to strings for client component
-  const serialized = modules.map(m => ({
-    ...m,
+  const serialized = plugins.map(p => ({
+    ...p,
     createdAt: undefined,
-    installedAt: m.installedAt ? m.installedAt.toISOString() : null,
+    installedAt: p.installedAt ? p.installedAt.toISOString() : null,
   }));
 
-  return <AppStore initialModules={serialized as any} />;
+  return <AppStore initialPlugins={serialized as any} />;
 }

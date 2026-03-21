@@ -1,79 +1,43 @@
 // =============================================================
-// izhubs ERP — Modal
-// Centered dialog modal with backdrop, ESC close, header/footer slots.
-// Used for: Add Contact, Create Deal, Confirm Delete, etc.
+// izhubs ERP — Modal (shim → IzModal)
+// Wraps IzModal compound component with simple open/onClose/title/footer API.
+// All existing call sites work without changes.
 // =============================================================
 
 'use client';
 
-import React, { useEffect } from 'react';
-import styles from './Modal.module.scss';
-import { IzButton } from '@/components/ui/IzButton';
+import React from 'react';
+import {
+  IzModal,
+  IzModalContent,
+  IzModalHeader,
+  IzModalTitle,
+  IzModalBody,
+  IzModalFooter,
+} from '@/components/ui/IzModal';
 
 interface ModalProps {
   open: boolean;
   onClose: () => void;
   title?: string;
-  /** Max width of the modal dialog — default 560px */
+  /** Max width — kept for API compat; IzModal uses size prop internally */
   maxWidth?: string;
-  /** Footer slot: action buttons */
   footer?: React.ReactNode;
   children: React.ReactNode;
 }
 
-export default function Modal({
-  open,
-  onClose,
-  title,
-  maxWidth = '560px',
-  footer,
-  children,
-}: ModalProps) {
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handler);
-    // Prevent body scroll
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.removeEventListener('keydown', handler);
-      document.body.style.overflow = '';
-    };
-  }, [open, onClose]);
-
-  if (!open) return null;
-
+export default function Modal({ open, onClose, title, footer, children }: ModalProps) {
   return (
-    <div className={styles.overlay} role="dialog" aria-modal="true" aria-label={title}>
-      {/* Backdrop */}
-      <div className={styles.backdrop} onClick={onClose} aria-hidden />
-
-      {/* Dialog */}
-      <div className={styles.dialog} style={{ maxWidth }}>
-        {/* Header */}
+    <IzModal open={open} onOpenChange={(o) => { if (!o) onClose(); }}>
+      <IzModalContent hideCloseButton={false}>
         {title && (
-          <div className={styles.header}>
-            <h2 className={styles.title}>{title}</h2>
-            <IzButton
-              variant="ghost"
-              size="icon"
-              className={styles.closeBtn}
-              onClick={onClose}
-              aria-label="Đóng"
-            >
-              ✕
-            </IzButton>
-          </div>
+          <IzModalHeader>
+            <IzModalTitle>{title}</IzModalTitle>
+          </IzModalHeader>
         )}
-
-        {/* Content */}
-        <div className={styles.content}>{children}</div>
-
-        {/* Footer */}
-        {footer && <div className={styles.footer}>{footer}</div>}
-      </div>
-    </div>
+        <IzModalBody>{children}</IzModalBody>
+        {footer && <IzModalFooter>{footer}</IzModalFooter>}
+      </IzModalContent>
+    </IzModal>
   );
 }

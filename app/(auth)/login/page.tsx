@@ -42,7 +42,9 @@ function LoginForm() {
     const json = await res.json();
     
     if (!res.ok) {
-      throw new Error(json.error?.message || json.message || 'Login failed');
+      const message = json.error?.message ?? json.message ?? 'Login failed';
+      setError(typeof message === 'string' ? message : 'Login failed');
+      return;
     }
 
     if (typeof window !== 'undefined') {
