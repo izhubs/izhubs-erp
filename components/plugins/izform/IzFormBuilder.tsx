@@ -99,24 +99,29 @@ export default function IzFormBuilder() {
       {/* ── LEFT: Editor ── */}
       <div className={styles.editorPane}>
         {/* Form basics */}
-        <IzCard>
+        <IzCard className={styles.formDetailsCard}>
           <IzCardContent>
             <div className={styles.sectionTitle}>Form Details</div>
 
-            <IzInput
-              value={formName}
-              onChange={e => setFormName(e.target.value)}
-              placeholder="e.g. Client Onboarding Survey"
-              required
-            />
+            <div className={styles.formGroup}>
+              <label className={styles.formGroupLabel}>Form Name *</label>
+              <IzInput
+                value={formName}
+                onChange={e => setFormName(e.target.value)}
+                placeholder="e.g. Client Onboarding Survey"
+                required
+              />
+            </div>
 
-            <IzTextarea
-              value={formDesc}
-              onChange={e => setFormDesc(e.target.value)}
-              placeholder="Describe this form's purpose..."
-              rows={2}
-              style={{ marginTop: '0.75rem' }}
-            />
+            <div className={styles.formGroup}>
+              <label className={styles.formGroupLabel}>Description</label>
+              <IzTextarea
+                value={formDesc}
+                onChange={e => setFormDesc(e.target.value)}
+                placeholder="Describe this form's purpose..."
+                rows={3}
+              />
+            </div>
           </IzCardContent>
         </IzCard>
 

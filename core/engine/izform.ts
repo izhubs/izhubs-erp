@@ -12,7 +12,7 @@ import { z } from 'zod';
 
 const FormFieldSchema = z.object({
   id:       z.string(),
-  type:     z.enum(['text', 'email', 'phone', 'textarea', 'select']),
+  type:     z.enum(['text', 'email', 'phone', 'textarea', 'select', 'number']),
   label:    z.string(),
   required: z.boolean().default(false),
   options:  z.array(z.string()).optional(), // for select type
