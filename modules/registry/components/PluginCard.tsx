@@ -76,7 +76,7 @@ export function PluginCard({
             {CATEGORY_LABELS[category]}
           </IzBadge>
           {isOfficial && (
-            <IzBadge variant="outline">Official</IzBadge>
+            <IzBadge variant="outline" className={styles.officialBadge}>Official</IzBadge>
           )}
         </div>
       </div>
@@ -98,8 +98,8 @@ export function PluginCard({
         {error && <p className={styles.errorMsg}>{error}</p>}
 
         <IzButton
-          variant={isActive ? 'outline' : 'default'}
-          className={styles.btn}
+          variant={isCorePlugin ? 'secondary' : (isActive ? 'outline' : 'default')}
+          className="w-full"
           onClick={handleToggle}
           disabled={loading || isCorePlugin}
           title={isCorePlugin ? 'Plugin này không thể gỡ cài đặt' : undefined}

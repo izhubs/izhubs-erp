@@ -19,7 +19,6 @@ import { IzButton } from '@/components/ui/IzButton';
 import { apiFetch } from '@/lib/apiFetch';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import { formatDate } from '@/lib/userTime';
-import { formatDate } from '@/lib/userTime';
 
 // Kanban is already complex — keep lazy
 const KanbanBoard = dynamic(() => import('./KanbanBoard'), { ssr: false });

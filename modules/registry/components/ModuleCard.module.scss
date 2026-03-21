@@ -15,8 +15,9 @@
   }
 
   &.active {
-    border-color: rgba(99, 102, 241, 0.4);
-    background: linear-gradient(135deg, var(--hz-surface-2, #1e1e2e) 0%, rgba(99, 102, 241, 0.04) 100%);
+    border-color: var(--hz-primary, #6366f1);
+    background: var(--hz-surface-2, #1e1e2e);
+    box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.2);
   }
 }
 
@@ -36,6 +37,12 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 0.25rem;
+}
+
+.officialBadge {
+  background: rgba(99, 102, 241, 0.15) !important;
+  color: #818cf8 !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
 }
 
 
@@ -108,34 +115,4 @@
   margin: 0;
 }
 
-.btn {
-  width: 100%;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: opacity 0.15s ease, transform 0.1s ease;
 
-  &:hover:not(:disabled) {
-    opacity: 0.85;
-    transform: translateY(-1px);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-.btnInstall {
-  background: var(--hz-primary, #6366f1);
-  color: white;
-}
-
-.btnUninstall {
-  background: transparent;
-  border: 1px solid var(--hz-border, rgba(255, 255, 255, 0.15)) !important;
-  color: var(--hz-text-muted, #94a3b8);
-}

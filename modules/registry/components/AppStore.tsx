@@ -6,6 +6,7 @@ import { usePlugins } from '../hooks/usePlugins';
 import styles from './AppStore.module.scss';
 import { IzInput } from '@/components/ui/IzInput';
 import { IzTabs, IzTabsList, IzTabsTrigger } from '@/components/ui/IzTabs';
+import { PageHeader } from '@/components/shared';
 
 interface Plugin {
   id: string;
@@ -50,14 +51,10 @@ export function AppStore({ initialPlugins }: AppStoreProps) {
   return (
     <div className={styles.container}>
       {/* Header */}
-      <div className={styles.pageHeader}>
-        <div>
-          <h1 className={styles.title}>Quản lý Plugins</h1>
-          <p className={styles.subtitle}>
-            {activeCount}/{plugins.length} plugins đang hoạt động
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Quản lý Plugins"
+        subtitle={`${activeCount}/${plugins.length} plugins đang hoạt động`}
+      />
 
       {/* Filters */}
       <div className={styles.filters}>

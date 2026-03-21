@@ -6,24 +6,7 @@
   max-width: 1200px;
 }
 
-.pageHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
 
-.title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--hz-text-primary, #e2e8f0);
-  margin: 0 0 0.25rem;
-}
-
-.subtitle {
-  font-size: 0.85rem;
-  color: var(--hz-text-muted, #94a3b8);
-  margin: 0;
-}
 
 .filters {
   display: flex;
