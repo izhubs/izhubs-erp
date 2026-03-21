@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useCurrency } from '@/lib/hooks/useCurrency';
+import { formatDate } from '@/lib/userTime';
 
 export interface ColumnDef {
   header: string;
@@ -22,6 +24,8 @@ export function DataTableWidget({
   data,
   isLoading
 }: DataTableWidgetProps) {
+  const { fmt } = useCurrency();
+
   if (isLoading) {
     return (
       <div className="card p-4 skeleton-container animate-pulse" style={{ height: '400px' }}>
@@ -39,9 +43,9 @@ export function DataTableWidget({
 
     switch (col.type) {
       case 'currency':
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(val) || 0);
+        return fmt(val);
       case 'date':
-        return new Date(val).toLocaleDateString('vi-VN');
+        return formatDate(val);
       case 'status':
         return (
           <span style={{

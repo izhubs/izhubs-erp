@@ -67,7 +67,6 @@ export function PluginCard({
         <div className={styles.meta}>
           <IzBadge
             variant="secondary"
-            className={styles.categoryBadge}
             style={{ 
               backgroundColor: CATEGORY_COLORS[category] + '20', 
               color: CATEGORY_COLORS[category],
@@ -77,7 +76,7 @@ export function PluginCard({
             {CATEGORY_LABELS[category]}
           </IzBadge>
           {isOfficial && (
-            <IzBadge variant="outline" className={styles.officialBadge}>Official</IzBadge>
+            <IzBadge variant="outline">Official</IzBadge>
           )}
         </div>
       </div>

@@ -10,6 +10,7 @@ import Badge from '@/components/shared/Badge';
 import EmptyState from '@/components/shared/EmptyState';
 import SidePanel from '@/components/shared/SidePanel';
 import { IzButton } from '@/components/ui/IzButton';
+import { formatDate } from '@/lib/userTime';
 
 interface Lead extends Record<string, unknown> {
   id: string;
@@ -86,7 +87,7 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
                   <td><Badge variant={status.variant}>{status.label}</Badge></td>
                   <td style={{ color: 'var(--color-text-muted)' }}>{lead.owner_name ?? '—'}</td>
                   <td style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-xs)' }}>
-                    {new Date(lead.created_at).toLocaleDateString('vi-VN')}
+                    {formatDate(lead.created_at)}
                   </td>
                 </tr>
               );
@@ -122,7 +123,7 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
               })()}
             </InfoRow>
             {selected.owner_name && <InfoRow label="Người phụ trách">{selected.owner_name as string}</InfoRow>}
-            <InfoRow label="Ngày vào">{new Date(selected.created_at as string).toLocaleDateString('vi-VN')}</InfoRow>
+            <InfoRow label="Ngày vào">{formatDate(selected.created_at as string)}</InfoRow>
           </div>
         )}
       </SidePanel>

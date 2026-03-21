@@ -18,6 +18,8 @@ import { IzBadge, IzBadgeVariant } from '@/components/ui/IzBadge';
 import { IzButton } from '@/components/ui/IzButton';
 import { apiFetch } from '@/lib/apiFetch';
 import { useCurrency } from '@/lib/hooks/useCurrency';
+import { formatDate } from '@/lib/userTime';
+import { formatDate } from '@/lib/userTime';
 
 // Kanban is already complex — keep lazy
 const KanbanBoard = dynamic(() => import('./KanbanBoard'), { ssr: false });
@@ -70,7 +72,7 @@ function TableView({ deals, onDealClick, stages }: { deals: Deal[]; onDealClick:
     columnHelper.accessor('createdAt', {
       header: 'Ngày tạo',
       cell: info => <span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-xs)' }}>
-        {new Date(info.getValue() ?? '').toLocaleDateString('vi-VN')}
+        {formatDate(info.getValue() ?? '')}
       </span>,
     }),
   ], [stageMap, fmtCompact]);

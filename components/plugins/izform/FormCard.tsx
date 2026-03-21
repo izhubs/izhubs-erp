@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import styles from './IzFormList.module.scss';
 import { IzButton } from '@/components/ui/IzButton';
+import { formatDate } from '@/lib/userTime';
 
 interface FormField {
   id: string;
@@ -52,7 +53,7 @@ export function FormCard({ form }: Props) {
       <div className={styles.formCardMeta}>
         <span>{form.fields.length} fields</span>
         <span>·</span>
-        <span>{new Date(form.createdAt).toLocaleDateString('vi-VN')}</span>
+        <span>{formatDate(form.createdAt)}</span>
       </div>
 
       <div className={styles.embedSection}>

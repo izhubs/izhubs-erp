@@ -32,35 +32,6 @@
   flex-wrap: wrap;
 }
 
-.tabs {
-  display: flex;
-  gap: 0.25rem;
-  background: var(--hz-surface-2, #1e1e2e);
-  border: 1px solid var(--hz-border, rgba(255, 255, 255, 0.08));
-  border-radius: 10px;
-  padding: 0.25rem;
-}
-
-.tab {
-  padding: 0.4rem 0.85rem;
-  border-radius: 7px;
-  border: none;
-  background: transparent;
-  color: var(--hz-text-muted, #94a3b8);
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-
-  &:hover {
-    color: var(--hz-text-primary, #e2e8f0);
-  }
-
-  &.tabActive {
-    background: var(--hz-primary, #6366f1);
-    color: white;
-  }
-}
 
 .search {
   flex: 1;
