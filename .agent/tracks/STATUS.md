@@ -50,7 +50,7 @@ _Last updated: 2026-03-20 (Session 18 — Audit Log + Ephemeral Demo Users + UI 
 | 2026-03-20 | audit-log-system | ✅ done | **Session 18** — PostgreSQL trigger `trg_audit` on 7 tables. `db.query()` wraps writes in BEGIN/COMMIT+SET LOCAL → trigger captures user_id correctly. Audit-logs API reads tenantId từ JWT claims (bypass middleware). ActivityTimeline auto-refresh 30s + on-open. GlobalHistorySlideOver fix entityType plural. |
 | 2026-03-20 | ephemeral-demo-users | ✅ done | **Session 18** — Mỗi demo login tạo tenant riêng (is_demo=true, expires_at=+24h) + user riêng. Reset/24h cascade DELETE toàn bộ. Migration 015. Demo logs có user_id đúng tên. |
 | 2026-03-20 | ui-polish-session18 | ✅ done | **Session 18** — Toast z-index 9999+padding-top 64px; Modal/Sheet overlay z-index 99999/100000 che toàn màn hình; bỏ backdrop-filter blur (gây lag); DealSlideOver inline styles fix transparent nền; IzSheet --color-surface fix. db.query chỉ wrap writes (SELECT không overhead). |
-| 2026-03-21 | dynamic-dashboard-engine | ✅ done | Dynamic Dashboard Engine PRD — DAR (D-A-R) framework, RBAC, BFF architecture, JSON configuration. |
+| 2026-03-21 | dynamic-dashboard-engine | ✅ done | Dynamic Dashboard Engine PRD — DAR (D-A-R) framework, RBAC, BFF architecture, JSON configuration. Dashboard Roles Layout specs recorded for future blueprint seeds. |
 
 ---
 
