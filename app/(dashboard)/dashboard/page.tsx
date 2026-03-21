@@ -221,6 +221,23 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
+      {/* Coming Soon Notice for Dynamic Dashboards */}
+      <IzCard style={{ background: 'var(--color-bg-elevated)', borderLeft: '4px solid var(--color-primary)' }}>
+        <IzCardContent style={{ padding: 'var(--space-3)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+            <span style={{ fontSize: 24 }}>🚧</span>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: 'var(--font-size-sm)' }}>
+                Dynamic Role Dashboard (Coming Soon)
+              </div>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
+                Bạn đang xem ở chế độ <strong>{effectiveRole.toUpperCase()}</strong>. Giao diện D.A.R Framework chuyên biệt cho vai trò này đã lưu cấu hình và đang được xây dựng UI.
+              </div>
+            </div>
+          </div>
+        </IzCardContent>
+      </IzCard>
+
       {/* KPI Cards */}
       {showFullDashboard && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-4)' }}>

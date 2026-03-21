@@ -1,7 +1,6 @@
 import { getTenantModules } from '@/core/engine/modules';
 import { AppStore } from '@/modules/registry/components/AppStore';
-
-const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000001';
+import { getTenantId } from '@/core/engine/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,7 +14,8 @@ export const metadata = {
  * AppStore is a Client Component that handles interactive install/uninstall.
  */
 export default async function PluginsPage() {
-  const plugins = await getTenantModules(DEFAULT_TENANT_ID);
+  const tenantId = await getTenantId();
+  const plugins = await getTenantModules(tenantId);
 
   // Serialize dates to strings for client component
   const serialized = plugins.map(p => ({
