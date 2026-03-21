@@ -11,19 +11,12 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { getUserCurrency, formatMoney, type Currency } from '@/lib/userTime';
+import { useCallback, useContext } from 'react';
+import { CurrencyContext } from '@/components/providers/CurrencyProvider';
+import { type Currency, formatMoney } from '../userTime';
 
 export function useCurrency() {
-  const [currency, setCurrency] = useState<Currency>('VND');
-
-  useEffect(() => {
-    setCurrency(getUserCurrency());
-
-    const handler = () => setCurrency(getUserCurrency());
-    window.addEventListener('hz_currency_changed', handler);
-    return () => window.removeEventListener('hz_currency_changed', handler);
-  }, []);
+  const { currency } = useContext(CurrencyContext);
 
   const fmt = useCallback(
     (amount: number | string | null | undefined) => formatMoney(amount, currency),

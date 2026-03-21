@@ -11,6 +11,7 @@ import PageHeader from '@/components/shared/PageHeader';
 import Badge from '@/components/shared/Badge';
 import EmptyState from '@/components/shared/EmptyState';
 import { IzButton } from '@/components/ui/IzButton';
+import { Money } from '@/components/shared/Money';
 
 export const metadata = { title: 'Gói Dịch vụ — izhubs ERP' };
 
@@ -68,7 +69,7 @@ export default async function ServicePackagesPage() {
                   </Badge>
                 </div>
                 <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>
-                  {Number(pkg.monthly_price).toLocaleString('vi-VN')}đ / tháng
+                  <Money value={pkg.monthly_price} /> / tháng
                 </div>
                 <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-subtle)', marginTop: 4 }}>
                   {pkg.subscriber_count} khách đang dùng
@@ -98,14 +99,14 @@ export default async function ServicePackagesPage() {
                 <div className="card" style={{ padding: 'var(--space-4)' }}>
                   <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>Giá theo tháng</div>
                   <div style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 700, marginTop: 4 }}>
-                    {Number(packages[0].monthly_price).toLocaleString('vi-VN')}đ
+                    <Money value={packages[0].monthly_price} />
                   </div>
                 </div>
                 <div className="card" style={{ padding: 'var(--space-4)' }}>
                   <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>Giá theo năm</div>
                   <div style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 700, marginTop: 4 }}>
                     {packages[0].annual_price
-                      ? `${Number(packages[0].annual_price).toLocaleString('vi-VN')}đ`
+                      ? <Money value={packages[0].annual_price} />
                       : '—'}
                   </div>
                 </div>
@@ -136,7 +137,7 @@ export default async function ServicePackagesPage() {
                   <div>
                     <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>Doanh thu/tháng</div>
                     <div style={{ fontSize: 'var(--font-size-xl)', fontWeight: 700 }}>
-                      {Number(packages[0].monthly_revenue).toLocaleString('vi-VN')}đ
+                      <Money value={packages[0].monthly_revenue} />
                     </div>
                   </div>
                   <div>

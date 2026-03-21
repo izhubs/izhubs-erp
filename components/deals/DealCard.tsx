@@ -7,6 +7,7 @@ import type { Deal } from '@/core/schema/entities';
 import { PIPELINE_STAGES } from '@/core/config/pipeline';
 import styles from './kanban.module.scss';
 import { IzKanbanCard } from '@/components/ui/IzKanbanBoard';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 
 interface Props {
   deal: Deal;
@@ -29,13 +30,7 @@ function valueTierColor(deal: Deal): string {
   return '#10b981';
 }
 
-function formatVND(v: number): string {
-  if (!v) return '0đ';
-  if (v >= 1_000_000_000) return `${(v / 1_000_000_000).toFixed(1)}Bđ`;
-  if (v >= 1_000_000)     return `${(v / 1_000_000).toFixed(v % 1_000_000 === 0 ? 0 : 1)}Mđ`;
-  if (v >= 1_000)         return `${(v / 1_000).toFixed(0)}Kđ`;
-  return `${v}đ`;
-}
+
 
 function relativeAge(date: Date | string): string {
   const ms = Date.now() - new Date(date).getTime();
@@ -54,6 +49,7 @@ function ownerInitials(name: string | null | undefined): string {
 }
 
 export default function DealCard({ deal, isOverlay, onClick }: Props) {
+  const { fmtCompact } = useCurrency();
   const {
     attributes, listeners, setNodeRef,
     transform, transition, isDragging,
@@ -119,7 +115,7 @@ export default function DealCard({ deal, isOverlay, onClick }: Props) {
       }
       footerRight={
         <div className={styles.cardMeta} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: 0 }}>
-          <span className={styles.cardValue} style={{ margin: 0 }}>{formatVND(deal.value)}</span>
+          <span className={styles.cardValue} style={{ margin: 0 }}>{fmtCompact(deal.value)}</span>
           <div className={styles.cardAvatars} style={{ margin: 0 }}>
             <span
               className={styles.cardAvatar}

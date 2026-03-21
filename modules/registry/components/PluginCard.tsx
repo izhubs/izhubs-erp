@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import styles from './ModuleCard.module.scss';
 import { IzButton } from '@/components/ui/IzButton';
+import { IzBadge } from '@/components/ui/IzBadge';
 
 interface PluginCardProps {
   id: string;
@@ -64,14 +65,19 @@ export function PluginCard({
           {icon ?? '📦'}
         </span>
         <div className={styles.meta}>
-          <span
+          <IzBadge
+            variant="secondary"
             className={styles.categoryBadge}
-            style={{ backgroundColor: CATEGORY_COLORS[category] + '20', color: CATEGORY_COLORS[category] }}
+            style={{ 
+              backgroundColor: CATEGORY_COLORS[category] + '20', 
+              color: CATEGORY_COLORS[category],
+              border: 'none'
+            }}
           >
             {CATEGORY_LABELS[category]}
-          </span>
+          </IzBadge>
           {isOfficial && (
-            <span className={styles.officialBadge}>Official</span>
+            <IzBadge variant="outline" className={styles.officialBadge}>Official</IzBadge>
           )}
         </div>
       </div>

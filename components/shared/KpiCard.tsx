@@ -11,7 +11,7 @@ export type TrendDirection = 'up' | 'down' | 'neutral';
 export interface KpiCardProps {
   label: string;
   value: React.ReactNode;
-  subLabel?: string;
+  subLabel?: React.ReactNode;
   trend?: string;
   trendDirection?: TrendDirection;
   urgent?: boolean;

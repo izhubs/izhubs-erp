@@ -8,6 +8,7 @@ import DealCard from './DealCard';
 import styles from './kanban.module.scss';
 import { useMemo } from 'react';
 import { IzKanbanColumn } from '@/components/ui/IzKanbanBoard';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 import { IzButton } from '@/components/ui/IzButton';
 
 interface Props {
@@ -19,6 +20,7 @@ interface Props {
 
 export default function KanbanColumn({ stage, deals, onCardClick, onAddDeal }: Props) {
   const columnValue = deals.reduce((sum, d) => sum + d.value, 0);
+  const { fmtCompact } = useCurrency();
 
   const { setNodeRef, isOver } = useDroppable({
     id: stage.id,
@@ -26,13 +28,6 @@ export default function KanbanColumn({ stage, deals, onCardClick, onAddDeal }: P
   });
 
   const dealIds = useMemo(() => deals.map(d => d.id), [deals]);
-
-  const formatValue = (v: number) => {
-    if (v >= 1_000_000_000) return `${(v / 1_000_000_000).toFixed(1)}Tỷđ`;
-    if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(0)}Mđ`;
-    if (v >= 1_000) return `${(v / 1_000).toFixed(0)}Kđ`;
-    return v > 0 ? `${v}đ` : '';
-  };
 
   return (
     <IzKanbanColumn
@@ -43,7 +38,7 @@ export default function KanbanColumn({ stage, deals, onCardClick, onAddDeal }: P
       style={{ borderTop: `4px solid ${stage.color || 'var(--color-border)'}` }}
       headerAction={
         columnValue > 0 ? (
-          <span className={styles.columnValue} style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontWeight: 600 }}>{formatValue(columnValue)}</span>
+          <span className={styles.columnValue} style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontWeight: 600 }}>{fmtCompact(columnValue)}</span>
         ) : undefined
       }
     >

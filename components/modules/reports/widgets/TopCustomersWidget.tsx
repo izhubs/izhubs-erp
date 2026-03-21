@@ -4,9 +4,11 @@
 // Uses AvatarGroup + KpiCard patterns from shared components.
 // =============================================================
 
+import Link from 'next/link';
 import { db } from '@/core/engine/db';
 import { getTenantId } from '@/core/engine/auth';
-import Badge from '@/components/shared/Badge';
+import { IzBadge } from '@/components/ui/IzBadge';
+import { Money } from '@/components/shared/Money';
 
 export async function TopCustomersWidget() {
   const tenantId = await getTenantId();
@@ -69,11 +71,11 @@ export async function TopCustomersWidget() {
                   </div>
                 )}
               </td>
-              <td style={{ fontWeight: 600 }}>
-                {Number(row.total_value).toLocaleString('vi-VN')}đ
+              <td align="right" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>
+                <Money value={row.total_value} />
               </td>
               <td>
-                <Badge variant="info">{row.active_deals} deals</Badge>
+                <IzBadge variant="info">{row.active_deals} deals</IzBadge>
               </td>
               <td>
                 {Number(row.expiring_soon) > 0 ? (

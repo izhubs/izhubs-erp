@@ -139,3 +139,12 @@ ON CONFLICT (id) DO NOTHING;
 | `operations` | Tasks, Projects, Inventory |
 | `hr` | Employees, Attendance, Payroll |
 | `marketing` | Campaigns, Email, Landing Pages |
+
+## UI & Data Formatting Standard
+
+Để đảm bảo User Settings (đơn vị tiền tệ, múi giờ) hoạt động đồng bộ:
+1. **Tiền tệ (Tuyệt đối KHÔNG hardcode `₫`, `VND`, hay `toLocaleString('vi-VN')`)**:
+   - **Server Components**: Sử dụng `<Money value={...} />` từ `@/components/shared/Money`. Dùng `<Money value={...} compact />` nếu cần số tóm tắt (VD: 1.5M).
+   - **Client Components**: Dùng hook `const { fmt, fmtCompact } = useCurrency()` từ `@/lib/hooks/useCurrency`.
+2. **Ngày giờ (Tuyệt đối KHÔNG dùng raw Date string)**:
+   - Dùng các hàm từ `@/lib/userTime` (`formatDate`, `formatDateTime`, `formatTime`) để render ngày giờ đúng Timezone mà user đã chọn.

@@ -16,6 +16,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 
 interface DataPoint {
   stage: string;  // stage label
@@ -28,6 +29,8 @@ interface PipelineFunnelChartProps {
 }
 
 export default function PipelineFunnelChart({ data }: PipelineFunnelChartProps) {
+  const { fmt } = useCurrency();
+
   if (data.length === 0) {
     return (
       <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -65,7 +68,7 @@ export default function PipelineFunnelChart({ data }: PipelineFunnelChartProps) 
             color: 'var(--color-text)',
           }}
           formatter={(v: number, name: string) => [
-            name === 'count' ? `${v} deals` : `${v.toLocaleString('vi-VN')}đ`,
+            name === 'count' ? `${v} deals` : fmt(v),
             name === 'count' ? 'Số deals' : 'Tổng giá trị',
           ]}
         />

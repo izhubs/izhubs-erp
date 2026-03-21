@@ -118,13 +118,7 @@ async function bootstrap() {
     // ---- Step 5: Insert official modules catalog ----
     await client.query(`
       INSERT INTO modules (id, name, description, version, category, icon, is_official) VALUES
-        ('crm',          'CRM Pipeline',  'Manage deals pipeline and contacts. Kanban drag-drop.',            '1.0.0', 'core',       '📊', true),
-        ('contracts',    'Contracts',     'Create and manage contracts with template support.',               '1.0.0', 'finance',    '📋', true),
-        ('invoices',     'Invoices',      'Manage invoices, recurring billing, VAT export.',                 '1.0.0', 'finance',    '🧾', true),
-        ('reports',      'Reports',       'MRR, Churn, Pipeline, Occupancy dashboards.',                     '1.0.0', 'operations', '📈', true),
-        ('mail-log',     'Mail Log',      'Track inbound/outbound mail, notify clients on status.',           '1.0.0', 'operations', '📬', true),
-        ('room-booking', 'Room Booking',  'Manage room/hot-desk bookings by hour or day.',                   '1.0.0', 'operations', '🗓️', true),
-        ('automation',   'Automation',    'Trigger → Condition → Action. Follow-up reminders, auto-email.', '1.0.0', 'operations', '⚡', true)
+        ('crm',          'CRM Pipeline',  'Manage deals pipeline and contacts. Kanban drag-drop.',            '1.0.0', 'core',       '📊', true)
       ON CONFLICT (id) DO NOTHING
     `);
     console.log('  ✅ Official modules catalog seeded');

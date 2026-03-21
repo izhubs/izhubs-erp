@@ -21,6 +21,7 @@ import KanbanColumn from './KanbanColumn';
 import DealCard from './DealCard';
 import DealFormModal from './DealFormModal';
 import DealSlideOver from './DealSlideOver';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 import styles from './kanban.module.scss';
 import { apiFetch } from '@/lib/apiFetch';
 import { PIPELINE_STAGES, type PipelineStageConfig } from '@/core/config/pipeline';
@@ -36,6 +37,7 @@ interface Props {
 
 export default function KanbanBoard({ initialDeals, stages: stagesProp }: Props) {
   const allStages = stagesProp ?? PIPELINE_STAGES;
+  const { fmtCompact } = useCurrency();
   const [deals, setDeals] = useState<Deal[]>(initialDeals);
   const [activeDeal, setActiveDeal] = useState<Deal | null>(null);
   const columnsRef = useRef<HTMLDivElement>(null);
@@ -202,11 +204,11 @@ export default function KanbanBoard({ initialDeals, stages: stagesProp }: Props)
         <div className={styles.boardStats}>
           <div className={styles.stat}>
             <span className={styles.statLabel}>Active Pipeline</span>
-            <span className={styles.statValue}>{formatCurrency(totalValue)}</span>
+            <span className={styles.statValue}>{fmtCompact(totalValue)}</span>
           </div>
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>Won</span>
-            <span className={`${styles.statValue} ${styles.statWon}`}>{formatCurrency(wonValue)}</span>
+          <div className={styles.statCard} style={{ borderColor: 'rgba(34,197,94,0.3)' }}>
+            <span className={styles.statLabel}>Deal đã thắng</span>
+            <span className={`${styles.statValue} ${styles.statWon}`}>{fmtCompact(wonValue)}</span>
           </div>
           <div className={styles.stat}>
             <span className={styles.statLabel}>Total Deals</span>
@@ -296,11 +298,4 @@ export default function KanbanBoard({ initialDeals, stages: stagesProp }: Props)
       )}
     </div>
   );
-}
-
-function formatCurrency(value: number): string {
-  if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}Tỷđ`;
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(0)}Mđ`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(0)}Kđ`;
-  return `${value}đ`;
 }

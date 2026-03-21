@@ -7,6 +7,7 @@ import { IzButton } from '@/components/ui/IzButton';
 import { IzInput } from '@/components/ui/IzInput';
 import { IzSelect } from '@/components/ui/IzSelect';
 import { IzCheckbox } from '@/components/ui/IzCheckbox';
+import { Money } from '@/components/shared/Money';
 
 interface ServicePackage {
   id: string;
@@ -31,9 +32,7 @@ const BILLING_LABELS_VI: Record<string, string> = {
   one_time: 'Một lần',
 };
 
-function formatPrice(price: number, currency: string) {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency }).format(price);
-}
+
 
 type BillingCycle = 'monthly' | 'yearly' | 'one_time';
 
@@ -167,7 +166,7 @@ export default function ServicePackagesPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: 'var(--font-size-sm)', marginBottom: 4 }}>{pkg.name}</div>
                   <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-primary)', fontWeight: 600 }}>
-                    {formatPrice(pkg.price, pkg.currency)} / {isVi ? BILLING_LABELS_VI[pkg.billing] : BILLING_LABELS[pkg.billing]}
+                    <Money value={pkg.price} /> / {isVi ? BILLING_LABELS_VI[pkg.billing] : BILLING_LABELS[pkg.billing]}
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
@@ -206,7 +205,7 @@ export default function ServicePackagesPage() {
             {/* Price */}
             <div style={{ display: 'flex', gap: 'var(--space-5)', marginBottom: 'var(--space-5)' }}>
               {[
-                { icon: DollarSign, labelEn: 'Price', labelVi: 'Giá', value: formatPrice(selected.price, selected.currency) },
+                { icon: DollarSign, labelEn: 'Price', labelVi: 'Giá', value: <Money value={selected.price} /> },
                 { icon: Users, labelEn: 'Subscribers', labelVi: 'Khách hàng', value: String(selected.subscriber_count) },
               ].map((stat, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', padding: 'var(--space-3) var(--space-4)', background: 'var(--color-bg-elevated)', borderRadius: 'var(--radius-md)' }}>

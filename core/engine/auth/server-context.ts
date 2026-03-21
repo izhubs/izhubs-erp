@@ -49,7 +49,7 @@ export async function getCurrentUserRole(): Promise<string> {
  */
 export async function getEffectiveRole(): Promise<string> {
   const baseRole = await getCurrentUserRole();
-  if (baseRole === 'superadmin') {
+  if (baseRole === 'superadmin' || baseRole === 'admin') {
     const c = await cookies();
     const viewAs = c.get('hz_view_as_role')?.value;
     if (viewAs && ['superadmin', 'admin', 'manager', 'member', 'viewer'].includes(viewAs)) {

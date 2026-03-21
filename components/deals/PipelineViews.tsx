@@ -17,6 +17,7 @@ import { IzTable } from '@/components/ui/IzTable';
 import { IzBadge, IzBadgeVariant } from '@/components/ui/IzBadge';
 import { IzButton } from '@/components/ui/IzButton';
 import { apiFetch } from '@/lib/apiFetch';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 
 // Kanban is already complex — keep lazy
 const KanbanBoard = dynamic(() => import('./KanbanBoard'), { ssr: false });
@@ -36,6 +37,7 @@ const VIEW_LABELS: Record<ViewMode, string> = {
 
 // ---- Table View ------------------------------------------------
 function TableView({ deals, onDealClick, stages }: { deals: Deal[]; onDealClick: (d: Deal) => void; stages: PipelineStageConfig[] }) {
+  const { fmtCompact } = useCurrency();
   const [sorting, setSorting] = useState<SortingState>([]);
   const stageMap = useMemo(() => Object.fromEntries(stages.map(s => [s.id, s])), [stages]);
 
@@ -63,7 +65,7 @@ function TableView({ deals, onDealClick, stages }: { deals: Deal[]; onDealClick:
     }),
     columnHelper.accessor('value', {
       header: 'Giá trị',
-      cell: info => <span style={{ fontWeight: 600 }}>{formatVnd(info.getValue())}</span>,
+      cell: info => <span style={{ fontWeight: 600 }}>{fmtCompact(info.getValue())}</span>,
     }),
     columnHelper.accessor('createdAt', {
       header: 'Ngày tạo',
@@ -71,7 +73,7 @@ function TableView({ deals, onDealClick, stages }: { deals: Deal[]; onDealClick:
         {new Date(info.getValue() ?? '').toLocaleDateString('vi-VN')}
       </span>,
     }),
-  ], [stageMap]);
+  ], [stageMap, fmtCompact]);
 
   const table = useReactTable({
     data: deals,
@@ -96,6 +98,7 @@ function TableView({ deals, onDealClick, stages }: { deals: Deal[]; onDealClick:
 
 // ---- Funnel View -----------------------------------------------
 function FunnelView({ deals, stages }: { deals: Deal[]; stages: PipelineStageConfig[] }) {
+  const { fmtCompact } = useCurrency();
   const openDeals = deals.filter(d => d.stage !== 'won' && d.stage !== 'lost');
   const openStages = stages.filter(s => !s.closed);
   const totalStages = openStages.length;
@@ -125,7 +128,7 @@ function FunnelView({ deals, stages }: { deals: Deal[]; stages: PipelineStageCon
                   {stage.label}
                 </span>
                 <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: 'var(--font-size-xs)', textAlign: 'right' }}>
-                  {count} deals{value > 0 ? ` · ${formatVnd(value)}` : ''}
+                  {count} deals{value > 0 ? ` · ${fmtCompact(value)}` : ''}
                 </span>
               </div>
             </div>
@@ -135,8 +138,8 @@ function FunnelView({ deals, stages }: { deals: Deal[]; stages: PipelineStageCon
 
       {/* Summary */}
       <div className="card" style={{ marginTop: 'var(--space-4)', display: 'flex', gap: 'var(--space-6)' }}>
-        <Stat label="Tổng pipeline" value={formatVnd(openDeals.reduce((s, d) => s + d.value, 0))} />
-        <Stat label="Won" value={formatVnd(deals.filter(d => d.stage === 'won').reduce((s, d) => s + d.value, 0))} green />
+        <Stat label="Tổng pipeline" value={fmtCompact(openDeals.reduce((s, d) => s + d.value, 0))} />
+        <Stat label="Won" value={fmtCompact(deals.filter(d => d.stage === 'won').reduce((s, d) => s + d.value, 0))} green />
         <Stat label="Deals đang open" value={String(openDeals.length)} />
       </div>
     </div>
@@ -154,6 +157,7 @@ function Stat({ label, value, green }: { label: string; value: string; green?: b
 
 // ---- Main PipelineViews component ------------------------------
 export default function PipelineViews({ initialDeals, stages: stagesProp }: { initialDeals: Deal[]; stages?: PipelineStageConfig[] }) {
+  const { fmtCompact } = useCurrency();
   const stages = stagesProp ?? PIPELINE_STAGES;
   const router = useRouter();
   const [view, setView] = useState<ViewMode>('kanban');
@@ -200,7 +204,7 @@ export default function PipelineViews({ initialDeals, stages: stagesProp }: { in
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
           <h1 style={{ margin: 0, fontSize: 'var(--font-size-xl)', fontWeight: 700 }}>Pipeline</h1>
           <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>
-            {formatVnd(totalValue)} active
+            {fmtCompact(totalValue)} active
           </span>
         </div>
 
@@ -221,9 +225,4 @@ export default function PipelineViews({ initialDeals, stages: stagesProp }: { in
   );
 }
 
-function formatVnd(v: number): string {
-  if (v >= 1_000_000_000) return `${(v / 1_000_000_000).toFixed(1)}Tỷđ`;
-  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(0)}Mđ`;
-  if (v >= 1_000) return `${(v / 1_000).toFixed(0)}Kđ`;
-  return `${v}đ`;
-}
+

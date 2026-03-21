@@ -55,6 +55,7 @@ export function getUserCurrency(): Currency {
 
 export function setUserCurrency(currency: Currency) {
   localStorage.setItem('hz_currency', currency);
+  document.cookie = `hz_currency=${currency}; path=/; max-age=31536000; SameSite=Lax`;
   window.dispatchEvent(new Event('hz_currency_changed'));
 }
 

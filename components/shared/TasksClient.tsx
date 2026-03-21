@@ -7,8 +7,10 @@
 // =============================================================
 
 import React, { useState, useTransition } from 'react';
+import { apiFetch } from '@/lib/apiFetch';
 import type { Activity } from '@/core/engine/activities';
-import Badge, { BadgeVariant } from '@/components/shared/Badge';
+import { IzBadge, type IzBadgeVariant } from '@/components/ui/IzBadge';
+import { formatDateTime } from '@/lib/userTime';
 import EmptyState from '@/components/shared/EmptyState';
 import SidePanel from '@/components/shared/SidePanel';
 import { IzButton } from '@/components/ui/IzButton';
@@ -28,7 +30,7 @@ const TYPE_LABELS: Record<Activity['type'], string> = {
   note:    'Ghi chú',
 };
 
-const TYPE_VARIANT: Record<Activity['type'], BadgeVariant> = {
+const TYPE_VARIANT: Record<Activity['type'], IzBadgeVariant> = {
   task:    'primary',
   call:    'info',
   email:   'neutral',
@@ -36,7 +38,7 @@ const TYPE_VARIANT: Record<Activity['type'], BadgeVariant> = {
   note:    'neutral',
 };
 
-const PRIORITY_VARIANT: Record<string, BadgeVariant> = {
+const PRIORITY_VARIANT: Record<string, IzBadgeVariant> = {
   high:   'danger',
   medium: 'warning',
   low:    'neutral',
@@ -74,7 +76,7 @@ function TaskRow({
         />
       </td>
       <td style={{ fontWeight: 500 }}>{task.title}</td>
-      <td><Badge variant={TYPE_VARIANT[task.type]}>{TYPE_LABELS[task.type]}</Badge></td>
+      <td><IzBadge variant={TYPE_VARIANT[task.type]}>{TYPE_LABELS[task.type]}</IzBadge></td>
       <td>
         {task.deal_title && (
           <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
@@ -96,9 +98,9 @@ function TaskRow({
       </td>
       <td>
         {task.priority && (
-          <Badge variant={PRIORITY_VARIANT[task.priority]}>
+          <IzBadge variant={PRIORITY_VARIANT[task.priority]}>
             {task.priority === 'high' ? 'Cao' : task.priority === 'medium' ? 'TB' : 'Thấp'}
-          </Badge>
+          </IzBadge>
         )}
       </td>
     </tr>
@@ -238,7 +240,7 @@ export default function TasksClient({ initialToday, initialThisWeek, initialOver
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
             <div>
               <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginBottom: 4 }}>Loại</div>
-              <Badge variant={TYPE_VARIANT[selected.type]}>{TYPE_LABELS[selected.type]}</Badge>
+              <IzBadge variant={TYPE_VARIANT[selected.type]}>{TYPE_LABELS[selected.type]}</IzBadge>
             </div>
             {selected.description && (
               <div>
@@ -248,8 +250,8 @@ export default function TasksClient({ initialToday, initialThisWeek, initialOver
             )}
             {selected.due_date && (
               <div>
-                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginBottom: 4 }}>Ngày hết hạn</div>
-                <p style={{ fontSize: 'var(--font-size-sm)' }}>{new Date(selected.due_date).toLocaleString('vi-VN')}</p>
+                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginBottom: 4 }}>Deadline</p>
+                <p style={{ fontSize: 'var(--font-size-sm)' }}>{formatDateTime(selected.due_date)}</p>
               </div>
             )}
             {selected.deal_title && (

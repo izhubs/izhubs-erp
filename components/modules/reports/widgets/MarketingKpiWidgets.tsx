@@ -6,6 +6,7 @@
 import KpiCard from '@/components/shared/KpiCard';
 import { db } from '@/core/engine/db';
 import { getTenantId } from '@/core/engine/auth';
+import { Money } from '@/components/shared/Money';
 
 // ---- kpi.leads_month ----------------------------------------
 export async function LeadsMonthWidget() {
@@ -83,7 +84,7 @@ export async function CacWidget() {
   return (
     <KpiCard
       label="Chi phí mỗi khách (CAC)"
-      value={`${cac.toLocaleString('vi-VN')}đ`}
+      value={<Money value={cac} />}
       subLabel={`${new_customers} khách mới tháng này`}
       trendDirection="neutral"
     />

@@ -1,8 +1,10 @@
 'use client';
 
 import React from 'react';
+import styles from './ActivityTimeline.module.scss';
 import { useQuery } from '@tanstack/react-query';
-import { Clock, Edit2, Plus, Trash2, ArrowRight } from 'lucide-react';
+import { Clock, Trash2, CheckCircle2, AlertCircle, RefreshCw, MessageSquare, Play, UserPlus, PhoneCall, Mail, Building, FileText, Calendar, LinkIcon, Edit } from 'lucide-react';
+import { formatDateTime } from '@/lib/userTime';
 import { IzAvatar, IzAvatarImage, IzAvatarFallback } from '@/components/ui/IzAvatar';
 
 export interface AuditLog {
@@ -83,13 +85,13 @@ export function ActivityTimeline({ entityType, entityId, isOpen }: Props = {}) {
       <div style={{ position: 'absolute', top: '16px', bottom: '16px', left: '31px', width: '2px', background: 'var(--color-border)', zIndex: 0 }} />
 
       {logs.map((log) => {
-        let Icon = Edit2;
+        let Icon = Edit;
         let iconColor = 'var(--color-primary)';
         let iconBg = 'var(--color-primary-light, #e0e7ff)';
         const actionUpper = log.action.toUpperCase();
 
         if (actionUpper === 'CREATE') {
-          Icon = Plus; iconColor = 'var(--color-success, #10b981)'; iconBg = 'var(--color-success-light, #d1fae5)';
+          Icon = CheckCircle2; iconColor = 'var(--color-success, #10b981)'; iconBg = 'var(--color-success-light, #d1fae5)';
         } else if (actionUpper === 'DELETE') {
           Icon = Trash2; iconColor = 'var(--color-danger, #ef4444)'; iconBg = 'var(--color-danger-light, #fee2e2)';
         }
@@ -145,9 +147,9 @@ export function ActivityTimeline({ entityType, entityId, isOpen }: Props = {}) {
                     </span>
                   )}
                 </div>
-                <span style={{ fontSize: '12px', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Clock size={12} /> {new Date(log.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
+                  <Clock size={12} /> {formatDateTime(log.created_at)}
+                </div>
               </div>
               
               <p style={{ fontSize: '13px', color: 'var(--color-text)', marginTop: '6px', fontWeight: 500 }}>

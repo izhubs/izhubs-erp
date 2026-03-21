@@ -7,6 +7,7 @@
 import KpiCard from '@/components/shared/KpiCard';
 import { db } from '@/core/engine/db';
 import { getTenantId, getCurrentUserId } from '@/core/engine/auth';
+import { Money } from '@/components/shared/Money';
 
 // ---- kpi.my_pipeline ----------------------------------------
 export async function MyPipelineWidget() {
@@ -26,7 +27,7 @@ export async function MyPipelineWidget() {
   return (
     <KpiCard
       label="Pipeline của tôi"
-      value={`${Number(total_value).toLocaleString('vi-VN')}đ`}
+      value={<Money value={total_value} />}
       subLabel={`${total_deals} deals đang xử lý`}
       trendDirection="neutral"
     />
@@ -53,8 +54,8 @@ export async function QuotaProgressWidget() {
   return (
     <KpiCard
       label="Đã chốt tháng này"
-      value={`${Number(won_value).toLocaleString('vi-VN')}đ`}
-      subLabel={`${pct}% quota (${Number(quota).toLocaleString('vi-VN')}đ)`}
+      value={<Money value={won_value} />}
+      subLabel={<>{pct}% quota (<Money value={quota} />)</>}
       trendDirection={pct >= 80 ? 'up' : pct >= 50 ? 'neutral' : 'down'}
     />
   );

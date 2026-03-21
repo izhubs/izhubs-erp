@@ -16,6 +16,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 
 interface DataPoint {
   name: string;       // Package name
@@ -37,6 +38,8 @@ const PALETTE = [
 ];
 
 export default function RevenueByPackageChart({ data }: RevenueByPackageChartProps) {
+  const { fmt } = useCurrency();
+
   if (data.length === 0) {
     return (
       <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -83,9 +86,9 @@ export default function RevenueByPackageChart({ data }: RevenueByPackageChartPro
             fontSize: 12,
             color: 'var(--color-text)',
           }}
-          formatter={(v: number, _name, props) => [
-            `${v.toLocaleString('vi-VN')}đ — ${props.payload.count} khách`,
-            'Doanh thu/tháng',
+          formatter={(v: number, name: string, props: any) => [
+            `${fmt(v)} — ${props.payload.count} khách`,
+            name === 'revenue' ? 'Doanh thu' : name,
           ]}
         />
         <Bar dataKey="revenue" radius={[0, 4, 4, 0]} maxBarSize={28}>

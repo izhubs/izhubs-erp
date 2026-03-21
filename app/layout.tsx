@@ -1,7 +1,10 @@
 import '@/app/styles/globals.scss';
 import type { Metadata, Viewport } from 'next';
 import ReactQueryProvider from '@/components/providers/ReactQueryProvider';
+import CurrencyProvider from '@/components/providers/CurrencyProvider';
 import { IzToaster } from '@/components/ui/IzToaster';
+import { cookies } from 'next/headers';
+import type { Currency } from '@/lib/userTime';
 
 export const metadata: Metadata = {
   title: { default: 'izhubs ERP', template: '%s | izhubs ERP' },
@@ -16,7 +19,10 @@ export const viewport: Viewport = {
   themeColor: '#6366f1',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const cookieStore = await cookies();
+  const initialCurrency = (cookieStore.get('hz_currency')?.value as Currency) || 'VND';
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -37,8 +43,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ReactQueryProvider>
-          {children}
-          <IzToaster />
+          <CurrencyProvider initialCurrency={initialCurrency}>
+            {children}
+            <IzToaster />
+          </CurrencyProvider>
         </ReactQueryProvider>
       </body>
     </html>

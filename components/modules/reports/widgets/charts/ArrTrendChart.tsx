@@ -15,6 +15,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 
 interface DataPoint {
   month: string;   // e.g. "01/2026"
@@ -25,14 +26,9 @@ interface ArrTrendChartProps {
   data: DataPoint[];
 }
 
-function formatVnd(v: number) {
-  if (v >= 1_000_000_000) return `${(v / 1_000_000_000).toFixed(1)}B`;
-  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(0)}M`;
-  if (v >= 1_000) return `${(v / 1_000).toFixed(0)}K`;
-  return String(v);
-}
-
 export default function ArrTrendChart({ data }: ArrTrendChartProps) {
+  const { fmt, fmtCompact } = useCurrency();
+
   if (data.length === 0) {
     return (
       <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -63,7 +59,7 @@ export default function ArrTrendChart({ data }: ArrTrendChartProps) {
           tickLine={false}
         />
         <YAxis
-          tickFormatter={formatVnd}
+          tickFormatter={(v: number) => fmtCompact(v)}
           tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }}
           axisLine={false}
           tickLine={false}
@@ -77,7 +73,7 @@ export default function ArrTrendChart({ data }: ArrTrendChartProps) {
             fontSize: 12,
             color: 'var(--color-text)',
           }}
-          formatter={(v: number) => [`${v.toLocaleString('vi-VN')}đ`, 'Doanh thu']}
+          formatter={(v: number) => [fmt(v), 'Doanh thu']}
         />
         <Area
           type="monotone"

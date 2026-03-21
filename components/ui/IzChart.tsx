@@ -51,7 +51,7 @@ export function IzChartTooltip({
             </div>
             <span>
               {valuePrefix}
-              {typeof entry.value === 'number' ? entry.value.toLocaleString('vi-VN') : entry.value}
+              {typeof entry.value === 'number' ? entry.value.toLocaleString() : entry.value}
               {valueSuffix}
             </span>
           </div>

@@ -3,6 +3,8 @@ import { AppStore } from '@/modules/registry/components/AppStore';
 
 const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000001';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Plugins — izhubs ERP',
   description: 'Quản lý và cài đặt các plugins mở rộng cho izhubs ERP',

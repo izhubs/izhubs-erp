@@ -42,6 +42,26 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 
+  // If authenticated, we need to inject user context headers for Server Components
+  if (isAuthenticated && refreshCookie?.value) {
+    try {
+      const { payload } = await jwtVerify(refreshCookie.value, getSecret());
+      
+      const reqHeaders = new Headers(req.headers);
+      reqHeaders.set('x-user-id', (payload as any).sub || '');
+      reqHeaders.set('x-user-role', (payload as any).role || 'viewer');
+      reqHeaders.set('x-tenant-id', (payload as any).tenantId || '');
+
+      return NextResponse.next({
+        request: {
+          headers: reqHeaders,
+        },
+      });
+    } catch {
+      return NextResponse.next();
+    }
+  }
+
   return NextResponse.next();
 }
 

@@ -5,6 +5,7 @@ import { PluginCard } from './PluginCard';
 import { usePlugins } from '../hooks/usePlugins';
 import styles from './AppStore.module.scss';
 import { IzInput } from '@/components/ui/IzInput';
+import { IzTabs, IzTabsList, IzTabsTrigger } from '@/components/ui/IzTabs';
 
 interface Plugin {
   id: string;
@@ -61,19 +62,15 @@ export function AppStore({ initialPlugins }: AppStoreProps) {
       {/* Filters */}
       <div className={styles.filters}>
         {/* Category tabs */}
-        <div className={styles.tabs} role="tablist">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat.key}
-              role="tab"
-              aria-selected={activeCategory === cat.key}
-              className={`${styles.tab} ${activeCategory === cat.key ? styles.tabActive : ''}`}
-              onClick={() => setActiveCategory(cat.key)}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
+        <IzTabs value={activeCategory} onValueChange={setActiveCategory}>
+          <IzTabsList>
+            {CATEGORIES.map(cat => (
+              <IzTabsTrigger key={cat.key} value={cat.key}>
+                {cat.label}
+              </IzTabsTrigger>
+            ))}
+          </IzTabsList>
+        </IzTabs>
 
         {/* Search */}
         <IzInput

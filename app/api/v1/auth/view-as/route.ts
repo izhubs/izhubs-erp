@@ -17,8 +17,8 @@ export async function POST(req: Request) {
     const token = authHeader.split(' ')[1];
     const decoded = await verifyJwt(token);
 
-    if (decoded.role !== 'superadmin') {
-      return NextResponse.json({ error: 'Forbidden: Only superadmins can use view-as' }, { status: 403 });
+    if (decoded.role !== 'superadmin' && decoded.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden: Only admins/superadmins can use view-as' }, { status: 403 });
     }
 
     const { role } = await req.json();
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     }
 
     c.set('hz_view_as_role', role, {
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/'

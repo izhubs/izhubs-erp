@@ -7,6 +7,7 @@
 import KpiCard from '@/components/shared/KpiCard';
 import { db } from '@/core/engine/db';
 import { getTenantId } from '@/core/engine/auth';
+import { Money } from '@/components/shared/Money';
 
 // ---- kpi.mrr ------------------------------------------------
 export async function MrrWidget() {
@@ -28,8 +29,8 @@ export async function MrrWidget() {
   return (
     <KpiCard
       label="MRR (Doanh thu tháng)"
-      value={Number(mrr).toLocaleString('vi-VN') + 'đ'}
-      subLabel={prev_mrr ? `So với ${Number(prev_mrr).toLocaleString('vi-VN')}đ tháng trước` : undefined}
+      value={<Money value={mrr} />}
+      subLabel={prev_mrr ? <>So với <Money value={prev_mrr} /> tháng trước</> : undefined}
       trend={trend ? `${trend}%` : undefined}
       trendDirection={Number(trend) >= 0 ? 'up' : 'down'}
     />
