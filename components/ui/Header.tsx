@@ -5,6 +5,7 @@ import { Palette, LogOut, User, ChevronDown, Globe, HelpCircle, History } from '
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { useTour } from '@/components/onboarding/TourContext';
 import { GlobalHistorySlideOver } from '@/components/shared/GlobalHistorySlideOver';
+import { ViewAsRoleSelector } from '@/components/ui/ViewAsRoleSelector';
 import {
   IzDropdownMenu,
   IzDropdownMenuTrigger,
@@ -104,6 +105,9 @@ export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenu
       </button>
 
       <div className="header-controls">
+
+        {/* View As Role Selector for SuperAdmins */}
+        <ViewAsRoleSelector />
 
         {/* Language Toggle */}
         <IzButton

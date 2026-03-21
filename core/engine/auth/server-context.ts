@@ -9,7 +9,7 @@
 //   x-user-role: string  (from JWT claim role)
 // =============================================================
 
-import { headers } from 'next/headers';
+import { headers, cookies } from 'next/headers';
 
 const DEFAULT_TENANT = '00000000-0000-0000-0000-000000000001';
 
@@ -42,4 +42,19 @@ export async function getCurrentUserId(): Promise<string> {
 export async function getCurrentUserRole(): Promise<string> {
   const h = await headers();
   return h.get('x-user-role') ?? 'viewer';
+}
+
+/**
+ * Get the effective role for the current user, applying View-As simulation if superadmin.
+ */
+export async function getEffectiveRole(): Promise<string> {
+  const baseRole = await getCurrentUserRole();
+  if (baseRole === 'superadmin') {
+    const c = await cookies();
+    const viewAs = c.get('hz_view_as_role')?.value;
+    if (viewAs && ['superadmin', 'admin', 'manager', 'member', 'viewer'].includes(viewAs)) {
+      return viewAs;
+    }
+  }
+  return baseRole;
 }

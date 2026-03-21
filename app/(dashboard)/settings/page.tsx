@@ -2,73 +2,57 @@
 
 import Link from 'next/link';
 import { Palette, Sliders, Puzzle, Link2, Shield, Zap, ChevronRight } from 'lucide-react';
-import { useLanguage } from '@/components/providers/LanguageProvider';
 
 const SETTINGS_SECTIONS = [
   {
     href: '/settings/appearance',
     icon: Palette,
-    titleEn: 'Appearance',
-    titleVi: 'Giao diện & Ngôn ngữ',
-    descEn: 'Theme colors and display language',
-    descVi: 'Màu sắc giao diện và ngôn ngữ hiển thị',
+    title: 'Appearance',
+    desc: 'Theme colors and display language',
     badge: null,
   },
   {
     href: '/settings/automation',
     icon: Zap,
-    titleEn: 'Automation Rules',
-    titleVi: 'Automation Rules',
-    descEn: 'Configure auto-task triggers (renewal, follow-up…)',
-    descVi: 'Cấu hình rule tự động tạo task (gia hạn, follow-up…)',
+    title: 'Automation Rules',
+    desc: 'Configure auto-task triggers (renewal, follow-up…)',
     badge: null,
   },
   {
     href: '/settings/pipeline-stages',
     icon: Sliders,
-    titleEn: 'Pipeline Stages',
-    titleVi: 'Giai đoạn Pipeline',
-    descEn: 'Customize your sales funnel stages',
-    descVi: 'Tuỳ chỉnh các giai đoạn bán hàng',
+    title: 'Pipeline Stages',
+    desc: 'Customize your sales funnel stages',
     badge: null,
   },
   {
     href: '/settings/custom-fields',
     icon: Puzzle,
-    titleEn: 'Custom Fields',
-    titleVi: 'Trường tuỳ chỉnh',
-    descEn: 'Add extra fields to contacts and deals',
-    descVi: 'Thêm trường dữ liệu cho liên hệ và cơ hội',
+    title: 'Custom Fields',
+    desc: 'Add extra fields to contacts and deals',
     badge: null,
   },
   {
     href: '/settings/integrations',
     icon: Link2,
-    titleEn: 'Integrations',
-    titleVi: 'Tích hợp',
-    descEn: 'Connect third-party services',
-    descVi: 'Kết nối dịch vụ bên thứ ba',
+    title: 'Integrations',
+    desc: 'Connect third-party services',
     badge: 'soon',
   },
   {
     href: '/settings/gdpr',
     icon: Shield,
-    titleEn: 'Data & Privacy',
-    titleVi: 'Dữ liệu & Quyền riêng tư',
-    descEn: 'GDPR erasure and data export',
-    descVi: 'Xoá dữ liệu GDPR và xuất dữ liệu',
+    title: 'Data & Privacy',
+    desc: 'GDPR erasure and data export',
     badge: null,
   },
 ];
 
 export default function SettingsPage() {
-  const { locale, t } = useLanguage();
-  const isVi = locale === 'vi';
-
   return (
     <div>
       <div className="page-header">
-        <h1>{t('nav.settings', 'Settings')}</h1>
+        <h1>Settings</h1>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', maxWidth: 640 }}>
@@ -111,7 +95,7 @@ export default function SettingsPage() {
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
                 <span style={{ fontWeight: 600, fontSize: 'var(--font-size-sm)' }}>
-                  {isVi ? s.titleVi : s.titleEn}
+                  {s.title}
                 </span>
                 {s.badge === 'soon' && (
                   <span style={{
@@ -128,7 +112,7 @@ export default function SettingsPage() {
                 )}
               </div>
               <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginTop: 2 }}>
-                {isVi ? s.descVi : s.descEn}
+                {s.desc}
               </div>
             </div>
 

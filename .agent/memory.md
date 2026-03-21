@@ -108,6 +108,7 @@ npm run typecheck; npm run test:contracts
 ### Seed Data & Templates
 - 5 industries: `seed-agency.js`, `seed-freelancer.js`, `seed-coworking.js`, `seed-restaurant.js`, `seed-cafe.js`
 - 5 Gumroad template packages: `dist/gumroad/{agency,restaurant,coworking,ecommerce,spa}-template.zip`
+- Dashboard JSON Templates `templates/dashboards/{industry}/{role}.json` cho Dynamic Dashboard Engine.
   - Listing copy: `docs/gumroad/agency-listing.md`, `docs/gumroad/coworking-listing.md`
   - Export script: `npm run export:gumroad:all`
 
@@ -128,6 +129,13 @@ npm run typecheck; npm run test:contracts
 - Soft-delete: All entities use `deleted_at` flag — nothing is physically removed from DB (migration 004)
 - Core engine layer: `core/engine/contacts.ts`, `core/engine/deals.ts` — only these may query the DB directly
 - `ApiResponse` factory: `core/engine/response.ts` — ALL API routes must use this, never `NextResponse.json()` directly
+
+### Session 19 — 2026-03-21 (Dynamic Dashboard Engine & BFF Architecture)
+- **Dynamic Dashboard Engine (D.A.R Framework)**: Kiến trúc UI JSON-driven cho phép mỗi Role/Industry có một giao diện Dashboard hoàn toàn khác biệt mà không cần hardcode React components. Lưu cấu hình tại bảng `dashboard_configs`.
+- **God-Mode View-As**: SuperAdmin có Dropdown trên Header để chủ động switch qua lại các Role (Manager, Member...) thông qua API `POST /api/v1/auth/view-as` và middleware cookie. Cực kỳ tiện lợi cho QA và Support.
+- **Backend-For-Frontend (BFF)**: `/api/v1/dashboard/BFF/route.ts` chịu trách nhiệm quy tụ dữ liệu từ hàng loạt Services, parse qua JSON Config, đính kèm metric/trend và trả về UI chỉ trong 1 request duy nhất. Giảm thiểu triệt để Client-side Waterfall.
+- **Dashboard Widgets UI**: Xây dựng 3 tầng Widget cốt lõi gồm `SummaryCardWidget` (Chỉ số kpi), `ChartWidget` (Recharts: Line/Bar/Donut), và `DataTableWidget` (Báo cáo tabular).
+- **Trải nghiệm Fluid Polish**: `DashboardEngine` renderer hỗ trợ CSS Grid tự động reflow cột theo breakpoints thiết bị. Đi kèm hiệu ứng Staggered Fade-In và Skeleton Loading cho cảm giác tải mượt mà, premium.
 
 ### Session 17 — 2026-03-20 (Complete UI Overhaul to IzUI & UX Polish)
 - **IzUI Refactoring Complete**: Refactored `DealSlideOver`, `ContactSlideOver`, `CustomFieldsManager`, and `NotesList` to strictly use `IzInput`, `IzButton`, and `IzSheet`. Removed all legacy Boostrap-like `.form-control` and `.btn` classes from the codebase.

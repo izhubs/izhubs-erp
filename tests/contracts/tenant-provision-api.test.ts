@@ -26,7 +26,7 @@ describe('@qa - API Contract Tests: Tenant Provisioning', () => {
       body: JSON.stringify({ templateId: 'agency', includeDemoData: true }),
     });
 
-    const res = await provisionRoute(req, { params: {} });
+    const res = await provisionRoute(req);
     const json = await res.json();
     
     expect(res.status).toBe(200);
@@ -40,7 +40,7 @@ describe('@qa - API Contract Tests: Tenant Provisioning', () => {
       headers: { 'x-tenant-id': 'tenant-123' },
     });
 
-    const res = await resetRoute(req, { params: {} });
+    const res = await resetRoute(req);
     const json = await res.json();
     
     expect(res.status).toBe(200);

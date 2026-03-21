@@ -34,12 +34,12 @@ export async function POST(req: NextRequest) {
     const user = await getUserByEmail(email);
 
     if (!user || !user.active) {
-      return ApiResponse.error('Invalid credentials', 401);
+      return ApiResponse.error('Email or password is incorrect', 401);
     }
 
     const isMatch = verifyPassword(password, user.password_hash ?? '');
     if (!isMatch) {
-      return ApiResponse.error('Invalid credentials', 401);
+      return ApiResponse.error('Email or password is incorrect', 401);
     }
 
     // Block anonymized (GDPR-erased) users

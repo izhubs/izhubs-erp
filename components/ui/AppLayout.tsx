@@ -18,6 +18,8 @@ interface Props {
   bottomItems?: NavItem[];
   /** CSS variable overrides from industry_templates.theme_defaults */
   themeDefaults?: Record<string, string>;
+  /** Git commit hash or version string */
+  version?: string;
 }
 
 function DemoBanner() {
@@ -108,7 +110,7 @@ function DemoBanner() {
   );
 }
 
-export default function AppLayout({ children, navItems, bottomItems, themeDefaults }: Props) {
+export default function AppLayout({ children, navItems, bottomItems, themeDefaults, version }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -196,6 +198,7 @@ export default function AppLayout({ children, navItems, bottomItems, themeDefaul
         onCollapse={setCollapsed}
         mobileOpen={mobileOpen}
         onMobileClose={() => setMobileOpen(false)}
+        version={version}
       />
 
       <Header

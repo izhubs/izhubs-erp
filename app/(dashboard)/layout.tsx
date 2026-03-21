@@ -5,6 +5,7 @@ import { verifyJwt } from '@/core/engine/auth/jwt';
 import { db } from '@/core/engine/db';
 import type { NavItem } from '@/templates/engine/template.schema';
 import { TourProvider } from '@/components/onboarding/TourContext';
+import { execSync } from 'child_process';
 
 
 export const dynamic = 'force-dynamic';
@@ -63,9 +64,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
     }
   }
 
+  let version = '';
+  try {
+    version = execSync('git rev-parse --short HEAD').toString().trim();
+  } catch {}
+
   return (
     <TourProvider>
-      <AppLayout navItems={navItems} bottomItems={bottomItems} themeDefaults={themeDefaults}>
+      <AppLayout navItems={navItems} bottomItems={bottomItems} themeDefaults={themeDefaults} version={version}>
         {children}
       </AppLayout>
     </TourProvider>

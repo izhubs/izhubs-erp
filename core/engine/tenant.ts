@@ -14,12 +14,14 @@ export async function provisionTenant(userId: string, config: ProvisionConfig) {
   }
 
   return await db.withTransaction(async () => {
-    // 1. Create tenant (simplified stub)
-    const result = await db.query('INSERT INTO tenants (name, template_id) VALUES ($1, $2) RETURNING id', [
-      `${config.templateId} workspace`,
-      config.templateId
-    ]);
-    const tenantId = result.rows[0]?.id || 'tenant-xyz';
+    // 1. Create tenant using actual schema columns (no template_id column)
+    const slug = `${config.templateId}-${Date.now()}`.toLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 100);
+    const result = await db.query(
+      'INSERT INTO tenants (name, slug, industry) VALUES ($1, $2, $3) RETURNING id',
+      [`${config.templateId} workspace`, slug, config.templateId]
+    );
+    const tenantId = result.rows[0]?.id;
+    if (!tenantId) throw new Error('Failed to create tenant');
 
     // 2. Map user to tenant + promote to superadmin (first person = workspace owner)
     await db.query(

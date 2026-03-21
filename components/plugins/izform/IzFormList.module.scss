@@ -1,0 +1,297 @@
+.container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-subtle);
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ── FormCard ── */
+.formCard {
+  background: var(--color-bg-card, var(--color-bg-secondary));
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: border-color 0.15s;
+}
+
+.formCard:hover { border-color: var(--color-brand-primary); }
+.formCardInactive { opacity: 0.6; }
+
+.formCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.formCardName {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  color: var(--color-text-primary);
+}
+
+.formCardDesc {
+  font-size: 0.8125rem;
+  color: var(--color-text-subtle);
+  margin: 0;
+}
+
+.formCardMeta {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--color-text-subtle);
+}
+
+.activeBadge {
+  font-size: 0.75rem;
+  color: var(--color-status-success, #10b981);
+  white-space: nowrap;
+}
+
+.inactiveBadge {
+  font-size: 0.75rem;
+  color: var(--color-text-subtle);
+  white-space: nowrap;
+}
+
+/* ── Embed ── */
+.embedSection {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-bg-muted, #f8f8f8);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+}
+
+.embedCode {
+  flex: 1;
+  overflow: hidden;
+}
+
+.embedCode code {
+  font-size: 0.75rem;
+  color: var(--color-text-subtle);
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+.copyBtn { flex-shrink: 0; }
+
+.formCardActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.viewLink {
+  font-size: 0.8125rem;
+  color: var(--color-brand-primary);
+  text-decoration: none;
+}
+.viewLink:hover { text-decoration: underline; }
+
+/* ── Empty State ── */
+.empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--color-text-subtle);
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.empty p {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.875rem;
+}
+
+/* ── Modal ── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modalHeader h2 { margin: 0; font-size: 1.125rem; font-weight: 600; }
+
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.125rem;
+  color: var(--color-text-subtle);
+  padding: 0.25rem;
+  border-radius: 4px;
+}
+.closeBtn:hover { background: var(--color-bg-hover); }
+
+.modalBody {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.formGroup label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.formGroup input, .formGroup select, .formGroup textarea {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.formGroup input:focus, .formGroup select:focus {
+  border-color: var(--color-brand-primary);
+  box-shadow: 0 0 0 2px var(--color-brand-primary)20;
+}
+
+/* ── Fields builder ── */
+.fieldsSection { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.fieldsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.fieldRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-bg-secondary);
+}
+
+.fieldLabel {
+  flex: 1;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 0.8125rem;
+}
+
+.fieldType {
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 0.8125rem;
+}
+
+.requiredToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--color-text-subtle);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.removeField {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  opacity: 0.6;
+}
+.removeField:hover:not(:disabled) { opacity: 1; }
+.removeField:disabled { cursor: not-allowed; }
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.errorMsg {
+  color: var(--color-status-error, #ef4444);
+  font-size: 0.875rem;
+  margin: 0;
+}

@@ -54,6 +54,8 @@ interface SidebarProps {
   onCollapse?: (v: boolean) => void;
   mobileOpen?: boolean;
   onMobileClose?: () => void;
+  /** Git commit hash or version string */
+  version?: string;
 }
 
 export default function Sidebar({
@@ -63,6 +65,7 @@ export default function Sidebar({
   onCollapse,
   mobileOpen = false,
   onMobileClose,
+  version,
 }: SidebarProps) {
   const pathname = usePathname();
 
@@ -105,19 +108,54 @@ export default function Sidebar({
       </nav>
 
       {/* Bottom: Dynamic bottom items + Collapse toggle */}
-      <div style={{ borderTop: '1px solid var(--color-border)', padding: 'var(--space-3)' }}>
+      <div style={{ borderTop: '1px solid var(--color-border)', padding: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
         {bottomItems.map(renderNavItem)}
 
-        <button
-          onClick={() => onCollapse?.(!collapsed)}
-          className="nav-link"
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          <span className="nav-link__icon">
-            {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-          </span>
-          {!collapsed && <span className="nav-link__label">Collapse</span>}
-        </button>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: collapsed ? 'center' : 'flex-end',
+          marginTop: 'var(--space-2)',
+        }}>
+          <button
+            onClick={() => onCollapse?.(!collapsed)}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            style={{
+              width: 28, height: 28,
+              borderRadius: 'var(--radius-full)',
+              border: '1px solid var(--color-border)',
+              background: 'var(--color-bg-elevated)',
+              color: 'var(--color-text-muted)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.color = 'var(--color-text)';
+              (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-hover)';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)';
+              (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-elevated)';
+            }}
+          >
+            {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+          </button>
+        </div>
+        
+        {version && (
+           <div style={{ 
+             fontSize: '10px', 
+             color: 'var(--color-text-muted)', 
+             fontFamily: 'monospace', 
+             textAlign: 'center', 
+             marginTop: 'var(--space-4)',
+             opacity: 0.7
+           }}>
+             {collapsed ? version : `v${version}`}
+           </div>
+        )}
       </div>
     </aside>
   );
