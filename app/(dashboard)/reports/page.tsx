@@ -8,8 +8,9 @@ import { db } from '@/core/engine/db';
 import { getTenantId } from '@/core/engine/auth';
 import { PageHeader, KpiCard, Badge } from '@/components/shared';
 import { IzButton } from '@/components/ui/IzButton';
+import { formatMoney } from '@/lib/userTime';
 
-export const metadata = { title: 'Báo cáo & Phân tích — izhubs ERP' };
+export const metadata = { title: 'Reports & Analytics — izhubs ERP' };
 
 export default async function ReportsPage() {
   const tenantId = await getTenantId();
@@ -80,45 +81,45 @@ export default async function ReportsPage() {
     : '—';
 
   const STAGE_LABELS: Record<string, string> = {
-    lead: 'Lead mới', proposal: 'Gửi Proposal', negotiation: 'Đàm phán',
-    onboarding: 'Onboarding', active: 'Đang chạy', renewal: 'Gia hạn',
+    lead: 'New Lead', proposal: 'Proposal Sent', negotiation: 'Negotiation',
+    onboarding: 'Onboarding', active: 'Active', renewal: 'Up for Renewal',
   };
 
   return (
     <div className="page">
       <PageHeader
-        title="Báo cáo & Phân tích"
-        subtitle="Tổng quan kinh doanh — Virtual Office"
+        title="Reports & Analytics"
+        subtitle="Business overview"
         actions={
-          <IzButton variant="ghost">📥 Xuất CSV</IzButton>
+          <IzButton variant="ghost">📥 Export CSV</IzButton>
         }
       />
 
       {/* KPI Row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
         <KpiCard
-          label="Doanh thu tháng này"
-          value={`${Number(kpis.revenue_this_month).toLocaleString('vi-VN')}đ`}
+          label="Revenue this month"
+          value={formatMoney(kpis.revenue_this_month)}
           trendDirection="up"
         />
-        <KpiCard label="Deals chốt tháng này" value={String(kpis.won_this_month)} trendDirection="up" />
-        <KpiCard label="Deals thất bại" value={String(kpis.lost_this_month)} trendDirection="down" />
-        <KpiCard label="Win Rate tháng này" value={`${winRate}%`} trendDirection="neutral" />
-        <KpiCard label="Deals đang mở" value={String(kpis.open_deals)} trendDirection="neutral" />
+        <KpiCard label="Deals won this month" value={String(kpis.won_this_month)} trendDirection="up" />
+        <KpiCard label="Deals lost" value={String(kpis.lost_this_month)} trendDirection="down" />
+        <KpiCard label="Win rate this month" value={`${winRate}%`} trendDirection="neutral" />
+        <KpiCard label="Open deals" value={String(kpis.open_deals)} trendDirection="neutral" />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-5)', marginBottom: 'var(--space-5)' }}>
         {/* Pipeline stage breakdown */}
-        <div className="card">
-          <div className="card-header">Pipeline theo Stage</div>
+          <div className="card">
+          <div className="card-header">Pipeline by Stage</div>
           {stages.length === 0 ? (
             <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--space-3)' }}>
-              Chưa có deals nào.
+              No deals yet.
             </p>
           ) : (
             <table className="table" style={{ marginTop: 'var(--space-3)' }}>
               <thead>
-                <tr><th>Stage</th><th>Số deals</th><th>Tổng giá trị</th></tr>
+                <tr><th>Stage</th><th>Count</th><th>Total value</th></tr>
               </thead>
               <tbody>
                 {stages.map((s) => (
@@ -126,7 +127,7 @@ export default async function ReportsPage() {
                     <td><Badge variant="info">{STAGE_LABELS[s.stage] ?? s.stage}</Badge></td>
                     <td style={{ fontWeight: 600 }}>{s.count}</td>
                     <td style={{ color: 'var(--color-text-muted)' }}>
-                      {Number(s.total_value).toLocaleString('vi-VN')}đ
+                      {formatMoney(s.total_value)}
                     </td>
                   </tr>
                 ))}
@@ -136,11 +137,11 @@ export default async function ReportsPage() {
         </div>
 
         {/* Revenue trend (text-based) */}
-        <div className="card">
-          <div className="card-header">Doanh thu 6 tháng gần nhất</div>
+          <div className="card">
+          <div className="card-header">Revenue — last 6 months</div>
           {monthly.length === 0 ? (
             <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--space-3)' }}>
-              Chưa có dữ liệu.
+              No data yet.
             </p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginTop: 'var(--space-4)' }}>
@@ -151,7 +152,7 @@ export default async function ReportsPage() {
                   <div key={m.month}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-size-xs)', marginBottom: 4 }}>
                       <span style={{ color: 'var(--color-text-muted)' }}>{m.month}</span>
-                      <span style={{ fontWeight: 600 }}>{Number(m.revenue).toLocaleString('vi-VN')}đ</span>
+                      <span style={{ fontWeight: 600 }}>{formatMoney(m.revenue)}</span>
                     </div>
                     <div style={{ background: 'var(--color-bg-hover)', borderRadius: 'var(--radius-full)', height: 6 }}>
                       <div style={{
@@ -170,15 +171,15 @@ export default async function ReportsPage() {
 
       {/* Top deals table */}
       <div className="card">
-        <div className="card-header">Deals chốt tháng này</div>
+        <div className="card-header">Deals won this month</div>
         {topDeals.length === 0 ? (
           <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', marginTop: 'var(--space-3)' }}>
-            Chưa có deal nào được chốt tháng này.
+            No deals closed this month yet.
           </p>
         ) : (
           <table className="table" style={{ marginTop: 'var(--space-3)' }}>
             <thead>
-              <tr><th>Tên deal</th><th>Công ty</th><th>Giá trị</th><th>Phụ trách</th></tr>
+              <tr><th>Deal</th><th>Company</th><th>Value</th><th>Owner</th></tr>
             </thead>
             <tbody>
               {topDeals.map((d, i) => (
@@ -186,7 +187,7 @@ export default async function ReportsPage() {
                   <td style={{ fontWeight: 500 }}>{d.name}</td>
                   <td style={{ color: 'var(--color-text-muted)' }}>{d.company ?? '—'}</td>
                   <td style={{ fontWeight: 600, color: 'var(--color-success)' }}>
-                    {Number(d.value).toLocaleString('vi-VN')}đ
+                    {formatMoney(d.value)}
                   </td>
                   <td style={{ color: 'var(--color-text-muted)' }}>{d.owner ?? '—'}</td>
                 </tr>

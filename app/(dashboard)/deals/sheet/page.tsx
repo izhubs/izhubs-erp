@@ -4,28 +4,24 @@ import * as React from 'react';
 import { SheetView, EditableCell } from '@/components/ui/SmartGrid';
 import { useDeals, useUpdateDeal, useBulkDeleteDeals, useCreateDeal } from '@/hooks/useDeals';
 import { useSheetPermissions } from '@/hooks/useSheetPermissions';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 import { ColumnDef } from '@tanstack/react-table';
 import Link from 'next/link';
 import type { Deal } from '@/hooks/useDeals';
 
-const formatVnd = (v: number) => {
-  if (!v) return '—';
-  if (v >= 1_000_000_000) return `${(v / 1_000_000_000).toFixed(1)}Tỷ`;
-  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(0)}M`;
-  return new Intl.NumberFormat('vi-VN').format(v);
-};
+function ValueCell({ value: raw }: { value: number }) {
+  const { fmt } = useCurrency();
+  return <span style={{ color: 'var(--color-success)', fontVariantNumeric: 'tabular-nums' }}>{fmt(raw)}</span>;
+}
 
 const columns: ColumnDef<Deal, any>[] = [
-  { id: 'name',  accessorKey: 'name',  header: 'Tên deal',   cell: (ctx) => <EditableCell context={ctx} />, size: 250 },
+  { id: 'name',  accessorKey: 'name',  header: 'Deal name', cell: (ctx) => <EditableCell context={ctx} />, size: 250 },
   {
-    id: 'value', accessorKey: 'value', header: 'Giá trị',
-    cell: (ctx) => {
-      const raw = ctx.getValue() as number;
-      return <span style={{ color: 'var(--color-success)', fontVariantNumeric: 'tabular-nums' }}>{formatVnd(raw)}</span>;
-    },
+    id: 'value', accessorKey: 'value', header: 'Value',
+    cell: (ctx) => <ValueCell value={ctx.getValue() as number} />,
     size: 140,
   },
-  { id: 'stage', accessorKey: 'stage', header: 'Giai đoạn', cell: (ctx) => <EditableCell context={ctx} />, size: 150,
+  { id: 'stage', accessorKey: 'stage', header: 'Stage', cell: (ctx) => <EditableCell context={ctx} />, size: 150,
     meta: {
       type: 'select',
       options: [

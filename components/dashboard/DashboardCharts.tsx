@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import { IzCard, IzCardHeader, IzCardTitle, IzCardContent } from '@/components/ui/IzCard';
 import { IzChartTooltip, IzChartGradient, izChartLegendFormatter } from '@/components/ui/IzChart';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 
 interface ArrDataPoint { month: string; arr: number }
 interface RevenueSlice  { name: string; value: number; color: string }
@@ -19,18 +20,18 @@ interface RevenueSlice  { name: string; value: number; color: string }
 interface Props {
   arrData: ArrDataPoint[];
   revenueData: RevenueSlice[];
-  locale: 'en' | 'vi';
 }
 
-function formatVND(v: number) {
+// Compact axis label — not full currency, just abbreviation
+function axisAbbrev(v: number) {
   if (v >= 1_000_000_000) return `${(v / 1_000_000_000).toFixed(1)}B`;
   if (v >= 1_000_000)     return `${(v / 1_000_000).toFixed(1)}M`;
   if (v >= 1_000)         return `${(v / 1_000).toFixed(0)}K`;
   return String(v);
 }
 
-export function DashboardCharts({ arrData, revenueData, locale }: Props) {
-  const isVi = locale === 'vi';
+export function DashboardCharts({ arrData, revenueData }: Props) {
+  const { fmt } = useCurrency();
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 'var(--space-5)' }}>
@@ -39,7 +40,7 @@ export function DashboardCharts({ arrData, revenueData, locale }: Props) {
       <IzCard style={{ position: 'relative' }}>
         <IzCardHeader style={{ paddingBottom: 'var(--space-2)' }}>
           <IzCardTitle style={{ margin: 0, fontSize: 'var(--font-size-base)', fontWeight: 600 }}>
-            {isVi ? 'Doanh thu theo tháng (VND)' : 'Monthly Revenue (VND)'}
+            Monthly Revenue
           </IzCardTitle>
         </IzCardHeader>
         <IzCardContent style={{ padding: '0 var(--space-4) var(--space-4)' }}>
@@ -53,15 +54,15 @@ export function DashboardCharts({ arrData, revenueData, locale }: Props) {
                 axisLine={false} tickLine={false}
               />
               <YAxis
-                tickFormatter={formatVND}
+                tickFormatter={axisAbbrev}
                 tick={{ fontSize: 11, fill: 'var(--color-text-muted)' }}
                 axisLine={false} tickLine={false} width={40}
               />
               <Tooltip
                 content={
                   <IzChartTooltip 
-                    valueSuffix="đ" 
-                    nameMap={{ arr: isVi ? 'Doanh thu' : 'Revenue' }}
+                    formatter={(val: unknown) => fmt(Number(val))}
+                    nameMap={{ arr: 'Revenue' }}
                   />
                 }
                 cursor={{ stroke: 'var(--color-border)', strokeWidth: 1, strokeDasharray: '4 4' }}
@@ -81,13 +82,13 @@ export function DashboardCharts({ arrData, revenueData, locale }: Props) {
       <IzCard>
         <IzCardHeader style={{ paddingBottom: 'var(--space-2)' }}>
           <IzCardTitle style={{ margin: 0, fontSize: 'var(--font-size-base)', fontWeight: 600 }}>
-            {isVi ? 'Cơ cấu doanh thu' : 'Revenue by Package'}
+            Revenue by Package
           </IzCardTitle>
         </IzCardHeader>
         <IzCardContent style={{ padding: '0 var(--space-4) var(--space-4)' }}>
           {revenueData.length === 0 ? (
             <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)' }}>
-              {isVi ? 'Chưa có dữ liệu' : 'No data yet'}
+            No data yet
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={200}>
@@ -105,7 +106,7 @@ export function DashboardCharts({ arrData, revenueData, locale }: Props) {
                   ))}
                 </Pie>
                 <Tooltip
-                  content={<IzChartTooltip valueSuffix="đ" />}
+                  content={<IzChartTooltip formatter={(val: unknown) => fmt(Number(val))} />}
                 />
                 <Legend
                   iconType="circle" iconSize={8}

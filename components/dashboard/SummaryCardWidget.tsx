@@ -1,4 +1,7 @@
+'use client';
+
 import { ArrowUpRight, ArrowDownRight, Activity } from 'lucide-react';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 
 export interface SummaryCardProps {
   id: string;
@@ -19,6 +22,8 @@ export function SummaryCardWidget({
   format = 'number',
   isLoading
 }: SummaryCardProps) {
+  const { fmt } = useCurrency();
+
   if (isLoading) {
     return (
       <div className="card p-4 skeleton-container animate-pulse" style={{ height: '120px' }}>
@@ -29,11 +34,12 @@ export function SummaryCardWidget({
     );
   }
 
-  const formattedValue = format === 'currency' 
-    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(value) || 0)
+  const formattedValue = format === 'currency'
+    ? fmt(value)
     : format === 'percent'
     ? `${value}%`
     : new Intl.NumberFormat('en-US').format(Number(value) || 0);
+
 
   const isPositive = (trend ?? 0) >= 0;
 

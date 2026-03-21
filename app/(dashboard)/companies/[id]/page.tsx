@@ -10,6 +10,7 @@ import { notFound } from 'next/navigation';
 import PageHeader from '@/components/shared/PageHeader';
 import Badge from '@/components/shared/Badge';
 import { IzButton } from '@/components/ui/IzButton';
+import { formatMoney } from '@/lib/userTime';
 import type { Metadata } from 'next';
 
 interface Props {
@@ -74,20 +75,20 @@ export default async function CompanyDetailPage({ params }: Props) {
   const stats = statsRes.rows[0];
 
   const STAGE_LABEL: Record<string, string> = {
-    lead: 'Lead mới', proposal: 'Gửi Proposal', negotiation: 'Đàm phán',
-    onboarding: 'Onboarding', active: 'Đang chạy', renewal: 'Gia hạn',
-    won: 'Đã chốt', lost: 'Không chốt',
+    lead: 'New Lead', proposal: 'Proposal Sent', negotiation: 'Negotiation',
+    onboarding: 'Onboarding', active: 'Active', renewal: 'Up for Renewal',
+    won: 'Won', lost: 'Lost',
   };
 
   return (
     <div className="page">
       <PageHeader
         title={company.name}
-        breadcrumb={<><a href="/contacts" style={{ color: 'var(--color-primary)' }}>Contacts</a> / Công ty</>}
+        breadcrumb={<><a href="/contacts" style={{ color: 'var(--color-primary)' }}>Contacts</a> / Company</>}
         actions={
           <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-            <IzButton variant="ghost">Thêm Contact</IzButton>
-            <IzButton variant="default">Tạo Deal</IzButton>
+            <IzButton variant="ghost">Add Contact</IzButton>
+            <IzButton variant="default">Create Deal</IzButton>
           </div>
         }
       />
@@ -108,8 +109,8 @@ export default async function CompanyDetailPage({ params }: Props) {
 
           <Field label="Website">{company.website ?? '—'}</Field>
           <Field label="Email">{company.email ?? '—'}</Field>
-          <Field label="Điện thoại">{company.phone ?? '—'}</Field>
-          <Field label="Địa chỉ">{company.address ?? '—'}</Field>
+          <Field label="Phone">{company.phone ?? '—'}</Field>
+          <Field label="Address">{company.address ?? '—'}</Field>
 
           {/* Extensible custom fields section */}
           {company.custom_fields && Object.keys(company.custom_fields).length > 0 && (
@@ -132,11 +133,11 @@ export default async function CompanyDetailPage({ params }: Props) {
           <div className="card" style={{ marginBottom: 'var(--space-4)' }}>
             <div className="card-header">Contacts ({contactsRes.rows.length})</div>
             {contactsRes.rows.length === 0 ? (
-              <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)' }}>Chưa có contact nào.</p>
+              <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)' }}>No contacts yet.</p>
             ) : (
               <table className="table" style={{ marginTop: 'var(--space-3)' }}>
                 <thead>
-                  <tr><th>Họ tên</th><th>Email</th><th>Chức danh</th><th>Trạng thái</th></tr>
+                  <tr><th>Name</th><th>Email</th><th>Title</th><th>Status</th></tr>
                 </thead>
                 <tbody>
                   {contactsRes.rows.map((c) => (
@@ -160,18 +161,18 @@ export default async function CompanyDetailPage({ params }: Props) {
           <div className="card">
             <div className="card-header">Deals ({dealsRes.rows.length})</div>
             {dealsRes.rows.length === 0 ? (
-              <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)' }}>Chưa có deal nào.</p>
+                <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)' }}>No deals yet.</p>
             ) : (
               <table className="table" style={{ marginTop: 'var(--space-3)' }}>
                 <thead>
-                  <tr><th>Tên deal</th><th>Stage</th><th>Giá trị</th></tr>
+                  <tr><th>Deal</th><th>Stage</th><th>Value</th></tr>
                 </thead>
                 <tbody>
                   {dealsRes.rows.map((d) => (
                     <tr key={d.id}>
                       <td style={{ fontWeight: 500 }}>{d.title}</td>
                       <td><Badge variant="info">{STAGE_LABEL[d.stage] ?? d.stage}</Badge></td>
-                      <td>{Number(d.value).toLocaleString('vi-VN')}đ</td>
+                      <td>{formatMoney(d.value)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -182,12 +183,12 @@ export default async function CompanyDetailPage({ params }: Props) {
 
         {/* RIGHT — Quick Stats */}
         <aside style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-          <StatCard label="Tổng giá trị deals" value={`${Number(stats.total_value).toLocaleString('vi-VN')}đ`} />
-          <StatCard label="Deals đang active" value={String(stats.open_deals)} />
-          <StatCard label="Deals đã chốt" value={String(stats.won_deals)} />
+          <StatCard label="Total deal value" value={formatMoney(stats.total_value)} />
+          <StatCard label="Open deals" value={String(stats.open_deals)} />
+          <StatCard label="Won deals" value={String(stats.won_deals)} />
           {Number(stats.expiring_30d) > 0 && (
             <StatCard
-              label="HĐ sắp hết hạn (30 ngày)"
+              label="Contracts expiring (30d)"
               value={String(stats.expiring_30d)}
               urgent
             />

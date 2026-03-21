@@ -8,6 +8,8 @@ import { verifyJwt } from '@/core/engine/auth/jwt';
 import { db } from '@/core/engine/db';
 import { IzMetricCard } from '@/components/ui/IzMetricCard';
 import { IzCard, IzCardHeader, IzCardTitle, IzCardContent } from '@/components/ui/IzCard';
+import { formatMoney } from '@/lib/userTime';
+import { getEffectiveRole } from '@/core/engine/auth/server-context';
 
 export const metadata = { title: 'Dashboard — izhubs ERP' };
 export const dynamic = 'force-dynamic';
@@ -77,7 +79,8 @@ const DEFAULT_STAGES = [
   { key: 'lost',        label: 'Lost',           color: '#ef4444' },
 ];
 
-function formatVND(v: number): string {
+// Compact abbreviation for chart axis only (not for display amounts)
+function abbrevMoney(v: number): string {
   if (v >= 1_000_000_000) return `${(v / 1_000_000_000).toFixed(1)}B`;
   if (v >= 1_000_000)     return `${(v / 1_000_000).toFixed(1)}M`;
   if (v >= 1_000)         return `${(v / 1_000).toFixed(0)}K`;
@@ -114,6 +117,16 @@ function buildArrData(deals: Array<{ value: number; created_at?: Date | string |
 
 export default async function DashboardPage() {
   const locale: Locale = await getLocaleFromCookies();
+  const effectiveRole = await getEffectiveRole();
+  // Role access levels:
+  // superadmin / admin → full dashboard
+  // manager → KPIs + charts only
+  // member → own pipeline only (no aggregate KPIs)
+  // viewer → read-only summary only
+  const showFullDashboard = effectiveRole === 'superadmin' || effectiveRole === 'admin';
+  const showCharts = showFullDashboard || effectiveRole === 'manager';
+  const showPipelineDetails = showFullDashboard || effectiveRole === 'manager';
+  const showTopCustomers = showFullDashboard;
   const t = T[locale];
 
   // Read tenant's template stages from DB
@@ -152,7 +165,7 @@ export default async function DashboardPage() {
   const mrr          = activeDeals.reduce((s, d) => s + d.value, 0);
 
   const kpis = [
-    { labelKey: 'mrr',           value: `${formatVND(mrr)}đ`,        icon: '💰', href: '/contracts', color: '#6366f1' },
+    { labelKey: 'mrr',           value: formatMoney(mrr),              icon: '💰', href: '/contracts', color: '#6366f1' },
     { labelKey: 'activeClients', value: String(activeDeals.length),   icon: '✅', href: '/contracts', color: '#10b981' },
     { labelKey: 'renewalsDue',   value: String(renewalDeals.length),  icon: '🔔', href: '/deals',     color: '#f97316' },
     { labelKey: 'openDeals',     value: String(openDeals.length),     icon: '📊', href: '/deals',     color: '#60a5fa' },
@@ -223,7 +236,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Charts Row */}
-      <DashboardCharts arrData={arrData} revenueData={revenueData} locale={locale} />
+      <DashboardCharts arrData={arrData} revenueData={revenueData} />
 
       {/* Bottom Row: Pipeline Breakdown + Top Customers — 3:2 */}
       <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 'var(--space-5)' }}>
@@ -260,7 +273,7 @@ export default async function DashboardPage() {
                   </span>
                   {s.value > 0 && (
                     <span style={{ fontSize: 10, color: 'var(--color-text-muted)', whiteSpace: 'nowrap', minWidth: 52, textAlign: 'right' }}>
-                      {formatVND(s.value)}đ
+                      {abbrevMoney(s.value)}
                     </span>
                   )}
                 </div>
@@ -306,7 +319,7 @@ export default async function DashboardPage() {
                       </div>
                     </div>
                     <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--color-primary)', flexShrink: 0, background: 'rgba(99,102,241,0.1)', padding: '2px 6px', borderRadius: 4 }}>
-                      {formatVND(d.value)}đ
+                      {formatMoney(d.value)}
                     </span>
                   </div>
                 ))}

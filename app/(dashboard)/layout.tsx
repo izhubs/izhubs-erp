@@ -22,6 +22,7 @@ const DEFAULT_NAV: NavItem[] = [
 ];
 
 const DEFAULT_BOTTOM: NavItem[] = [
+  { id: 'plugins',  label: 'Plugins',  href: '/settings/plugins', icon: 'Package',  roles: ['admin'] },
   { id: 'settings', label: 'Settings', href: '/settings', icon: 'Settings', roles: ['admin'] },
 ];
 

@@ -58,6 +58,7 @@ const coworkingTemplate: IndustryTemplate = {
       { id: 'import',     label: 'Import',       href: '/import',     icon: 'Upload',          roles: ['admin', 'member'] },
     ],
     bottomItems: [
+      { id: 'plugins',    label: 'Plugins',      href: '/settings/plugins', icon: 'Package',         roles: ['admin'] },
       { id: 'settings',   label: 'Cài đặt',      href: '/settings',   icon: 'Settings',        roles: ['admin'] },
     ],
     dashboardLayout: {

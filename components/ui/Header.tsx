@@ -6,6 +6,7 @@ import { useLanguage } from '@/components/providers/LanguageProvider';
 import { useTour } from '@/components/onboarding/TourContext';
 import { GlobalHistorySlideOver } from '@/components/shared/GlobalHistorySlideOver';
 import { ViewAsRoleSelector } from '@/components/ui/ViewAsRoleSelector';
+import { getUserTimezone, getTimezoneOffset } from '@/lib/userTime';
 import {
   IzDropdownMenu,
   IzDropdownMenuTrigger,
@@ -24,6 +25,50 @@ const THEMES = [
   { id: 'light',   label: 'Light Mode',  color: '#6366f1', isLight: true },
 ];
 
+// ---- Live Clock Badge ----
+function ClockBadge() {
+  const [time, setTime] = useState('');
+  const [offset, setOffset] = useState('');
+
+  useEffect(() => {
+    function tick() {
+      const tz = getUserTimezone();
+      const now = new Date();
+      const t = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: tz });
+      setTime(t);
+      setOffset(getTimezoneOffset(tz));
+    }
+    tick();
+    const id = setInterval(tick, 1000);
+    // Re-read timezone when user changes it in settings
+    const onTzChange = () => tick();
+    window.addEventListener('hz_timezone_changed', onTzChange);
+    return () => { clearInterval(id); window.removeEventListener('hz_timezone_changed', onTzChange); };
+  }, []);
+
+  if (!time) return null;
+
+  return (
+    <div title="Current time in your timezone (change in Settings → Appearance)" style={{
+      display: 'flex', alignItems: 'center', gap: 5,
+      fontSize: 12, fontFamily: 'monospace', fontWeight: 500,
+      color: 'var(--color-text-muted)',
+      padding: '3px 8px',
+      borderRadius: 'var(--radius-full)',
+      border: '1px solid var(--color-border)',
+      background: 'var(--color-bg-elevated)',
+      whiteSpace: 'nowrap',
+      cursor: 'default',
+    }}>
+      <span style={{ opacity: 0.7 }}>🕐</span>
+      {time}
+      <span style={{ opacity: 0.5, fontSize: 10 }}>·</span>
+      <span style={{ opacity: 0.6, fontSize: 10 }}>{offset}</span>
+    </div>
+  );
+}
+
+
 function applyTheme(themeId: string) {
   if (themeId === 'default') {
     document.documentElement.removeAttribute('data-theme');
@@ -31,7 +76,9 @@ function applyTheme(themeId: string) {
     document.documentElement.setAttribute('data-theme', themeId);
   }
   localStorage.setItem('hz_theme', themeId);
+  window.dispatchEvent(new Event('hz_theme_changed'));
 }
+
 
 export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenuButton?: React.ReactNode; onSearchClick?: () => void }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -132,6 +179,9 @@ export default function Header({ mobileMenuButton, onSearchClick }: { mobileMenu
             {locale.toUpperCase()}
           </span>
         </IzButton>
+
+        {/* Live Clock */}
+        <ClockBadge />
 
         {/* Help/Tour Button */}
         <IzButton

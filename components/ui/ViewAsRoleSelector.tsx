@@ -28,19 +28,24 @@ export function ViewAsRoleSelector() {
 
   useEffect(() => {
     try {
-      // 1. Check if user is SuperAdmin by parsing JWT
+      // 1. Check if user is Admin/SuperAdmin by parsing JWT
       const tokenStr = document.cookie
         .split('; ')
         .find(r => r.startsWith('hz_access='))
         ?.split('=')[1];
       
-      if (!tokenStr) return;
+      if (!tokenStr) {
+        console.log('[ViewAs] No hz_access cookie found');
+        return;
+      }
       const payload = JSON.parse(atob(tokenStr.split('.')[1]));
+      console.log('[ViewAs] User role from JWT:', payload.role);
       
-      if (payload.role === 'superadmin') {
+      if (payload.role === 'superadmin' || payload.role === 'admin') {
         setIsSuperAdmin(true);
       } else {
-        return; // Non-superadmins don't get this UI
+        console.log('[ViewAs] Role not eligible, hiding button. Got:', payload.role);
+        return;
       }
 
       // 2. Check current view-as simulation
@@ -49,9 +54,9 @@ export function ViewAsRoleSelector() {
         .find(r => r.startsWith('hz_view_as_role='))
         ?.split('=')[1];
       
-      setCurrentViewRole(viewAsCookie || 'superadmin');
-    } catch {
-      // Decode error / no token
+      setCurrentViewRole(viewAsCookie || payload.role);
+    } catch (e) {
+      console.log('[ViewAs] Error parsing token:', e);
     }
   }, []);
 

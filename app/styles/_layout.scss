@@ -10,8 +10,8 @@
   display: grid;
   grid-template-columns: var(--sidebar-current-width, var(--sidebar-width)) 1fr;
   grid-template-rows: var(--header-height) 1fr;
-  height: 100vh;           // ← was min-height; needs to be fixed height so 1fr constrains
-  overflow: hidden;        // ← prevent the layout itself from scrolling
+  height: 100vh;
+  overflow: hidden;
   transition: grid-template-columns var(--transition-normal);
 
   &.sidebar-collapsed { --sidebar-current-width: 64px; }
@@ -30,6 +30,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
 
   &.collapsed { width: 64px; }
 

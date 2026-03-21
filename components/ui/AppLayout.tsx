@@ -6,7 +6,7 @@ import Header from '@/components/ui/Header';
 import CommandPalette from '@/components/ui/CommandPalette';
 import QueryProvider from '@/components/providers/QueryProvider';
 import { LanguageProvider } from '@/components/providers/LanguageProvider';
-import { Menu } from 'lucide-react';
+import { Menu, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ToastProvider } from '@/lib/toast';
 import type { NavItem } from '@/templates/engine/template.schema';
 import DevResetDbButton from './DevResetDbButton';
@@ -200,6 +200,41 @@ export default function AppLayout({ children, navItems, bottomItems, themeDefaul
         onMobileClose={() => setMobileOpen(false)}
         version={version}
       />
+
+      {/* Fixed collapse button — outside sidebar so it's never clipped by overflow:hidden */}
+      <button
+        onClick={() => setCollapsed(c => !c)}
+        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        style={{
+          position: 'fixed',
+          left: collapsed ? 'calc(64px - 14px)' : 'calc(var(--sidebar-width) - 14px)',
+          top: '18px',
+          width: 28,
+          height: 28,
+          borderRadius: '50%',
+          border: '1px solid var(--color-border)',
+          background: 'var(--color-bg-surface)',
+          color: 'var(--color-text-muted)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          zIndex: 9999,
+          transition: 'left 0.25s ease, color 0.2s, background 0.2s',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+        }}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-hover)';
+          (e.currentTarget as HTMLElement).style.color = 'var(--color-text)';
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-surface)';
+          (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)';
+        }}
+      >
+        {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+      </button>
 
       <Header
         onSearchClick={() => setPaletteOpen(true)}

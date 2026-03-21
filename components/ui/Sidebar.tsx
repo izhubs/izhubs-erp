@@ -72,27 +72,29 @@ export default function Sidebar({
   const isActive = (href: string) =>
     href === '/dashboard' ? pathname === href : pathname.startsWith(href);
 
-  const renderNavItem = (item: NavItem) => (
-    <Link
-      key={item.id}
-      href={item.href}
-      title={collapsed ? item.label : undefined}
-      className={`nav-link${isActive(item.href) ? ' nav-link--active' : ''}`}
-      onClick={onMobileClose}
-    >
-      <span className="nav-link__icon">
-        <NavIcon name={item.icon} />
-      </span>
-      {!collapsed && (
-        <span className="nav-link__label">
-          {item.label}
-          {item.badge && (
-            <span className="nav-link__badge">{item.badge}</span>
-          )}
+  function renderNavItem(item: NavItem) {
+    return (
+      <Link
+        key={item.id}
+        href={item.href}
+        title={collapsed ? item.label : undefined}
+        className={`nav-link${isActive(item.href) ? ' nav-link--active' : ''}`}
+        onClick={onMobileClose}
+      >
+        <span className="nav-link__icon">
+          <NavIcon name={item.icon} />
         </span>
-      )}
-    </Link>
-  );
+        {!collapsed && (
+          <span className="nav-link__label">
+            {item.label}
+            {item.badge && (
+              <span className="nav-link__badge">{item.badge}</span>
+            )}
+          </span>
+        )}
+      </Link>
+    );
+  }
 
   return (
     <aside id="app-sidebar" className={`sidebar${collapsed ? ' collapsed' : ''}${mobileOpen ? ' mobile-open' : ''}`}>
@@ -111,39 +113,6 @@ export default function Sidebar({
       <div style={{ borderTop: '1px solid var(--color-border)', padding: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
         {bottomItems.map(renderNavItem)}
 
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: collapsed ? 'center' : 'flex-end',
-          marginTop: 'var(--space-2)',
-        }}>
-          <button
-            onClick={() => onCollapse?.(!collapsed)}
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            style={{
-              width: 28, height: 28,
-              borderRadius: 'var(--radius-full)',
-              border: '1px solid var(--color-border)',
-              background: 'var(--color-bg-elevated)',
-              color: 'var(--color-text-muted)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.color = 'var(--color-text)';
-              (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-hover)';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.color = 'var(--color-text-muted)';
-              (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-elevated)';
-            }}
-          >
-            {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-          </button>
-        </div>
-        
         {version && (
            <div style={{ 
              fontSize: '10px', 

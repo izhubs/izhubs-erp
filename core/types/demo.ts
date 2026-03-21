@@ -88,7 +88,7 @@ export const ROLES: Record<RoleId, Role> = {
     icon: '👔',
     label: 'CEO / Founder',
     description: 'Full revenue dashboard, all pipeline, team KPIs',
-    rbacRole: 'admin',
+    rbacRole: 'superadmin',
   },
   sale: {
     id: 'sale',

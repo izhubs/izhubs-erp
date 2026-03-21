@@ -74,6 +74,7 @@ const virtualOfficeTemplate: IndustryTemplate = {
       { id: 'import',           label: 'Import',            href: '/import',            icon: 'Upload',          roles: ['admin'] },
     ],
     bottomItems: [
+      { id: 'plugins',    label: 'Plugins',      href: '/settings/plugins', icon: 'Package',         roles: ['admin'] },
       { id: 'settings', label: 'Settings', href: '/settings', icon: 'Settings', roles: ['admin'] },
     ],
     dashboardLayout: {
