@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { db } from './db';
+import { revalidateTag } from 'next/cache';
 
 // =============================================================
 // izhubs ERP — Module Registry Engine
@@ -162,6 +163,7 @@ export async function activateModule(tenantId: string, moduleId: string): Promis
 
   // Invalidate cache immediately so next request gets fresh state
   invalidateCache(tenantId, moduleId);
+  revalidateTag(`nav-config-${tenantId}`);
 }
 
 /**
@@ -182,4 +184,5 @@ export async function deactivateModule(tenantId: string, moduleId: string): Prom
   );
 
   invalidateCache(tenantId, moduleId);
+  revalidateTag(`nav-config-${tenantId}`);
 }

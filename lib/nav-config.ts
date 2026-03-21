@@ -57,8 +57,28 @@ async function fetchNavConfigFromDB(tenantId: string): Promise<NavConfig | null>
   // JSONB is already parsed by the pg driver
   const navConfig = result.rows[0].nav_config as NavConfig;
   const themeDefaults = result.rows[0].theme_defaults as Record<string, string> | null;
+
+  // Fetch active non-core plugins and inject into sidebar
+  const activePlugins = await db.query(
+    `SELECT m.id, m.name, m.icon
+     FROM modules m
+     JOIN tenant_modules tm ON tm.module_id = m.id AND tm.tenant_id = $1
+     WHERE tm.is_active = true AND m.category != 'core'`,
+    [tenantId]
+  );
+
+  const pluginNavItems: NavItem[] = activePlugins.rows.map(m => ({
+    id: `plugin-${m.id}`,
+    label: m.name.split('—')[0].trim(),
+    href: `/plugins/${m.id}`,
+    icon: m.icon || 'Package',
+    roles: ['admin', 'member'],
+  }));
+
+  const sidebar = [...(navConfig.sidebar ?? []), ...pluginNavItems];
+
   // Merge theme_defaults (stored as separate column) into the NavConfig
-  return { ...navConfig, themeDefaults: themeDefaults ?? {} };
+  return { ...navConfig, sidebar, themeDefaults: themeDefaults ?? {} };
 }
 
 /**

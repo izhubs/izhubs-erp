@@ -67,8 +67,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   let version = '';
   try {
-    version = execSync('git rev-parse --short HEAD').toString().trim();
-  } catch {}
+    const pkg = require('@/package.json');
+    version = pkg.version || '0.1.0';
+  } catch {
+    version = '0.1.0';
+  }
 
   return (
     <TourProvider>
