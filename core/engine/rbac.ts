@@ -29,7 +29,13 @@ export type Permission =
   | 'users:read'
   | 'users:write'
   | 'users:delete'
-  | 'settings:manage';
+  | 'settings:manage'
+  | 'expenses:read'
+  | 'expenses:write'
+  | 'expenses:delete'
+  | 'payments:read'
+  | 'payments:write'
+  | 'payments:delete';
 
 export type Role = 'superadmin' | 'admin' | 'member' | 'viewer';
 
@@ -45,6 +51,8 @@ export const ROLE_PERMISSIONS: Record<Role, Set<Permission>> = {
     'activities:read', 'activities:write',
     'users:read', 'users:write', 'users:delete',
     'settings:manage',
+    'expenses:read', 'expenses:write', 'expenses:delete',
+    'payments:read', 'payments:write', 'payments:delete',
   ]),
   admin: new Set([
     'contacts:read', 'contacts:write', 'contacts:delete',
@@ -54,6 +62,8 @@ export const ROLE_PERMISSIONS: Record<Role, Set<Permission>> = {
     'activities:read', 'activities:write',
     'users:read', 'users:write',
     'settings:manage',
+    'expenses:read', 'expenses:write', 'expenses:delete',
+    'payments:read', 'payments:write', 'payments:delete',
   ]),
   member: new Set([
     'contacts:read', 'contacts:write',
@@ -61,6 +71,8 @@ export const ROLE_PERMISSIONS: Record<Role, Set<Permission>> = {
     'contracts:read',
     'campaigns:read', 'campaigns:write',
     'activities:read', 'activities:write',
+    'expenses:read', 'expenses:write',
+    'payments:read', 'payments:write',
   ]),
   viewer: new Set([
     'contacts:read',
@@ -68,6 +80,8 @@ export const ROLE_PERMISSIONS: Record<Role, Set<Permission>> = {
     'contracts:read',
     'campaigns:read',
     'activities:read',
+    'expenses:read',
+    'payments:read',
   ]),
 };
 

@@ -13,7 +13,12 @@ const bizOpsModule: IzhubsModule = {
   icon: '💼',
   description: 'Manage contracts, payment milestones, and project campaigns.',
   dependencies: [],
-  requiredPermissions: ['contracts:read'],
+  requiredPermissions: [
+    'contracts:read', 'contracts:write', 'contracts:delete',
+    'campaigns:read', 'campaigns:write', 'campaigns:delete',
+    'expenses:read', 'expenses:write', 'expenses:delete',
+    'payments:read', 'payments:write', 'payments:delete'
+  ],
   apiPrefix: '/api/v1/biz-ops',
 };
 
