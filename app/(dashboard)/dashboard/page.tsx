@@ -11,6 +11,8 @@ import { IzCard, IzCardHeader, IzCardTitle, IzCardContent } from '@/components/u
 import { getEffectiveRole } from '@/core/engine/auth/server-context';
 import { Money } from '@/components/shared/Money';
 
+import { VirtualOfficeCeoDashboard } from '@/components/dashboard/VirtualOfficeCeoDashboard';
+
 export const metadata = { title: 'Dashboard — izhubs ERP' };
 export const dynamic = 'force-dynamic';
 
@@ -131,6 +133,7 @@ export default async function DashboardPage() {
 
   // Read tenant's template stages from DB
   let templateStages = DEFAULT_STAGES;
+  let industryId = 'virtual-office'; // default fallback for demo
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('hz_access')?.value;
@@ -138,11 +141,12 @@ export default async function DashboardPage() {
       const claims = await verifyJwt(token);
       const tenantId = claims.tenantId ?? '00000000-0000-0000-0000-000000000001';
       const res = await db.query(
-        `SELECT it.nav_config FROM tenants t
+        `SELECT it.nav_config, it.id as industry_id FROM tenants t
          JOIN industry_templates it ON it.id = t.industry
          WHERE t.id = $1 AND t.active = true`,
         [tenantId]
       );
+      industryId = res.rows[0]?.industry_id || 'virtual-office';
       const ps = res.rows[0]?.nav_config?.pipelineStages;
       if (Array.isArray(ps) && ps.length > 0) {
         templateStages = ps.map((s: { key: string; label: string; color?: string }) => ({
@@ -221,8 +225,12 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      {/* Coming Soon Notice for Dynamic Dashboards */}
-      <IzCard style={{ background: 'var(--color-bg-elevated)', borderLeft: '4px solid var(--color-primary)' }}>
+      {industryId === 'virtual-office' && effectiveRole === 'superadmin' ? (
+        <VirtualOfficeCeoDashboard deals={deals} contacts={contacts} />
+      ) : (
+      <>
+        {/* Coming Soon Notice for Dynamic Dashboards */}
+        <IzCard style={{ background: 'var(--color-bg-elevated)', borderLeft: '4px solid var(--color-primary)' }}>
         <IzCardContent style={{ padding: 'var(--space-3)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
             <span style={{ fontSize: 24 }}>🚧</span>
@@ -397,6 +405,8 @@ export default async function DashboardPage() {
           )}
         </IzCardContent>
       </IzCard>
+      </>
+      )}
     </div>
   );
 }
