@@ -1,0 +1,103 @@
+.workspaceContainer {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 64px); /* assuming 64px header */
+  background: var(--surface);
+  color: var(--on-surface);
+  font-family: var(--font-inter, 'Inter', sans-serif);
+  overflow: hidden;
+}
+
+.workspaceHeader {
+  padding: 24px 32px;
+  background: rgba(26, 26, 26, 0.6); /* surface_container with transparency */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(72, 72, 71, 0.15); /* outline_variant */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 10;
+}
+
+.headerTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.titleArea {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.titleArea h1 {
+  font-size: 1.5rem; /* headline-sm */
+  font-weight: 600;
+  margin: 0;
+  color: var(--on-surface);
+}
+
+.budgetInfo {
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.teamArea {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatarGroup {
+  display: flex;
+  align-items: center;
+}
+
+.avatarGroup > div {
+  margin-left: -8px;
+  border: 2px solid var(--surface-container);
+}
+
+.avatarGroup > div:first-child {
+  margin-left: 0;
+}
+
+.assignButton {
+  background: linear-gradient(135deg, #89acff 0%, #739eff 100%);
+  color: #002b6a;
+  font-weight: 600;
+  border: none;
+  transition: opacity 0.2s;
+}
+
+.assignButton:hover {
+  opacity: 0.9;
+}
+
+.workspaceTabs {
+  padding: 0 32px;
+}
+
+.workspaceContent {
+  flex: 1;
+  padding: 24px 32px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Kanban custom overrides to match Obsidian Theme */
+.kanbanWrapper {
+  height: 100%;
+  display: flex;
+  gap: 16px;
+}
+
+.taskBoard {
+  flex: 1;
+  min-height: 500px;
+}

@@ -247,7 +247,7 @@ export function BizOpsProjectsClient({ initialContracts, initialCampaigns }: Pro
                   onEdit={() => setModal({ type: 'edit-contract', data: contract })}
                   onDelete={() => handleDeleteContract(contract.id)}
                   onOpenPayments={() => setModal({ type: 'payments', data: contract })}
-                  onClick={() => {/* future: navigate to detail */}}
+                  onClick={() => { window.location.href = `/plugins/biz-ops/contracts/${contract.id}` }}
                 />
               ))}
             </div>
@@ -290,9 +290,10 @@ export function BizOpsProjectsClient({ initialContracts, initialCampaigns }: Pro
                   key={campaign.id}
                   campaign={campaign}
                   contractTitle={getContractTitle(campaign.contract_id)}
-                  onEdit={() => setModal({ type: 'edit-campaign', data: campaign })}
-                  onDelete={() => handleDeleteCampaign(campaign.id)}
-                  onOpenExpenses={() => setModal({ type: 'expenses', data: campaign })}
+                  onEdit={(e) => { e?.stopPropagation(); setModal({ type: 'edit-campaign', data: campaign }) }}
+                  onDelete={(e) => { e?.stopPropagation(); handleDeleteCampaign(campaign.id) }}
+                  onOpenExpenses={(e) => { e?.stopPropagation(); setModal({ type: 'expenses', data: campaign }) }}
+                  onClick={() => { window.location.href = `/plugins/biz-ops/campaigns/${campaign.id}` }}
                 />
               ))}
             </div>

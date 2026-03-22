@@ -16,9 +16,10 @@ interface CampaignCardProps {
     end_date: string | null;
   };
   contractTitle?: string;
-  onEdit: () => void;
-  onDelete: () => void;
-  onOpenExpenses: () => void;
+  onEdit: (e?: React.MouseEvent) => void;
+  onDelete: (e?: React.MouseEvent) => void;
+  onOpenExpenses: (e?: React.MouseEvent) => void;
+  onClick?: () => void;
 }
 
 const HEALTH_MAP: Record<string, { dot: string; label: string }> = {
@@ -39,14 +40,19 @@ function formatBudget(value: number) {
   return value.toLocaleString();
 }
 
-export function CampaignCard({ campaign, contractTitle, onEdit, onDelete, onOpenExpenses }: CampaignCardProps) {
+export function CampaignCard({ campaign, contractTitle, onEdit, onDelete, onOpenExpenses, onClick }: CampaignCardProps) {
   const health = HEALTH_MAP[campaign.health] ?? HEALTH_MAP.healthy;
   const budgetPct = campaign.allocated_budget > 0
     ? Math.min((campaign.actual_cogs / campaign.allocated_budget) * 100, 100)
     : 0;
 
   return (
-    <div className={styles.campaignCard} id={`campaign-${campaign.id}`}>
+    <div 
+      className={styles.campaignCard} 
+      id={`campaign-${campaign.id}`}
+      onClick={onClick}
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
+    >
       <div className={styles.campaignMeta}>
         <h4 className={styles.campaignName}>{campaign.name}</h4>
         <span className={styles.typeBadge}>{TYPE_LABELS[campaign.type] ?? campaign.type}</span>

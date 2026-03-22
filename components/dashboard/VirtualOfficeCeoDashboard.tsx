@@ -142,28 +142,38 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
   const contactsLastMonth = contacts.filter(c => c.createdAt && new Date(c.createdAt) >= firstDayLastMonth && new Date(c.createdAt) < firstDayThisMonth).length;
   const contactsTrend = contactsLastMonth === 0 ? (contactsThisMonth > 0 ? 100 : 0) : Number(((contactsThisMonth - contactsLastMonth) / contactsLastMonth * 100).toFixed(1));
 
+  const timeFilterMonths = timeFilter === 'all' ? 24 : parseInt(timeFilter);
+  const timeFilterStartDate = new Date(now.getFullYear(), now.getMonth() - timeFilterMonths + 1, 1);
+
+  // Filter deals based on time filter for charts & leaderboards
+  const filteredActiveDeals = activeDeals.filter(d => d.createdAt && new Date(d.createdAt) >= timeFilterStartDate);
+
   // 2. Chart Data: Revenue by Package (Donut)
   const revenueByPkg: Record<string, number> = {};
-  for (const d of activeDeals) {
+  for (const d of filteredActiveDeals) {
     const pkg = d.customFields?.goi_dich_vu as string ?? t.others;
     revenueByPkg[pkg] = (revenueByPkg[pkg] ?? 0) + d.value;
   }
+  const mrrFiltered = filteredActiveDeals.reduce((sum, d) => sum + d.value, 0);
   const PACKAGE_COLORS = ['#f59e0b', '#a8a29e', '#3b82f6', '#6366f1']; // Gold, Silver, Diamond, Others
   const revenueData = Object.entries(revenueByPkg).map(([name, value], i) => ({
     name, value, color: PACKAGE_COLORS[i % PACKAGE_COLORS.length],
   }));
 
-  // 3. Chart Data: Last 6 Months (Revenue & Deals)
-  const arrData = Array.from({ length: 6 }, (_, i) => {
-    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+  // 3. Chart Data: Line/Bar (Last X Months)
+  const arrData = Array.from({ length: timeFilterMonths }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (timeFilterMonths - 1 - i), 1);
     return { month: `T${d.getMonth() + 1}/${String(d.getFullYear()).slice(-2)}`, revenue: 0, deals: 0 };
   });
+  
   for (const deal of deals) {
     if (!deal.createdAt) continue;
     const created = new Date(deal.createdAt as string);
-    const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
-    if (created < sixMonthsAgo) continue;
-    const monthIdx = (created.getFullYear() - now.getFullYear()) * 12 + created.getMonth() - (now.getMonth() - 5);
+    if (created < timeFilterStartDate) continue;
+    
+    // Calculate index from the start date
+    const monthIdx = (created.getFullYear() - timeFilterStartDate.getFullYear()) * 12 + created.getMonth() - timeFilterStartDate.getMonth();
+    
     if (monthIdx >= 0 && monthIdx < arrData.length) {
       if (deal.stage === 'won' || deal.stage === 'active') {
         arrData[monthIdx].revenue += deal.value;
@@ -174,7 +184,7 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
 
   // 4. Staff Leaderboard
   const staffSalesMap: Record<string, { name: string, value: number }> = {};
-  for (const deal of activeDeals) {
+  for (const deal of filteredActiveDeals) {
     const ownerName = deal.ownerId ? (users.find(u => u.id === deal.ownerId)?.name || t.hiddenStaff) : t.unassigned;
     if (!staffSalesMap[ownerName]) staffSalesMap[ownerName] = { name: ownerName, value: 0 };
     staffSalesMap[ownerName].value += deal.value;
@@ -207,7 +217,7 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
         }
         
         @media (min-width: 1440px) {
-          .ceo-grid-charts { grid-template-columns: repeat(4, 1fr); }
+          .ceo-grid-charts { grid-template-columns: repeat(4, 1fr); align-items: start; }
         }
       `}</style>
       
@@ -286,7 +296,7 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
       </div>
 
       {/* CHARTS ROW (4 Columns natively matching the image) */}
-      <div className="ceo-grid-charts">
+      <div className="ceo-grid-charts" style={{ alignItems: 'start' }}>
         
         {/* Lượng deal đã chốt (Bar) */}
         <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12 }}>
@@ -294,12 +304,12 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
             <IzCardTitle style={{ fontSize: 14, fontWeight: 700 }}>{t.dealsClosed}</IzCardTitle>
           </IzCardHeader>
           <IzCardContent>
-            <div style={{ height: 260, marginTop: 10 }}>
-              <ResponsiveContainer width="100%" height="100%">
+            <div style={{ height: 260, minHeight: 260, maxHeight: 260, marginTop: 10 }}>
+              <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={arrData} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
                   <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} dy={10} />
                   <RechartsTooltip cursor={{ fill: 'transparent' }} labelStyle={{ color: '#0f172a' }} contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                  <Bar dataKey="deals" fill="#60a5fa" radius={[4, 4, 0, 0]} barSize={16}>
+                  <Bar dataKey="deals" fill="#60a5fa" radius={[4, 4, 0, 0]} barSize={timeFilter === '12' || timeFilter === 'all' ? 8 : 16}>
                     {arrData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={index === arrData.length - 1 ? '#3b82f6' : '#93c5fd'} />
                     ))}
@@ -327,7 +337,7 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
               </ResponsiveContainer>
               <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
                 <div style={{ fontSize: 15, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
-                  {mrr > 1000000 ? `${(mrr / 1000000).toFixed(1)} ${t.mil}` : fmt(mrr)}
+                  {mrrFiltered > 1000000 ? `${(mrrFiltered / 1000000).toFixed(1)} ${t.mil}` : fmt(mrrFiltered)}
                 </div>
                 <div style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase' }}>{t.totalRev}</div>
               </div>
@@ -339,7 +349,7 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: pkg.color }} />
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>{pkg.name}</span>
                   </div>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: '#0f172a' }}>{((pkg.value / mrr) * 100).toFixed(1)}%</span>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: '#0f172a' }}>{mrrFiltered === 0 ? '0.0' : ((pkg.value / mrrFiltered) * 100).toFixed(1)}%</span>
                 </div>
               ))}
             </div>
@@ -353,8 +363,8 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
             <span style={{ fontSize: 11, color: '#10b981', fontWeight: 600 }}>● {t.actual}</span>
           </IzCardHeader>
           <IzCardContent>
-            <div style={{ height: 260, marginTop: 10 }}>
-              <ResponsiveContainer width="100%" height="100%">
+            <div style={{ height: 260, minHeight: 260, maxHeight: 260, marginTop: 10 }}>
+              <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={arrData} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
                   <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} dy={10} />
                   <RechartsTooltip formatter={(val: number) => fmt(val)} contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
@@ -369,7 +379,7 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
         <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12, display: 'flex', flexDirection: 'column' }}>
           <IzCardHeader style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <IzCardTitle style={{ fontSize: 14, fontWeight: 700 }}>{t.leaderboard}</IzCardTitle>
-            <span style={{ fontSize: 10, color: '#94a3b8', border: '1px solid #e2e8f0', borderRadius: 4, padding: '2px 6px' }}>6 {t.months.toLowerCase()}</span>
+            <span style={{ fontSize: 10, color: '#94a3b8', border: '1px solid #e2e8f0', borderRadius: 4, padding: '2px 6px' }}>{timeFilter === 'all' ? t.all : `${timeFilter} ${t.months.toLowerCase()}`}</span>
           </IzCardHeader>
           <IzCardContent style={{ flex: 1 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24, marginTop: 10 }}>
