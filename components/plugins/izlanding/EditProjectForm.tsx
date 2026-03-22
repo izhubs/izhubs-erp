@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { IzButton } from '@/components/ui/IzButton';
 import { IzInput } from '@/components/ui/IzInput';
 import { IzTextarea } from '@/components/ui/IzTextarea';
+import { IzSelect } from '@/components/ui/IzSelect';
 import { IzCard, IzCardContent } from '@/components/ui/IzCard';
 import styles from './EditProject.module.scss';
 
@@ -306,16 +307,12 @@ export default function EditProjectForm({ project, tracking }: Props) {
                   </IzButton>
                 </div>
               ) : (
-                <select
-                  className="w-full px-4 py-2 border border-solid border-slate-300 rounded-lg text-slate-700 bg-white"
-                  value={selectedFormId}
-                  onChange={e => setSelectedFormId(e.target.value)}
-                >
-                  <option value="">-- Chọn Form --</option>
-                  {forms.map(f => (
-                    <option key={f.id} value={f.id}>{f.name}</option>
-                  ))}
-                </select>
+                <IzSelect
+                  options={forms.map(f => ({ value: f.id, label: f.name }))}
+                  value={selectedFormId ? { value: selectedFormId, label: forms.find(f => f.id === selectedFormId)?.name } : null}
+                  onChange={(opt: any) => setSelectedFormId(opt?.value || '')}
+                  placeholder="-- Chọn Form --"
+                />
               )}
             </div>
           </IzCardContent>
