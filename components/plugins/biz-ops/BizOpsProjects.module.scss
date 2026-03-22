@@ -1,0 +1,482 @@
+/* ══════════════════════════════════════════════
+   Biz-Ops Projects — Stylesheet
+   Follows izForm pattern with design system vars
+   ══════════════════════════════════════════════ */
+
+.container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.headerLeft h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.headerLeft p {
+  font-size: 0.875rem;
+  color: var(--color-text-subtle);
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 1.5rem;
+}
+
+.tab {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-subtle);
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+
+.tab:hover {
+  color: var(--color-text-primary);
+}
+
+.tabActive {
+  color: var(--color-brand-primary);
+  border-bottom-color: var(--color-brand-primary);
+}
+
+/* ── Filters ── */
+.filters {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.filterSelect {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 0.8125rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.filterSelect:focus {
+  border-color: var(--color-brand-primary);
+}
+
+/* ── Grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1rem;
+}
+
+/* ── Contract Card ── */
+.contractCard {
+  background: var(--color-bg-card, var(--color-bg-secondary));
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.contractCard:hover {
+  border-color: var(--color-brand-primary);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.cardCode {
+  font-size: 0.75rem;
+  color: var(--color-text-subtle);
+  font-family: monospace;
+}
+
+/* ── Status Badge ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: 100px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.badgeDraft       { background: #e5e7eb; color: #374151; }
+.badgeSigned      { background: #dbeafe; color: #1d4ed8; }
+.badgeInProgress  { background: #fef3c7; color: #b45309; }
+.badgeCompleted   { background: #d1fae5; color: #047857; }
+.badgeCancelled   { background: #fee2e2; color: #b91c1c; }
+
+/* ── Value Bar ── */
+.valueSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.valueRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+}
+
+.valueLabel { color: var(--color-text-subtle); }
+.valueAmount { font-weight: 600; color: var(--color-text-primary); }
+
+.valueBar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-bg-muted, #e5e7eb);
+  overflow: hidden;
+}
+
+.valueBarFill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #10b981, #059669);
+  transition: width 0.4s ease;
+}
+
+/* ── Card Meta ── */
+.cardMeta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8125rem;
+  color: var(--color-text-subtle);
+  flex-wrap: wrap;
+}
+
+.cardMeta span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.actionBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  color: var(--color-text-subtle);
+  transition: background 0.15s;
+}
+
+.actionBtn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.actionBtnDanger:hover {
+  color: var(--color-status-error, #ef4444);
+}
+
+/* ── Campaign Card ── */
+.campaignCard {
+  background: var(--color-bg-card, var(--color-bg-secondary));
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  transition: border-color 0.15s;
+}
+
+.campaignCard:hover {
+  border-color: var(--color-brand-primary);
+}
+
+.campaignMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.campaignName {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.typeBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: var(--color-bg-muted, #f3f4f6);
+  color: var(--color-text-subtle);
+}
+
+/* ── Health ── */
+.healthDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 0.25rem;
+}
+
+.healthHealthy  { background: #10b981; }
+.healthAtRisk   { background: #f59e0b; }
+.healthDelayed  { background: #ef4444; }
+.healthCompleted { background: #6b7280; }
+
+.campaignFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8125rem;
+  color: var(--color-text-subtle);
+}
+
+/* ── Contract Label (on campaign) ── */
+.contractLabel {
+  font-size: 0.75rem;
+  color: var(--color-text-subtle);
+  padding: 0.15rem 0.5rem;
+  background: var(--color-bg-muted, #f3f4f6);
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/* ── Empty State ── */
+.empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--color-text-subtle);
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.empty p {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.875rem;
+}
+
+/* ── Modal ── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.15s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: var(--color-bg-primary, #ffffff);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.2s ease;
+  position: relative;
+  z-index: 10000;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.25rem;
+  color: var(--color-text-subtle);
+  padding: 0.25rem;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.closeBtn:hover {
+  background: var(--color-bg-hover);
+}
+
+.modalBody {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.formGroup label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+  border-color: var(--color-brand-primary);
+  box-shadow: 0 0 0 3px rgba(234, 128, 46, 0.15);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 0 1.5rem 1.5rem;
+}
+
+.errorMsg {
+  color: var(--color-status-error, #ef4444);
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+/* ── Summary Stats ── */
+.stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.statCard {
+  background: var(--color-bg-card, var(--color-bg-secondary));
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  min-width: 160px;
+  flex: 1;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: var(--color-text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.25rem;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}

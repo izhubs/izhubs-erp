@@ -172,6 +172,23 @@ export async function deleteForm(tenantId: string, formId: string): Promise<bool
   return (res.rowCount ?? 0) > 0;
 }
 
+/** List submissions for a form (validates tenant ownership) */
+export async function getSubmissions(tenantId: string, formId: string): Promise<IzFormSubmission[]> {
+  const res = await db.query(
+    `SELECT
+       s.id, s.form_id AS "formId", s.tenant_id AS "tenantId",
+       s.data, s.contact_id AS "contactId",
+       s.ip_address AS "ipAddress",
+       s.submitted_at AS "submittedAt"
+     FROM iz_form_submissions s
+     JOIN iz_forms f ON f.id = s.form_id
+     WHERE s.form_id = $1 AND f.tenant_id = $2 AND f.deleted_at IS NULL
+     ORDER BY s.submitted_at DESC`,
+    [formId, tenantId]
+  );
+  return res.rows.map(r => IzFormSubmissionSchema.parse(r));
+}
+
 /** Public submit — no auth required. formId must be active */
 export async function submitForm(
   formId: string,
@@ -212,25 +229,6 @@ export async function submitForm(
   }
 
   return submission;
-}
-
-/** Get all submissions for a form */
-export async function getSubmissions(
-  tenantId: string,
-  formId: string
-): Promise<IzFormSubmission[]> {
-  const res = await db.query(
-    `SELECT
-       s.id, s.form_id AS "formId", s.tenant_id AS "tenantId",
-       s.data, s.contact_id AS "contactId",
-       s.ip_address AS "ipAddress", s.submitted_at AS "submittedAt"
-     FROM iz_form_submissions s
-     JOIN iz_forms f ON f.id = s.form_id
-     WHERE s.form_id = $1 AND f.tenant_id = $2
-     ORDER BY s.submitted_at DESC`,
-    [formId, tenantId]
-  );
-  return res.rows.map(r => IzFormSubmissionSchema.parse(r));
 }
 
 /** Convert a submission to a Contact */

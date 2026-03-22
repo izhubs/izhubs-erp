@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { GripVertical, Trash2, ArrowRight, Smartphone, Monitor, Zap, Send } from 'lucide-react';
+import { GripVertical, Trash2, ArrowRight, Smartphone, Monitor, Zap, Send, Plus, X } from 'lucide-react';
 import { IzButton } from '@/components/ui/IzButton';
 import { IzInput } from '@/components/ui/IzInput';
 import { IzTextarea } from '@/components/ui/IzTextarea';
@@ -19,6 +19,7 @@ interface FormField {
   type: FieldType;
   label: string;
   required: boolean;
+  options?: string[];
 }
 
 const FIELD_TYPE_OPTIONS = [
@@ -99,7 +100,45 @@ export default function IzFormBuilder({ formId }: IzFormBuilderProps) {
   };
 
   const updateField = (id: string, updates: Partial<FormField>) => {
-    setFields(prev => prev.map(f => f.id === id ? { ...f, ...updates } : f));
+    setFields(prev => prev.map(f => {
+      if (f.id !== id) return f;
+      const updated = { ...f, ...updates };
+      // Auto-add default options when switching to select
+      if (updates.type === 'select' && (!updated.options || updated.options.length === 0)) {
+        updated.options = ['Option 1', 'Option 2'];
+      }
+      // Clear options when switching away from select
+      if (updates.type && updates.type !== 'select') {
+        delete updated.options;
+      }
+      return updated;
+    }));
+  };
+
+  const addOption = (fieldId: string) => {
+    setFields(prev => prev.map(f => {
+      if (f.id !== fieldId) return f;
+      const opts = f.options || [];
+      return { ...f, options: [...opts, `Option ${opts.length + 1}`] };
+    }));
+  };
+
+  const removeOption = (fieldId: string, index: number) => {
+    setFields(prev => prev.map(f => {
+      if (f.id !== fieldId) return f;
+      const opts = [...(f.options || [])];
+      opts.splice(index, 1);
+      return { ...f, options: opts };
+    }));
+  };
+
+  const updateOption = (fieldId: string, index: number, value: string) => {
+    setFields(prev => prev.map(f => {
+      if (f.id !== fieldId) return f;
+      const opts = [...(f.options || [])];
+      opts[index] = value;
+      return { ...f, options: opts };
+    }));
   };
 
   /* ── Submit (Create or Update) ── */
@@ -185,46 +224,82 @@ export default function IzFormBuilder({ formId }: IzFormBuilderProps) {
           <div className={styles.fieldsList}>
             {fields.map(field => (
               <div key={field.id} className={styles.fieldRow}>
-                <span className={styles.dragHandle}>
-                  <GripVertical size={18} />
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span className={styles.dragHandle}>
+                    <GripVertical size={18} />
+                  </span>
 
-                <div className={styles.fieldName}>
-                  <IzInput
-                    value={field.label}
-                    onChange={e => updateField(field.id, { label: e.target.value })}
-                    placeholder="Field label"
-                  />
+                  <div className={styles.fieldName}>
+                    <IzInput
+                      value={field.label}
+                      onChange={e => updateField(field.id, { label: e.target.value })}
+                      placeholder="Field label"
+                    />
+                  </div>
+
+                  <div className={styles.fieldType}>
+                    <IzSelect
+                      options={FIELD_TYPE_OPTIONS}
+                      value={FIELD_TYPE_OPTIONS.find(o => o.value === field.type)}
+                      onChange={(val: any) => updateField(field.id, { type: val?.value as FieldType })}
+                      menuPosition="fixed"
+                    />
+                  </div>
+
+                  <div className={styles.requiredToggle}>
+                    <IzCheckbox
+                      label="Required"
+                      checked={field.required}
+                      onChange={e => updateField(field.id, { required: e.target.checked })}
+                    />
+                  </div>
+
+                  <div className={styles.removeBtn}>
+                    <IzButton
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeField(field.id)}
+                      disabled={fields.length <= 1}
+                    >
+                      <Trash2 size={16} />
+                    </IzButton>
+                  </div>
                 </div>
 
-                <div className={styles.fieldType}>
-                  <IzSelect
-                    options={FIELD_TYPE_OPTIONS}
-                    value={FIELD_TYPE_OPTIONS.find(o => o.value === field.type)}
-                    onChange={(val: any) => updateField(field.id, { type: val?.value as FieldType })}
-                    menuPosition="fixed"
-                  />
-                </div>
-
-                <div className={styles.requiredToggle}>
-                  <IzCheckbox
-                    label="Required"
-                    checked={field.required}
-                    onChange={e => updateField(field.id, { required: e.target.checked })}
-                  />
-                </div>
-
-                <div className={styles.removeBtn}>
-                  <IzButton
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeField(field.id)}
-                    disabled={fields.length <= 1}
-                  >
-                    <Trash2 size={16} />
-                  </IzButton>
-                </div>
+                {/* Dropdown options editor */}
+                {field.type === 'select' && (
+                  <div className={styles.optionsEditor}>
+                    <span className={styles.optionsLabel}>Options:</span>
+                    <div className={styles.optionsList}>
+                      {(field.options || []).map((opt, i) => (
+                        <div key={i} className={styles.optionTag}>
+                          <input
+                            className={styles.optionInput}
+                            value={opt}
+                            onChange={e => updateOption(field.id, i, e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addOption(field.id); } }}
+                          />
+                          <button
+                            type="button"
+                            className={styles.optionRemove}
+                            onClick={() => removeOption(field.id, i)}
+                            title="Remove option"
+                          >
+                            <X size={12} />
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        className={styles.addOptionBtn}
+                        onClick={() => addOption(field.id)}
+                      >
+                        <Plus size={12} /> Add
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -386,12 +461,21 @@ export default function IzFormBuilder({ formId }: IzFormBuilderProps) {
                   <span className={styles.previewFieldLabel}>
                     {field.label || 'Untitled'}{field.required ? ' *' : ''}
                   </span>
-                  <input
-                    className={styles.previewFieldInput}
-                    disabled
-                    placeholder={PLACEHOLDER_MAP[field.type] || 'Enter value...'}
-                    type={field.type === 'email' ? 'email' : field.type === 'number' ? 'number' : 'text'}
-                  />
+                  {field.type === 'select' ? (
+                    <select className={styles.previewFieldInput} disabled>
+                      <option value="">Select an option</option>
+                      {(field.options || []).map((opt, i) => (
+                        <option key={i} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      className={styles.previewFieldInput}
+                      disabled
+                      placeholder={PLACEHOLDER_MAP[field.type] || 'Enter value...'}
+                      type={field.type === 'email' ? 'email' : field.type === 'number' ? 'number' : 'text'}
+                    />
+                  )}
                 </div>
               ))}
               <button className={styles.previewSubmitBtn} type="button" disabled>
@@ -425,12 +509,21 @@ export default function IzFormBuilder({ formId }: IzFormBuilderProps) {
                       <span className={styles.previewFieldLabel}>
                         {field.label || 'Untitled'}{field.required ? ' *' : ''}
                       </span>
-                      <input
-                        className={styles.previewFieldInput}
-                        disabled
-                        placeholder={PLACEHOLDER_MAP[field.type] || 'Enter value...'}
-                        type={field.type === 'email' ? 'email' : field.type === 'number' ? 'number' : 'text'}
-                      />
+                      {field.type === 'select' ? (
+                        <select className={styles.previewFieldInput} disabled>
+                          <option value="">Select an option</option>
+                          {(field.options || []).map((opt, i) => (
+                            <option key={i} value={opt}>{opt}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          className={styles.previewFieldInput}
+                          disabled
+                          placeholder={PLACEHOLDER_MAP[field.type] || 'Enter value...'}
+                          type={field.type === 'email' ? 'email' : field.type === 'number' ? 'number' : 'text'}
+                        />
+                      )}
                     </div>
                   ))}
                   <button className={styles.previewSubmitBtn} type="button" disabled>
