@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { IzButton } from '@/components/ui/IzButton';
 import { IzAvatar, IzAvatarFallback, IzAvatarImage } from '@/components/ui/IzAvatar';
 import { IzBadge } from '@/components/ui/IzBadge';
@@ -41,7 +42,8 @@ async function apiCall(url: string, method: string, body?: object) {
 }
 
 export function BizOpsCampaign({ campaign }: Props) {
-  const [tab, setTab] = useState<Tab>('tasks');
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab') || 'tasks';
   const [tasks, setTasks] = useState<Task[]>([]);
   const [members, setMembers] = useState<ProjectMemberWithUser[]>([]);
   const [files, setFiles] = useState<FileRecord[]>([]);
@@ -82,71 +84,39 @@ export function BizOpsCampaign({ campaign }: Props) {
   };
 
   return (
-    <div className={styles.workspaceContainer}>
-      <div className={styles.workspaceSidebar}>
-        {/* Project Context */}
-        <div style={{ padding: '0 12px', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <IzButton variant="ghost" size="sm" onClick={() => window.location.href = `/plugins/biz-ops/contracts/${campaign.contract_id || ''}`} style={{ padding: '4px', height: 'auto', minWidth: 'auto', marginLeft: '-4px' }}>←</IzButton>
-            <IzBadge variant="info">{campaign.stage}</IzBadge>
-          </div>
-          <div className={styles.titleArea}>
-            <h1>{campaign.name}</h1>
-          </div>
-          <div className={styles.budgetInfo}>
-            <span>Spent: {(campaign.actual_cogs / 1_000_000).toFixed(1)}M / {(campaign.allocated_budget / 1_000_000).toFixed(1)}M</span>
-          </div>
-          
-          <div className={styles.teamArea} style={{ marginTop: '16px', flexDirection: 'column', alignItems: 'flex-start', gap: '12px' }}>
-            <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--on-surface-variant)', fontWeight: 600 }}>Team</span>
-            <div className={styles.avatarGroup}>
-              {members.slice(0, 3).map(m => (
-                <IzAvatar key={m.user_id}>
-                  {m.user_avatar_url && <IzAvatarImage src={m.user_avatar_url} />}
-                  <IzAvatarFallback>{m.user_name.charAt(0).toUpperCase()}</IzAvatarFallback>
-                </IzAvatar>
-              ))}
-              {members.length > 3 && (
-                <IzAvatar>
-                  <IzAvatarFallback>+{members.length - 3}</IzAvatarFallback>
-                </IzAvatar>
-              )}
+    <div className={styles.workspaceContainer} style={{ flexDirection: 'column', height: '100%' }}>
+      <div className={styles.workspaceMain} style={{ flex: 1 }}>
+        <div className={styles.workspaceHeader} style={{ padding: '24px 32px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 600, margin: 0 }}>{campaign.name}</h2>
+                <IzBadge variant="info">{campaign.stage}</IzBadge>
+              </div>
+              <div style={{ color: 'var(--on-surface-variant)', fontSize: '0.875rem', marginTop: '8px' }}>
+                Spent: {(campaign.actual_cogs / 1_000_000).toFixed(1)}M / {(campaign.allocated_budget / 1_000_000).toFixed(1)}M
+              </div>
             </div>
-            <button className={`${styles.assignButton} iz-button iz-button-sm`} style={{ borderRadius: '24px', width: '100%', marginTop: '4px', background: 'var(--surface-container-highest)', color: 'var(--on-surface)' }}>
-              + Assign Member
-            </button>
-          </div>
-        </div>
-
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(72, 72, 71, 0.15)', margin: '0 0 16px 0' }} />
-
-        {/* Local Navigation */}
-        <div className={styles.navMenu}>
-          <button onClick={() => setTab('tasks')} className={`${styles.navItem} ${tab === 'tasks' ? styles.navItemActive : ''}`}>
-            ☑️ Tasks
-          </button>
-          <button onClick={() => setTab('files')} className={`${styles.navItem} ${tab === 'files' ? styles.navItemActive : ''}`}>
-            📁 Files & Assets
-          </button>
-          <button onClick={() => setTab('finances')} className={`${styles.navItem} ${tab === 'finances' ? styles.navItemActive : ''}`}>
-            💸 Finances
-          </button>
-          <button onClick={() => setTab('settings')} className={`${styles.navItem} ${tab === 'settings' ? styles.navItemActive : ''}`}>
-            ⚙️ Settings
-          </button>
-        </div>
-      </div>
-
-      <div className={styles.workspaceMain}>
-        <div className={styles.workspaceHeader}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, margin: 0 }}>
-            {tab === 'tasks' && 'Kanban Board'}
-            {tab === 'files' && 'Files & Assets'}
-            {tab === 'finances' && 'Finances & Expenses'}
-            {tab === 'settings' && 'Project Settings'}
-          </h2>
-          <div>
-            {tab === 'tasks' && <IzButton>+ New Task</IzButton>}
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div className={styles.avatarGroup} style={{ display: 'flex', marginRight: '8px' }}>
+                {members.slice(0, 3).map(m => (
+                  <IzAvatar key={m.user_id}>
+                    {m.user_avatar_url && <IzAvatarImage src={m.user_avatar_url} />}
+                    <IzAvatarFallback>{m.user_name.charAt(0).toUpperCase()}</IzAvatarFallback>
+                  </IzAvatar>
+                ))}
+                {members.length > 3 && (
+                  <IzAvatar>
+                    <IzAvatarFallback>+{members.length - 3}</IzAvatarFallback>
+                  </IzAvatar>
+                )}
+              </div>
+              <button className={`${styles.assignButton} iz-button iz-button-sm`} style={{ borderRadius: '24px', background: 'var(--surface-container-highest)', color: 'var(--on-surface)' }}>
+                + Assign
+              </button>
+              {tab === 'tasks' && <IzButton>+ New Task</IzButton>}
+            </div>
           </div>
         </div>
 

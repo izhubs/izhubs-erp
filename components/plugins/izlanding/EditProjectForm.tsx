@@ -56,6 +56,7 @@ export default function EditProjectForm({ project, tracking }: Props) {
   const [blocks, setBlocks] = useState<any[]>([]);
   const [forms, setForms] = useState<any[]>([]);
   const [selectedFormId, setSelectedFormId] = useState<string>('');
+  const [formTitle, setFormTitle] = useState<string>('');
   
   // State
   const [loading, setLoading] = useState(false);
@@ -76,6 +77,9 @@ export default function EditProjectForm({ project, tracking }: Props) {
         if (formBlock?.content?.url) {
           const match = formBlock.content.url.match(/\/forms\/(.+)/);
           if (match) setSelectedFormId(match[1]);
+        }
+        if (formBlock?.content?.title) {
+          setFormTitle(formBlock.content.title);
         }
       }
       if (formsRes.success) setForms(formsRes.data || []);
@@ -124,6 +128,7 @@ export default function EditProjectForm({ project, tracking }: Props) {
         const formBlockIdx = newBlocks.findIndex(b => b.type === 'iframe-form');
         if (formBlockIdx >= 0 && selectedFormId) {
           newBlocks[formBlockIdx].content.url = `/forms/${selectedFormId}`;
+          if (formTitle) newBlocks[formBlockIdx].content.title = formTitle.trim();
         }
         await fetch(`/api/v1/plugins/izlanding/projects/${project.id}/content`, {
           method: 'PUT',
@@ -295,6 +300,16 @@ export default function EditProjectForm({ project, tracking }: Props) {
         <IzCard className={styles.card}>
           <IzCardContent>
             <div className={styles.sectionTitle}>📝 Form Nhúng (izForm)</div>
+            
+            <div className={styles.formGroup} style={{ marginBottom: '1.5rem' }}>
+              <label className={styles.label}>Lời kêu gọi (Headline) phía trên form</label>
+              <IzInput
+                value={formTitle}
+                onChange={e => setFormTitle(e.target.value)}
+                placeholder="VD: Điền form dưới đây để nhận tài khoản dùng thử"
+              />
+            </div>
+
             <div className={styles.formGroup}>
               <label className={styles.label}>Chọn Form để nhúng vào trang</label>
               {fetchingContent ? (

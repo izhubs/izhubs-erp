@@ -34,7 +34,28 @@ export function PublicFormView({ formId }: Props) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
-      setIsEmbed(searchParams.get('embed') === 'true');
+      const embedFlag = searchParams.get('embed') === 'true';
+      setIsEmbed(embedFlag);
+      
+      if (embedFlag) {
+        let isSetup = false;
+        // Observe body mutations for resizing
+        const sendHeight = () => {
+          requestAnimationFrame(() => {
+            const h = document.documentElement.scrollHeight || document.body.scrollHeight;
+            window.parent.postMessage({ type: 'IZFORM_RESIZE', height: h }, '*');
+          });
+        };
+        const ob = new MutationObserver(sendHeight);
+        ob.observe(document.body, { childList: true, subtree: true, attributes: true });
+        // Initial sends
+        window.addEventListener('load', sendHeight);
+        setTimeout(sendHeight, 500);
+        return () => {
+          ob.disconnect();
+          window.removeEventListener('load', sendHeight);
+        };
+      }
     }
     
     (async () => {
@@ -174,8 +195,8 @@ export function PublicFormView({ formId }: Props) {
         </button>
       </form>
 
-        <div className={styles.footer}>
-          <span>Powered by <strong>izhubs ERP</strong></span>
+        <div className={styles.footer} suppressHydrationWarning>
+          Powered by <strong>izhubs ERP</strong>
         </div>
       </div>
     </Wrapper>

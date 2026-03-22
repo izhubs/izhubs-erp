@@ -26,14 +26,14 @@ export function LandingRenderer({ blocks }: Props) {
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       {blocks.map((block, idx) => (
         <React.Fragment key={idx}>
-          {renderBlock(block)}
+          {renderBlock(block, idx)}
         </React.Fragment>
       ))}
     </div>
   );
 }
 
-function renderBlock(block: LandingBlock) {
+function renderBlock(block: LandingBlock, idx: number) {
   const { type, content } = block;
 
   switch (type) {
@@ -244,13 +244,23 @@ function renderBlock(block: LandingBlock) {
         <section className="py-24 px-6 bg-white text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-10 text-slate-900">{content.title}</h2>
-            <div className="w-full overflow-hidden min-h-[600px]">
+            <div className="w-full overflow-hidden min-h-[400px]">
               <iframe 
+                id={`izform-embed-${idx}`}
                 src={`${content.url}?embed=true`} 
-                className="w-full h-[700px] border-none" 
+                className="w-full h-[600px] border-none" 
                 title="Embedded Form"
                 loading="lazy"
+                style={{ transition: 'height 0.3s ease' }}
               ></iframe>
+              <script dangerouslySetInnerHTML={{ __html: `
+                window.addEventListener('message', function(e) {
+                  if (e.data && e.data.type === 'IZFORM_RESIZE' && e.data.height) {
+                    var iframe = document.getElementById('izform-embed-${idx}');
+                    if (iframe) iframe.style.height = e.data.height + 'px';
+                  }
+                });
+              `}} />
             </div>
           </div>
         </section>
