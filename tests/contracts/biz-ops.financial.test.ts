@@ -16,7 +16,7 @@ describe('Biz-Ops Financial Tracking & COGS (Phase 1.2)', () => {
 
     // 2. Setup Contract
     const contract = await createContract(tenantId, {
-      name: 'Test Contract FY26',
+      title: 'Test Contract FY26',
       status: 'in_progress',
       total_value: 10000,
       currency: 'VND',

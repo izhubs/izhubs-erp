@@ -6,6 +6,8 @@ import { ContractCard } from './ContractCard';
 import { CampaignCard } from './CampaignCard';
 import { ContractFormModal } from './ContractFormModal';
 import { CampaignFormModal } from './CampaignFormModal';
+import { CampaignExpensesModal } from './CampaignExpensesModal';
+import { ContractPaymentsModal } from './ContractPaymentsModal';
 import styles from './BizOpsProjects.module.scss';
 
 // ── Types ───────────────────────────────────────────────────
@@ -52,7 +54,9 @@ type ModalState =
   | { type: 'create-contract' }
   | { type: 'edit-contract'; data: ContractData }
   | { type: 'create-campaign' }
-  | { type: 'edit-campaign'; data: CampaignData };
+  | { type: 'edit-campaign'; data: CampaignData }
+  | { type: 'expenses'; data: CampaignData }
+  | { type: 'payments'; data: ContractData };
 
 // ── API helpers ─────────────────────────────────────────────
 
@@ -242,6 +246,7 @@ export function BizOpsProjectsClient({ initialContracts, initialCampaigns }: Pro
                   campaignCount={getCampaignCount(contract.id)}
                   onEdit={() => setModal({ type: 'edit-contract', data: contract })}
                   onDelete={() => handleDeleteContract(contract.id)}
+                  onOpenPayments={() => setModal({ type: 'payments', data: contract })}
                   onClick={() => {/* future: navigate to detail */}}
                 />
               ))}
@@ -287,6 +292,7 @@ export function BizOpsProjectsClient({ initialContracts, initialCampaigns }: Pro
                   contractTitle={getContractTitle(campaign.contract_id)}
                   onEdit={() => setModal({ type: 'edit-campaign', data: campaign })}
                   onDelete={() => handleDeleteCampaign(campaign.id)}
+                  onOpenExpenses={() => setModal({ type: 'expenses', data: campaign })}
                 />
               ))}
             </div>
@@ -338,6 +344,20 @@ export function BizOpsProjectsClient({ initialContracts, initialCampaigns }: Pro
             end_date: modal.data.end_date?.split('T')[0] ?? '',
           }}
           onSubmit={handleUpdateCampaign}
+          onClose={() => setModal(null)}
+        />
+      )}
+      {modal?.type === 'expenses' && (
+        <CampaignExpensesModal
+          campaignId={modal.data.id}
+          campaignName={modal.data.name}
+          onClose={() => setModal(null)}
+        />
+      )}
+      {modal?.type === 'payments' && (
+        <ContractPaymentsModal
+          contractId={modal.data.id}
+          contractTitle={modal.data.title}
           onClose={() => setModal(null)}
         />
       )}

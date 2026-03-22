@@ -243,7 +243,7 @@ export default async function DashboardPage() {
       </div>
 
       {effectiveRole === 'superadmin' ? (
-        <VirtualOfficeCeoDashboard deals={deals} contacts={contacts} users={usersStr} />
+        <VirtualOfficeCeoDashboard deals={deals} contacts={contacts} users={usersStr} locale={locale} />
       ) : (
       <>
         {/* Coming Soon Notice for Dynamic Dashboards */}
