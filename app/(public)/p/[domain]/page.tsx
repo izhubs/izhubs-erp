@@ -56,11 +56,11 @@ export default async function PublicLandingPage({ params }: { params: Params }) 
   let blocks: LandingBlock[] = [];
   
   try {
-    if (typeof project.content_json === 'string') {
-        blocks = JSON.parse(project.content_json);
-    } else {
-        blocks = project.content_json || [];
-    }
+    const rawContent = typeof project.content_json === 'string' 
+      ? JSON.parse(project.content_json) 
+      : project.content_json;
+      
+    blocks = Array.isArray(rawContent) ? rawContent : [];
   } catch (e) {
     blocks = [];
   }
@@ -69,36 +69,34 @@ export default async function PublicLandingPage({ params }: { params: Params }) 
 
   return (
     <>
-      <head>
-        {tracking.customHeadScripts && (
-          <script dangerouslySetInnerHTML={{ __html: tracking.customHeadScripts }} />
-        )}
-        {tracking.facebookPixelId && (
+      {tracking.customHeadScripts && (
+        <script dangerouslySetInnerHTML={{ __html: tracking.customHeadScripts }} />
+      )}
+      {tracking.facebookPixelId && (
+        <script dangerouslySetInnerHTML={{ __html: `
+          !function(f,b,e,v,n,t,s)
+          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+          n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t,s)}(window, document,'script',
+          'https://connect.facebook.net/en_US/fbevents.js');
+          fbq('init', '${tracking.facebookPixelId}');
+          fbq('track', 'PageView');
+        ` }} />
+      )}
+      {tracking.googleAnalyticsId && (
+        <>
+          <script async src={`https://www.googletagmanager.com/gtag/js?id=${tracking.googleAnalyticsId}`} />
           <script dangerouslySetInnerHTML={{ __html: `
-            !function(f,b,e,v,n,t,s)
-            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '${tracking.facebookPixelId}');
-            fbq('track', 'PageView');
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${tracking.googleAnalyticsId}');
           ` }} />
-        )}
-        {tracking.googleAnalyticsId && (
-          <>
-            <script async src={`https://www.googletagmanager.com/gtag/js?id=${tracking.googleAnalyticsId}`} />
-            <script dangerouslySetInnerHTML={{ __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${tracking.googleAnalyticsId}');
-            ` }} />
-          </>
-        )}
-      </head>
+        </>
+      )}
 
       {isDraft && (
         <div className="bg-amber-100 text-amber-800 text-center py-2 text-sm font-semibold sticky top-0 z-50 shadow-sm border-b border-amber-200">
