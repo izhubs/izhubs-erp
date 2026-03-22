@@ -10,6 +10,7 @@ import { IzMetricCard } from '@/components/ui/IzMetricCard';
 import { IzCard, IzCardHeader, IzCardTitle, IzCardContent } from '@/components/ui/IzCard';
 import { getEffectiveRole } from '@/core/engine/auth/server-context';
 import { Money } from '@/components/shared/Money';
+import { Download } from 'lucide-react';
 
 import { VirtualOfficeCeoDashboard } from '@/components/dashboard/VirtualOfficeCeoDashboard';
 
@@ -219,14 +220,26 @@ export default async function DashboardPage() {
             {t.subtitle}
           </p>
         </div>
-        <Link href="/deals" style={{
-          fontSize: 'var(--font-size-sm)', fontWeight: 600, color: 'var(--color-primary)',
-          textDecoration: 'none', padding: '6px 14px',
-          background: 'rgba(99,102,241,0.1)', borderRadius: '100px',
-          border: '1px solid rgba(99,102,241,0.2)',
-        }}>
-          {t.viewPipeline} →
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          {effectiveRole === 'superadmin' && (
+            <>
+              <button style={{ padding: '6px 12px', borderRadius: 6, background: '#ecfdf5', color: '#10b981', border: '1px solid #10b981', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}>
+                <Download size={14} /> Xuất PDF
+              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#64748b' }}>
+                <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 0 3px rgba(16,185,129,0.2)' }} /> Live
+              </div>
+            </>
+          )}
+          <Link href="/deals" style={{
+            fontSize: 'var(--font-size-sm)', fontWeight: 600, color: 'var(--color-primary)',
+            textDecoration: 'none', padding: '6px 14px',
+            background: 'rgba(99,102,241,0.1)', borderRadius: '100px',
+            border: '1px solid rgba(99,102,241,0.2)',
+          }}>
+            {t.viewPipeline} →
+          </Link>
+        </div>
       </div>
 
       {effectiveRole === 'superadmin' ? (

@@ -3,7 +3,7 @@ import { ApiResponse } from '@/core/engine/response';
 import { withModule } from '@/core/engine/rbac';
 import { listPaymentsByContract, createPayment, CreatePaymentSchema } from '@/modules/biz-ops/engine/payments';
 
-export const GET = withModule('biz-ops', 'payments:read', async (req, { params, tenantId }) => {
+export const GET = withModule('biz-ops', 'payments:read', async (req, { params, tenantId }: { params: { id: string }, tenantId: string }) => {
   try {
     const payments = await listPaymentsByContract(tenantId, params.id);
     return ApiResponse.success({ data: payments });
@@ -12,7 +12,7 @@ export const GET = withModule('biz-ops', 'payments:read', async (req, { params, 
   }
 });
 
-export const POST = withModule('biz-ops', 'payments:write', async (req, { params, tenantId }) => {
+export const POST = withModule('biz-ops', 'payments:write', async (req, { params, tenantId }: { params: { id: string }, tenantId: string }) => {
   try {
     const body = await req.json();
     const parsed = CreatePaymentSchema.safeParse({ ...body, contract_id: params.id });

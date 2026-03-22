@@ -9,7 +9,6 @@ import {
 } from 'recharts';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import { formatDate } from '@/lib/userTime';
-import { Download, Bell, Moon, MoreVertical } from 'lucide-react';
 import Link from 'next/link';
 
 interface Deal {
@@ -123,50 +122,52 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users }: { deals: D
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
-      {/* HEADER TOOLS (Mocked specific to CEO Dashboard) */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16 }}>
-        <button style={{ padding: '6px 12px', borderRadius: 6, background: '#ecfdf5', color: '#10b981', border: '1px solid #10b981', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-          <Download size={14} /> Xuất PDF
-        </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#64748b' }}>
-          <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 0 3px rgba(16,185,129,0.2)' }} /> Live
-        </div>
-      </div>
-
       {/* KPI ROW */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-4)' }}>
+        <Link href="/deals?status=won,active" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
         <IzMetricCard
           label="DOANH THU THÁNG NÀY"
           value={<span style={{ fontSize: 28, fontWeight: 800, color: '#0f172a' }}>{revenueThisMonth > 1000000 ? `${(revenueThisMonth / 1000000).toFixed(1)} Triệu` : fmt(revenueThisMonth)}</span>}
           trend={revenueTrend}
           description={`Tháng trước: ${revenueLastMonth > 1000000 ? `${(revenueLastMonth / 1000000).toFixed(1)} Triệu` : fmt(revenueLastMonth)}`}
           icon={<span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: '50%', background: '#ecfdf5', color: '#10b981', fontSize: 15 }}>💲</span>}
-          style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', borderRadius: 12 }}
+          style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', borderRadius: 12, height: '100%', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
+          className="hover-card"
         />
+        </Link>
+        <Link href="/deals?stage=lead" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
         <IzMetricCard
           label="LEAD MỚI THÁNG NÀY"
           value={<span style={{ fontSize: 28, fontWeight: 800, color: '#0f172a' }}>{leadsThisMonth}</span>}
           trend={leadsTrend}
           description={`Tháng trước: ${leadsLastMonth}`}
           icon={<span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: '50%', background: '#eff6ff', color: '#3b82f6', fontSize: 15 }}>👥</span>}
-          style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', borderRadius: 12 }}
+          style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', borderRadius: 12, height: '100%', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
+          className="hover-card"
         />
+        </Link>
+        <Link href="/deals?stage=won,renewal" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
         <IzMetricCard
           label="HỢP ĐỒNG THÁNG NÀY"
           value={<span style={{ fontSize: 28, fontWeight: 800, color: '#0f172a' }}>{contractsThisMonth}</span>}
           trend={contractsTrend}
           description={`Ký mới: ${wonThisMonth.length} / Tái ký: ${renewalThisMonth.length}`}
           icon={<span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: '50%', background: '#fffbeb', color: '#f59e0b', fontSize: 15 }}>📄</span>}
-          style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', borderRadius: 12 }}
+          style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', borderRadius: 12, height: '100%', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
+          className="hover-card"
         />
+        </Link>
+        <Link href="/contacts?time=this_month" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
         <IzMetricCard
           label="KHÁCH HÀNG MỚI"
           value={<span style={{ fontSize: 28, fontWeight: 800, color: '#0f172a' }}>{contactsThisMonth}</span>}
           trend={contactsTrend}
           description={`Tháng trước: ${contactsLastMonth}`}
           icon={<span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: '50%', background: '#f5f3ff', color: '#8b5cf6', fontSize: 15 }}>🏢</span>}
-          style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', borderRadius: 12 }}
+          style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.04)', borderRadius: 12, height: '100%', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
+          className="hover-card"
         />
+        </Link>
       </div>
 
       {/* FILTER BAR */}

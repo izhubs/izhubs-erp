@@ -3,7 +3,9 @@ import { ApiResponse } from '@/core/engine/response';
 import { withModule } from '@/core/engine/rbac';
 import { listExpensesByCampaign, createExpense, CreateExpenseSchema } from '@/modules/biz-ops/engine/expenses';
 
-export const GET = withModule('biz-ops', 'expenses:read', async (req, { params, tenantId }) => {
+export const GET = withModule('biz-ops', 'expenses:read', async (req, claims, ctx) => {
+  const tenantId = claims.tenantId!;
+  const params = ctx?.params as { id: string };
   try {
     const expenses = await listExpensesByCampaign(tenantId, params.id);
     return ApiResponse.success({ data: expenses });
@@ -12,7 +14,9 @@ export const GET = withModule('biz-ops', 'expenses:read', async (req, { params, 
   }
 });
 
-export const POST = withModule('biz-ops', 'expenses:write', async (req, { params, tenantId }) => {
+export const POST = withModule('biz-ops', 'expenses:write', async (req, claims, ctx) => {
+  const tenantId = claims.tenantId!;
+  const params = ctx?.params as { id: string };
   try {
     const body = await req.json();
     const parsed = CreateExpenseSchema.safeParse({ ...body, campaign_id: params.id });
