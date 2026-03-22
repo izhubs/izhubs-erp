@@ -2,6 +2,7 @@ import { db } from '@/core/engine/db';
 import { notFound } from 'next/navigation';
 import { LandingRenderer, LandingBlock } from '@/components/plugins/izlanding/LandingRenderer';
 import { Metadata } from 'next';
+import Script from 'next/script';
 
 interface Params {
   domain: string;
@@ -69,6 +70,7 @@ export default async function PublicLandingPage({ params }: { params: Params }) 
 
   return (
     <>
+      <Script src="https://cdn.tailwindcss.com" strategy="beforeInteractive" />
       {tracking.customHeadScripts && (
         <script dangerouslySetInnerHTML={{ __html: tracking.customHeadScripts }} />
       )}
