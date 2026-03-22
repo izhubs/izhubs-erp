@@ -217,7 +217,7 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
         }
         
         @media (min-width: 1440px) {
-          .ceo-grid-charts { grid-template-columns: repeat(4, 1fr); align-items: start; }
+          .ceo-grid-charts { grid-template-columns: repeat(4, 1fr); }
         }
       `}</style>
       
@@ -296,14 +296,14 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
       </div>
 
       {/* CHARTS ROW (4 Columns natively matching the image) */}
-      <div className="ceo-grid-charts" style={{ alignItems: 'start' }}>
+      <div className="ceo-grid-charts">
         
         {/* Lượng deal đã chốt (Bar) */}
-        <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12 }}>
+        <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12, height: '100%', display: 'flex', flexDirection: 'column' }}>
           <IzCardHeader>
             <IzCardTitle style={{ fontSize: 14, fontWeight: 700 }}>{t.dealsClosed}</IzCardTitle>
           </IzCardHeader>
-          <IzCardContent>
+          <IzCardContent style={{ flex: 1 }}>
             <div style={{ height: 260, minHeight: 260, maxHeight: 260, marginTop: 10 }}>
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={arrData} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
@@ -321,11 +321,11 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
         </IzCard>
 
         {/* Gói Dịch Vụ (Donut) */}
-        <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12 }}>
+        <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12, height: '100%', display: 'flex', flexDirection: 'column' }}>
           <IzCardHeader>
             <IzCardTitle style={{ fontSize: 14, fontWeight: 700 }}>{t.revenueByPkg}</IzCardTitle>
           </IzCardHeader>
-          <IzCardContent>
+          <IzCardContent style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <div style={{ height: 180, position: 'relative' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -357,12 +357,12 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
         </IzCard>
 
         {/* Doanh số theo tháng (Line) */}
-        <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12 }}>
+        <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12, height: '100%', display: 'flex', flexDirection: 'column' }}>
           <IzCardHeader style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <IzCardTitle style={{ fontSize: 14, fontWeight: 700 }}>{t.monthlyRev}</IzCardTitle>
             <span style={{ fontSize: 11, color: '#10b981', fontWeight: 600 }}>● {t.actual}</span>
           </IzCardHeader>
-          <IzCardContent>
+          <IzCardContent style={{ flex: 1 }}>
             <div style={{ height: 260, minHeight: 260, maxHeight: 260, marginTop: 10 }}>
               <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={arrData} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
@@ -376,7 +376,7 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
         </IzCard>
 
         {/* Doanh số nhân viên (Leaderboard) */}
-        <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12, display: 'flex', flexDirection: 'column' }}>
+        <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12, display: 'flex', flexDirection: 'column', height: '100%' }}>
           <IzCardHeader style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <IzCardTitle style={{ fontSize: 14, fontWeight: 700 }}>{t.leaderboard}</IzCardTitle>
             <span style={{ fontSize: 10, color: '#94a3b8', border: '1px solid #e2e8f0', borderRadius: 4, padding: '2px 6px' }}>{timeFilter === 'all' ? t.all : `${timeFilter} ${t.months.toLowerCase()}`}</span>
@@ -412,7 +412,7 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
       {/* TABLES ROW */}
       <div className="ceo-grid-2">
         {/* Hợp đồng sắp hết hạn */}
-        <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12 }}>
+        <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12, height: '100%', display: 'flex', flexDirection: 'column' }}>
           <IzCardHeader style={{ paddingBottom: 10, borderBottom: '1px solid #f1f5f9' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -423,7 +423,7 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
               <span style={{ fontSize: 12, color: '#94a3b8' }}>{t.in30Days}</span>
             </div>
           </IzCardHeader>
-          <IzCardContent style={{ padding: 0 }}>
+          <IzCardContent style={{ padding: 0, flex: 1 }}>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {expiringDeals.length > 0 ? expiringDeals.map((d, i) => (
                 <div key={d.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', borderBottom: i < expiringDeals.length - 1 ? '1px solid #f8fafc' : 'none', borderLeft: '3px solid #ef4444' }}>
@@ -446,7 +446,7 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
         </IzCard>
 
         {/* Khách hàng rời bỏ */}
-        <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12 }}>
+        <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12, height: '100%', display: 'flex', flexDirection: 'column' }}>
           <IzCardHeader style={{ paddingBottom: 10, borderBottom: '1px solid #f1f5f9' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -457,7 +457,7 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
               <span style={{ fontSize: 12, color: '#94a3b8' }}>{t.recent}</span>
             </div>
           </IzCardHeader>
-          <IzCardContent style={{ padding: 0 }}>
+          <IzCardContent style={{ padding: 0, flex: 1 }}>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {churnedDeals.length > 0 ? churnedDeals.map((d, i) => (
                 <div key={d.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', borderBottom: i < churnedDeals.length - 1 ? '1px solid #f8fafc' : 'none', borderLeft: '3px solid #f59e0b' }}>
