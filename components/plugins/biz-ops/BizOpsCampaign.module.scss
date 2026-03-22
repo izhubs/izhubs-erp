@@ -1,7 +1,7 @@
 .workspaceContainer {
   display: flex;
   flex-direction: row; /* Changed to row for Sidebar + Content */
-  height: calc(100vh - 64px); 
+  height: 100vh; 
   background: var(--surface);
   color: var(--on-surface);
   font-family: var(--font-inter, 'Inter', sans-serif);

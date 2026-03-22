@@ -118,6 +118,11 @@ CORE ENGINE ← Immutable entities, events, versioned API
 - Never `DELETE FROM` — soft-delete with `deleted_at`
 - Custom fields → JSONB, never add columns
 
+**Documentation:**
+- [System Architecture](docs/02_Core_Architecture/architecture.md)
+- [Data Layer Architecture](docs/02_Core_Architecture/data-layer-architecture.md)
+- [CRM Domain Model (Leads vs Deals)](docs/02_Core_Architecture/crm-domain-model.md)
+
 **Stack:** Next.js 14 App Router · PostgreSQL · Zod · SCSS · next-intl · Docker
 
 ---

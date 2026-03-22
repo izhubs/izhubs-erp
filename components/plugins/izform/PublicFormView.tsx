@@ -29,8 +29,14 @@ export function PublicFormView({ formId }: Props) {
   const [values, setValues] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [isEmbed, setIsEmbed] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      setIsEmbed(searchParams.get('embed') === 'true');
+    }
+    
     (async () => {
       try {
         const res = await fetch(`/api/v1/public/forms/${formId}`);
@@ -98,7 +104,7 @@ export function PublicFormView({ formId }: Props) {
   if (!form) return null;
 
   return (
-    <div className={styles.card}>
+    <div className={`${styles.card} ${isEmbed ? styles.embedded : ''}`}>
       <div className={styles.header}>
         <h1 className={styles.title}>{form.name}</h1>
         {form.description && <p className={styles.description}>{form.description}</p>}
