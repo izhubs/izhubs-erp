@@ -1,4 +1,4 @@
-import { getProject } from '@/core/engine/izlanding';
+import { getProject, getPageTracking } from '@/core/engine/izlanding';
 import EditProjectForm from '@/components/plugins/izlanding/EditProjectForm';
 import RequireModule from '@/components/providers/RequireModule';
 import { cookies } from 'next/headers';
@@ -27,7 +27,9 @@ export default async function EditIzLandingPage({ params }: { params: { id: stri
   const project = await getProject(tenantId, id);
   if (!project) return notFound();
 
-  const serialized = {
+  const tracking = await getPageTracking(id);
+
+  const serializedProject = {
     ...project,
     createdAt: project.createdAt.toISOString(),
     updatedAt: project.updatedAt.toISOString(),
@@ -35,7 +37,10 @@ export default async function EditIzLandingPage({ params }: { params: { id: stri
 
   return (
     <RequireModule moduleId="izlanding">
-      <EditProjectForm project={serialized as any} />
+      <EditProjectForm
+        project={serializedProject as any}
+        tracking={tracking}
+      />
     </RequireModule>
   );
 }

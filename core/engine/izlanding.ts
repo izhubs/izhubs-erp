@@ -24,6 +24,7 @@ export const UpdateProjectSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().nullable().optional(),
   status: z.enum(['draft', 'published', 'archived']).optional(),
+  activeDomain: z.string().nullable().optional(),
 });
 
 export type Project = z.infer<typeof ProjectSchema>;
@@ -112,6 +113,7 @@ export async function updateProject(
   if (data.name !== undefined) { sets.push(`name = $${idx++}`); vals.push(data.name); }
   if (data.description !== undefined) { sets.push(`description = $${idx++}`); vals.push(data.description); }
   if (data.status !== undefined) { sets.push(`status = $${idx++}`); vals.push(data.status); }
+  if (data.activeDomain !== undefined) { sets.push(`active_domain = $${idx++}`); vals.push(data.activeDomain); }
 
   if (sets.length === 0) return getProject(tenantId, projectId);
 
@@ -145,4 +147,83 @@ export async function deleteProject(tenantId: string, projectId: string): Promis
     [projectId, tenantId]
   );
   return (result.rowCount ?? 0) > 0;
+}
+
+// --- Page Tracking ---
+
+export const PageTrackingSchema = z.object({
+  facebookPixelId: z.string().nullable().optional(),
+  googleAnalyticsId: z.string().nullable().optional(),
+  customHeadScripts: z.string().nullable().optional(),
+});
+
+export interface PageTracking {
+  id: string;
+  projectId: string;
+  facebookPixelId: string | null;
+  googleAnalyticsId: string | null;
+  customHeadScripts: string | null;
+}
+
+/**
+ * Get or create the default page for a project (each project has 1 page)
+ */
+export async function getOrCreatePage(projectId: string): Promise<string> {
+  const existing = await db.query(
+    `SELECT id FROM iz_landing_pages WHERE project_id = $1 LIMIT 1`,
+    [projectId]
+  );
+  if (existing.rows.length > 0) return existing.rows[0].id;
+
+  const created = await db.query(
+    `INSERT INTO iz_landing_pages (project_id) VALUES ($1) RETURNING id`,
+    [projectId]
+  );
+  return created.rows[0].id;
+}
+
+/**
+ * Get page tracking scripts for a project
+ */
+export async function getPageTracking(projectId: string): Promise<PageTracking | null> {
+  const pageId = await getOrCreatePage(projectId);
+  const result = await db.query(
+    `SELECT
+      id,
+      project_id AS "projectId",
+      tracking_scripts->>'facebookPixelId' AS "facebookPixelId",
+      tracking_scripts->>'googleAnalyticsId' AS "googleAnalyticsId",
+      tracking_scripts->>'customHeadScripts' AS "customHeadScripts"
+     FROM iz_landing_pages
+     WHERE id = $1`,
+    [pageId]
+  );
+  return result.rows[0] || null;
+}
+
+/**
+ * Update page tracking scripts
+ */
+export async function updatePageTracking(
+  projectId: string,
+  data: z.infer<typeof PageTrackingSchema>
+): Promise<PageTracking | null> {
+  const pageId = await getOrCreatePage(projectId);
+  const result = await db.query(
+    `UPDATE iz_landing_pages
+     SET tracking_scripts = jsonb_build_object(
+       'facebookPixelId', $2::text,
+       'googleAnalyticsId', $3::text,
+       'customHeadScripts', $4::text
+     )
+     WHERE id = $1
+     RETURNING
+      id,
+      project_id AS "projectId",
+      tracking_scripts->>'facebookPixelId' AS "facebookPixelId",
+      tracking_scripts->>'googleAnalyticsId' AS "googleAnalyticsId",
+      tracking_scripts->>'customHeadScripts' AS "customHeadScripts"`,
+    [pageId, data.facebookPixelId || null, data.googleAnalyticsId || null, data.customHeadScripts || null]
+  );
+  return result.rows[0] || null;
 }

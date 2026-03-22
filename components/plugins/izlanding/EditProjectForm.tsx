@@ -20,8 +20,15 @@ interface ProjectData {
   updatedAt: string;
 }
 
+interface TrackingData {
+  facebookPixelId: string | null;
+  googleAnalyticsId: string | null;
+  customHeadScripts: string | null;
+}
+
 interface Props {
   project: ProjectData;
+  tracking: TrackingData | null;
 }
 
 const STATUS_OPTIONS: { value: Status; label: string; emoji: string }[] = [
@@ -30,11 +37,21 @@ const STATUS_OPTIONS: { value: Status; label: string; emoji: string }[] = [
   { value: 'archived', label: 'Archived', emoji: '📦' },
 ];
 
-export default function EditProjectForm({ project }: Props) {
+export default function EditProjectForm({ project, tracking }: Props) {
   const router = useRouter();
+
+  // Basic info
   const [name, setName] = useState(project.name);
   const [description, setDescription] = useState(project.description || '');
   const [status, setStatus] = useState<Status>(project.status);
+  const [activeDomain, setActiveDomain] = useState(project.activeDomain || '');
+
+  // Tracking
+  const [fbPixelId, setFbPixelId] = useState(tracking?.facebookPixelId || '');
+  const [gaId, setGaId] = useState(tracking?.googleAnalyticsId || '');
+  const [customScripts, setCustomScripts] = useState(tracking?.customHeadScripts || '');
+
+  // State
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,17 +63,35 @@ export default function EditProjectForm({ project }: Props) {
     setError(null);
     setSaved(false);
     try {
-      const res = await fetch(`/api/v1/plugins/izlanding/projects/${project.id}`, {
+      // Save project info
+      const res1 = await fetch(`/api/v1/plugins/izlanding/projects/${project.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: name.trim(),
           description: description.trim() || null,
           status,
+          activeDomain: activeDomain.trim() || null,
         }),
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error?.message || 'Failed to save');
+      const json1 = await res1.json();
+      if (!res1.ok) throw new Error(json1?.error?.message || 'Failed to save project');
+
+      // Save tracking
+      const res2 = await fetch(`/api/v1/plugins/izlanding/projects/${project.id}/tracking`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          facebookPixelId: fbPixelId.trim() || null,
+          googleAnalyticsId: gaId.trim() || null,
+          customHeadScripts: customScripts.trim() || null,
+        }),
+      });
+      if (!res2.ok) {
+        const json2 = await res2.json();
+        throw new Error(json2?.error?.message || 'Failed to save tracking');
+      }
+
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
@@ -145,17 +180,70 @@ export default function EditProjectForm({ project }: Props) {
         </IzCardContent>
       </IzCard>
 
-      {/* Domain Info (read-only for now) */}
-      {project.activeDomain && (
-        <IzCard className={styles.card}>
-          <IzCardContent>
-            <div className={styles.sectionTitle}>Domain</div>
-            <div className={styles.domainDisplay}>
-              🌐 <code>{project.activeDomain}</code>
+      {/* Domain */}
+      <IzCard className={styles.card}>
+        <IzCardContent>
+          <div className={styles.sectionTitle}>🌐 Custom Domain</div>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Domain tùy chỉnh</label>
+            <IzInput
+              value={activeDomain}
+              onChange={e => setActiveDomain(e.target.value)}
+              placeholder="landing.yourcompany.com"
+            />
+            <span className={styles.hint}>
+              Trỏ CNAME tới <code>pages.izlanding.com</code> rồi nhập domain vào đây.
+            </span>
+          </div>
+          <div className={styles.defaultDomain}>
+            <span className={styles.label}>Default URL:</span>
+            <code className={styles.domainCode}>
+              {project.id.slice(0, 8)}.izlanding.com
+            </code>
+          </div>
+        </IzCardContent>
+      </IzCard>
+
+      {/* Tracking Scripts */}
+      <IzCard className={styles.card}>
+        <IzCardContent>
+          <div className={styles.sectionTitle}>📊 Tracking & Analytics</div>
+
+          <div className={styles.trackingGrid}>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Facebook Pixel ID</label>
+              <IzInput
+                value={fbPixelId}
+                onChange={e => setFbPixelId(e.target.value)}
+                placeholder="123456789012345"
+              />
             </div>
-          </IzCardContent>
-        </IzCard>
-      )}
+
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Google Analytics ID</label>
+              <IzInput
+                value={gaId}
+                onChange={e => setGaId(e.target.value)}
+                placeholder="G-XXXXXXXXXX"
+              />
+            </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Custom Head Scripts</label>
+            <textarea
+              className={styles.codeTextarea}
+              value={customScripts}
+              onChange={e => setCustomScripts(e.target.value)}
+              placeholder={'<!-- Paste tracking scripts here -->\n<script>...</script>'}
+              rows={5}
+            />
+            <span className={styles.hint}>
+              Scripts sẽ được inject vào <code>&lt;head&gt;</code> của landing page.
+            </span>
+          </div>
+        </IzCardContent>
+      </IzCard>
 
       {error && <p className={styles.error}>{error}</p>}
       {saved && <p className={styles.success}>✅ Đã lưu thành công!</p>}
