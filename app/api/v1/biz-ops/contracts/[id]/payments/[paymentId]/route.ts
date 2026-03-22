@@ -3,17 +3,21 @@ import { ApiResponse } from '@/core/engine/response';
 import { withModule } from '@/core/engine/rbac';
 import { getPayment, updatePayment, deletePayment, UpdatePaymentSchema } from '@/modules/biz-ops/engine/payments';
 
-export const GET = withModule('biz-ops', 'payments:read', async (req, { params, tenantId }: { params: { id: string, paymentId: string }, tenantId: string }) => {
+export const GET = withModule('biz-ops', 'payments:read', async (req, claims, ctx) => {
+  const tenantId = claims.tenantId!;
+  const params = ctx?.params as { id: string; paymentId: string };
   try {
     const payment = await getPayment(tenantId, params.paymentId);
     if (!payment) return ApiResponse.error('Payment not found', 404);
-    return ApiResponse.success({ data: payment });
+    return ApiResponse.success(payment);
   } catch (err: any) {
     return ApiResponse.serverError(err);
   }
 });
 
-export const PATCH = withModule('biz-ops', 'payments:write', async (req, { params, tenantId }: { params: { id: string, paymentId: string }, tenantId: string }) => {
+export const PATCH = withModule('biz-ops', 'payments:write', async (req, claims, ctx) => {
+  const tenantId = claims.tenantId!;
+  const params = ctx?.params as { id: string; paymentId: string };
   try {
     const body = await req.json();
     const parsed = UpdatePaymentSchema.safeParse(body);
@@ -21,13 +25,15 @@ export const PATCH = withModule('biz-ops', 'payments:write', async (req, { param
 
     const payment = await updatePayment(tenantId, params.paymentId, parsed.data);
     if (!payment) return ApiResponse.error('Payment not found', 404);
-    return ApiResponse.success({ data: payment });
+    return ApiResponse.success(payment);
   } catch (err: any) {
     return ApiResponse.serverError(err);
   }
 });
 
-export const DELETE = withModule('biz-ops', 'payments:delete', async (req, { params, tenantId }: { params: { id: string, paymentId: string }, tenantId: string }) => {
+export const DELETE = withModule('biz-ops', 'payments:delete', async (req, claims, ctx) => {
+  const tenantId = claims.tenantId!;
+  const params = ctx?.params as { id: string; paymentId: string };
   try {
     const success = await deletePayment(tenantId, params.paymentId);
     if (!success) return ApiResponse.error('Payment not found', 404);

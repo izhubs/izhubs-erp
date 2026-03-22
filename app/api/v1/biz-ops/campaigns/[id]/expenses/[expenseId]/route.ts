@@ -9,7 +9,7 @@ export const GET = withModule('biz-ops', 'expenses:read', async (req, claims, ct
   try {
     const expense = await getExpense(tenantId, params.expenseId);
     if (!expense) return ApiResponse.error('Expense not found', 404);
-    return ApiResponse.success({ data: expense });
+    return ApiResponse.success(expense);
   } catch (err: any) {
     return ApiResponse.serverError(err);
   }
@@ -25,7 +25,7 @@ export const PATCH = withModule('biz-ops', 'expenses:write', async (req, claims,
 
     const expense = await updateExpense(tenantId, params.expenseId, parsed.data);
     if (!expense) return ApiResponse.error('Expense not found', 404);
-    return ApiResponse.success({ data: expense });
+    return ApiResponse.success(expense);
   } catch (err: any) {
     return ApiResponse.serverError(err);
   }

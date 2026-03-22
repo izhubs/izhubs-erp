@@ -84,7 +84,7 @@ async function fetchNavConfigFromDB(tenantId: string): Promise<NavConfig | null>
       icon = 'Rocket';
     } else if (m.id === 'biz-ops') {
       label = 'Projects';
-      icon = 'Briefcase';
+      icon = 'FolderKanban';
     }
 
     return {

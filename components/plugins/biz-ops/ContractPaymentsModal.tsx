@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { IzButton } from '@/components/ui/IzButton';
 import { X, Plus, Trash2 } from 'lucide-react';
 import styles from './BizOpsProjects.module.scss';
-import { useCurrency } from '@/hooks/useCurrency';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 
 interface Payment {
   id: string;
@@ -25,7 +25,7 @@ export function ContractPaymentsModal({ contractId, contractTitle, onClose }: Pr
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { formatMoney } = useCurrency();
+  const { fmt } = useCurrency();
 
   // Form state
   const [amount, setAmount] = useState('');
@@ -111,7 +111,7 @@ export function ContractPaymentsModal({ contractId, contractTitle, onClose }: Pr
           <div style={{ padding: '16px', borderRadius: '12px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
             <h4 style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '8px' }}>Total Collected Value</h4>
             <div style={{ fontSize: '24px', fontWeight: '600', color: 'var(--text-primary)' }}>
-              {formatMoney(totalCollected)}
+              {fmt(totalCollected)}
             </div>
             <p style={{ fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '4px' }}>
               This value automatically rolls up into the contract's collected revenue. Reload the page to see changes applied.
@@ -152,7 +152,7 @@ export function ContractPaymentsModal({ contractId, contractTitle, onClose }: Pr
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <IzButton type="submit" variant="primary" disabled={isSubmitting}>
+              <IzButton type="submit" variant="default" disabled={isSubmitting}>
                 <Plus size={16} style={{ marginRight: 8 }} />
                 Log Payment
               </IzButton>
@@ -173,7 +173,7 @@ export function ContractPaymentsModal({ contractId, contractTitle, onClose }: Pr
                   <div key={exp.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: 'var(--bg-secondary)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{formatMoney(exp.amount)}</span>
+                        <span style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{fmt(exp.amount)}</span>
                         <span style={{ fontSize: '11px', padding: '2px 6px', borderRadius: '4px', background: exp.status === 'paid' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(234, 179, 8, 0.1)', color: exp.status === 'paid' ? 'var(--success-color)' : 'var(--warning-color)' }}>
                           {exp.status.toUpperCase()}
                         </span>

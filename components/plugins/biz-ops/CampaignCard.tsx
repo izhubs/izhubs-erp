@@ -18,6 +18,7 @@ interface CampaignCardProps {
   contractTitle?: string;
   onEdit: () => void;
   onDelete: () => void;
+  onOpenExpenses: () => void;
 }
 
 const HEALTH_MAP: Record<string, { dot: string; label: string }> = {
@@ -38,7 +39,7 @@ function formatBudget(value: number) {
   return value.toLocaleString();
 }
 
-export function CampaignCard({ campaign, contractTitle, onEdit, onDelete }: CampaignCardProps) {
+export function CampaignCard({ campaign, contractTitle, onEdit, onDelete, onOpenExpenses }: CampaignCardProps) {
   const health = HEALTH_MAP[campaign.health] ?? HEALTH_MAP.healthy;
   const budgetPct = campaign.allocated_budget > 0
     ? Math.min((campaign.actual_cogs / campaign.allocated_budget) * 100, 100)
@@ -89,6 +90,7 @@ export function CampaignCard({ campaign, contractTitle, onEdit, onDelete }: Camp
 
       <div className={styles.cardActions}>
         <button className={styles.actionBtn} onClick={onEdit} title="Edit">✏️ Edit</button>
+        <button className={styles.actionBtn} onClick={onOpenExpenses} title="Manage Expenses">💸 Expenses</button>
         <button className={`${styles.actionBtn} ${styles.actionBtnDanger}`} onClick={onDelete} title="Delete">🗑️</button>
       </div>
     </div>

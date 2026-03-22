@@ -6,6 +6,7 @@ import {
   Star, Globe, Headphones, Package, PieChart,
   Layers, Bell, Lock, Database, Cpu,
   ClipboardList, // Added for izform
+  UserPlus, CheckSquare, FolderKanban, // Added for generic and Project icons
   LucideIcon,
 } from 'lucide-react';
 
@@ -17,6 +18,7 @@ export const ICON_MAP: Record<string, LucideIcon> = {
   Star, Globe, Headphones, Package, PieChart,
   Layers, Bell, Lock, Database, Cpu,
   ClipboardList,
+  UserPlus, CheckSquare, FolderKanban,
 };
 
 interface IconProps {

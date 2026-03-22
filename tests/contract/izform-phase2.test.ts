@@ -148,7 +148,7 @@ async function testAutoConvertLead() {
 async function testFieldMapperVariations() {
   console.log('\nTEST 3: Smart field mapper handles label variations');
 
-  const testCases = [
+  const testCases: { input: Record<string, string>, expectedName: string, expectedEmail: string }[] = [
     { input: { 'name': 'user1', 'email': 'a@b.com' }, expectedName: 'user1', expectedEmail: 'a@b.com' },
     { input: { 'Full Name': 'user2', 'E-mail': 'c@d.com' }, expectedName: 'user2', expectedEmail: 'c@d.com' },
     { input: { 'FULL NAME': 'user3', 'EMAIL': 'e@f.com' }, expectedName: 'user3', expectedEmail: 'e@f.com' },

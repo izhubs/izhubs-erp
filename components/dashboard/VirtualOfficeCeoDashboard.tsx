@@ -190,8 +190,29 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
+      <style>{`
+        .ceo-grid-4 { display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
+        .ceo-grid-charts { display: grid; grid-template-columns: 1fr; gap: var(--space-5); }
+        .ceo-grid-2 { display: grid; grid-template-columns: 1fr; gap: var(--space-5); }
+        .ceo-filter-bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+        
+        @media (min-width: 640px) {
+          .ceo-grid-4 { grid-template-columns: repeat(2, 1fr); }
+          .ceo-grid-2 { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (min-width: 1024px) {
+          .ceo-grid-4 { grid-template-columns: repeat(4, 1fr); }
+          .ceo-grid-charts { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @media (min-width: 1440px) {
+          .ceo-grid-charts { grid-template-columns: repeat(4, 1fr); }
+        }
+      `}</style>
+      
       {/* KPI ROW */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-4)' }}>
+      <div className="ceo-grid-4">
         <Link href="/deals?status=won,active" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
         <IzMetricCard
           label={t.revenue}
@@ -239,9 +260,9 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
       </div>
 
       {/* FILTER BAR */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div className="ceo-filter-bar">
         <span style={{ fontSize: 13, fontWeight: 700, color: '#64748b' }}>{t.show}</span>
-        <div style={{ display: 'flex', background: '#fff', padding: 4, borderRadius: 20, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+        <div style={{ display: 'flex', background: '#fff', padding: 4, borderRadius: 20, boxShadow: '0 2px 8px rgba(0,0,0,0.04)', overflowX: 'auto', WebkitOverflowScrolling: 'touch', maxWidth: '100%' }}>
           {['3', '6', '12', 'all'].map(v => (
             <button
               key={v}
@@ -265,7 +286,7 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
       </div>
 
       {/* CHARTS ROW (4 Columns natively matching the image) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-5)' }}>
+      <div className="ceo-grid-charts">
         
         {/* Lượng deal đã chốt (Bar) */}
         <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12 }}>
@@ -379,7 +400,7 @@ export function VirtualOfficeCeoDashboard({ deals, contacts, users, locale = 'vi
       </div>
 
       {/* TABLES ROW */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-5)' }}>
+      <div className="ceo-grid-2">
         {/* Hợp đồng sắp hết hạn */}
         <IzCard style={{ border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderRadius: 12 }}>
           <IzCardHeader style={{ paddingBottom: 10, borderBottom: '1px solid #f1f5f9' }}>

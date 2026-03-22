@@ -8,7 +8,7 @@ export const GET = withModule('biz-ops', 'expenses:read', async (req, claims, ct
   const params = ctx?.params as { id: string };
   try {
     const expenses = await listExpensesByCampaign(tenantId, params.id);
-    return ApiResponse.success({ data: expenses });
+    return ApiResponse.success(expenses);
   } catch (err: any) {
     return ApiResponse.serverError(err);
   }
@@ -23,7 +23,7 @@ export const POST = withModule('biz-ops', 'expenses:write', async (req, claims, 
     if (!parsed.success) return ApiResponse.validationError(parsed.error);
 
     const expense = await createExpense(tenantId, parsed.data);
-    return ApiResponse.success({ data: expense });
+    return ApiResponse.success(expense);
   } catch (err: any) {
     return ApiResponse.serverError(err);
   }

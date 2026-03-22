@@ -19,6 +19,7 @@ interface ContractCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onClick: () => void;
+  onOpenPayments: () => void;
 }
 
 const STATUS_MAP: Record<string, { label: string; className: string }> = {
@@ -33,7 +34,7 @@ function formatMoney(value: number, currency: string) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency }).format(value);
 }
 
-export function ContractCard({ contract, campaignCount, onEdit, onDelete, onClick }: ContractCardProps) {
+export function ContractCard({ contract, campaignCount, onEdit, onDelete, onClick, onOpenPayments }: ContractCardProps) {
   const pct = contract.total_value > 0
     ? Math.min((contract.collected_value / contract.total_value) * 100, 100)
     : 0;
@@ -75,6 +76,13 @@ export function ContractCard({ contract, campaignCount, onEdit, onDelete, onClic
           title="Edit"
         >
           ✏️ Edit
+        </button>
+        <button
+          className={styles.actionBtn}
+          onClick={(e) => { e.stopPropagation(); onOpenPayments(); }}
+          title="Manage Payments"
+        >
+          💰 Payments
         </button>
         <button
           className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
