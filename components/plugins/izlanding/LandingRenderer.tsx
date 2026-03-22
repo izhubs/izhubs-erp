@@ -244,7 +244,7 @@ function renderBlock(block: LandingBlock) {
         <section className="py-24 px-6 bg-white text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-10 text-slate-900">{content.title}</h2>
-            <div className="w-full bg-slate-50 rounded-3xl shadow-inner border border-slate-200 overflow-hidden min-h-[600px] p-6">
+            <div className="w-full overflow-hidden min-h-[600px]">
               <iframe 
                 src={`${content.url}?embed=true`} 
                 className="w-full h-[700px] border-none" 

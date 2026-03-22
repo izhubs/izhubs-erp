@@ -74,38 +74,48 @@ export function PublicFormView({ formId }: Props) {
     }
   };
 
+  const Wrapper = ({ children }: { children: React.ReactNode }) => {
+    if (isEmbed) return <>{children}</>;
+    return <div className={styles.standaloneWrapper}>{children}</div>;
+  };
+
   if (loading) {
-    return <div className={styles.card}><p className={styles.loading}>Loading form...</p></div>;
+    return <Wrapper><div className={styles.card}><p className={styles.loading}>Loading form...</p></div></Wrapper>;
   }
 
   if (error) {
     return (
-      <div className={styles.card}>
-        <div className={styles.errorState}>
-          <span className={styles.errorIcon}>⚠️</span>
-          <p>{error}</p>
+      <Wrapper>
+        <div className={styles.card}>
+          <div className={styles.errorState}>
+            <span className={styles.errorIcon}>⚠️</span>
+            <p>{error}</p>
+          </div>
         </div>
-      </div>
+      </Wrapper>
     );
   }
 
   if (submitted) {
     return (
-      <div className={styles.card}>
-        <div className={styles.successState}>
-          <span className={styles.successIcon}>🎉</span>
-          <h2>Thank you!</h2>
-          <p>Your response has been submitted successfully.</p>
+      <Wrapper>
+        <div className={styles.card}>
+          <div className={styles.successState}>
+            <span className={styles.successIcon}>🎉</span>
+            <h2>Thank you!</h2>
+            <p>Your response has been submitted successfully.</p>
+          </div>
         </div>
-      </div>
+      </Wrapper>
     );
   }
 
   if (!form) return null;
 
   return (
-    <div className={`${styles.card} ${isEmbed ? styles.embedded : ''}`}>
-      <div className={styles.header}>
+    <Wrapper>
+      <div className={`${styles.card} ${isEmbed ? styles.embedded : ''}`}>
+        <div className={styles.header}>
         <h1 className={styles.title}>{form.name}</h1>
         {form.description && <p className={styles.description}>{form.description}</p>}
       </div>
@@ -164,9 +174,10 @@ export function PublicFormView({ formId }: Props) {
         </button>
       </form>
 
-      <div className={styles.footer}>
-        <span>Powered by <strong>izhubs ERP</strong></span>
+        <div className={styles.footer}>
+          <span>Powered by <strong>izhubs ERP</strong></span>
+        </div>
       </div>
-    </div>
+    </Wrapper>
   );
 }
