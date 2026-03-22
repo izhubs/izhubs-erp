@@ -106,7 +106,14 @@ export default async function PublicLandingPage({ params }: { params: Params }) 
         </div>
       )}
 
-      <LandingRenderer blocks={blocks} />
+      <style dangerouslySetInnerHTML={{ __html: `
+        .iz-landing-preview { opacity: 0; animation: fadeIn 0.5s ease-in forwards; animation-delay: 0.3s; }
+        @keyframes fadeIn { to { opacity: 1; } }
+      `}} />
+
+      <div className="iz-landing-preview">
+        <LandingRenderer blocks={blocks} />
+      </div>
     </>
   );
 }

@@ -48,4 +48,15 @@ export const TEMPLATES: LandingTemplate[] = [
       { type: 'cta-form', content: { title: 'Đăng ký ngay hôm nay' } },
     ],
   },
+  {
+    id: 'saas-conversion',
+    name: 'SaaS Lead Gen (có Form)',
+    description: 'Tối ưu chuyển đổi với Form nhúng trực tiếp, lấy Lead hiệu quả.',
+    thumbnail: '🎯',
+    blocks: [
+      { type: 'hero-saas', content: { title: 'Tăng x3 tỷ lệ chuyển đổi', subtitle: 'Giải pháp thu thập lead tự động, không cần code', badge: 'MỚI RA MẮT' } },
+      { type: 'features-grid', content: { items: ['Tự động hóa hoàn toàn', 'Tích hợp CRM mượt mà', 'Báo cáo Real-time'] } },
+      { type: 'iframe-form', content: { url: '/forms/demo', title: 'Điền form dưới đây để nhận tài khoản dùng thử' } },
+    ],
+  },
 ];

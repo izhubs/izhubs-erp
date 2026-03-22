@@ -203,6 +203,59 @@ function renderBlock(block: LandingBlock) {
         </section>
       );
 
+    // --- SAAS CONVERSION ---
+    case 'hero-saas':
+      return (
+        <section className="bg-slate-900 text-white pt-32 pb-24 px-6 text-center relative overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+          <div className="max-w-4xl mx-auto relative z-10">
+            {content.badge && (
+              <span className="inline-block px-4 py-1.5 rounded-full bg-indigo-500/20 text-indigo-300 text-sm font-semibold tracking-wide mb-6">
+                {content.badge}
+              </span>
+            )}
+            <h1 className="text-5xl md:text-7xl font-extrabold mb-8 tracking-tight capitalize leading-tight">
+              {content.title}
+            </h1>
+            <p className="text-xl md:text-2xl opacity-80 mb-12 max-w-2xl mx-auto font-light leading-relaxed">
+              {content.subtitle}
+            </p>
+          </div>
+        </section>
+      );
+    case 'features-grid':
+      return (
+        <section className="py-24 px-6 bg-slate-50">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-10">
+              {content.items?.map((item: string, i: number) => (
+                <div key={i} className="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all">
+                  <div className="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center mb-6 text-indigo-600 text-2xl">⚡</div>
+                  <h3 className="text-xl font-bold mb-3 text-slate-800">{item}</h3>
+                  <p className="text-slate-500">Mô tả chi tiết về tính năng tuyệt vời này giúp khách hàng hiểu rõ giá trị mang lại.</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    case 'iframe-form':
+      return (
+        <section className="py-24 px-6 bg-white text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-10 text-slate-900">{content.title}</h2>
+            <div className="w-full bg-slate-50 rounded-3xl shadow-inner border border-slate-200 overflow-hidden min-h-[600px]">
+              <iframe 
+                src={content.url} 
+                className="w-full h-[700px] border-none" 
+                title="Embedded Form"
+                loading="lazy"
+              ></iframe>
+            </div>
+          </div>
+        </section>
+      );
+
     default:
       return (
         <div className="p-4 border border-dashed border-red-300 bg-red-50 text-red-500 my-4 text-center">
