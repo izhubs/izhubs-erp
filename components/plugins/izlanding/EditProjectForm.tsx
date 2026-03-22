@@ -189,16 +189,16 @@ export default function EditProjectForm({ project, tracking }: Props) {
             <IzInput
               value={activeDomain}
               onChange={e => setActiveDomain(e.target.value)}
-              placeholder="landing.yourcompany.com"
+              placeholder={`landing.${process.env.NEXT_PUBLIC_LANDING_DOMAIN || 'izhubs.com'}`}
             />
             <span className={styles.hint}>
-              Trỏ CNAME tới <code>pages.izlanding.com</code> rồi nhập domain vào đây.
+              Trỏ CNAME tới <code>{process.env.NEXT_PUBLIC_LANDING_CNAME || `pages.${process.env.NEXT_PUBLIC_LANDING_DOMAIN || 'izhubs.com'}`}</code> rồi nhập domain vào đây.
             </span>
           </div>
           <div className={styles.defaultDomain}>
             <span className={styles.label}>Default URL:</span>
             <code className={styles.domainCode}>
-              {project.id.slice(0, 8)}.izlanding.com
+              {project.id.slice(0, 8)}.{process.env.NEXT_PUBLIC_LANDING_DOMAIN || 'izhubs.com'}
             </code>
           </div>
         </IzCardContent>
