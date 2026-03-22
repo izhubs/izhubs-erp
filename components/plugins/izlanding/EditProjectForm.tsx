@@ -299,8 +299,11 @@ export default function EditProjectForm({ project, tracking }: Props) {
               {fetchingContent ? (
                 <div className="text-sm text-slate-500">Đang tải data...</div>
               ) : forms.length === 0 ? (
-                <div className="text-sm text-rose-500 bg-rose-50 p-3 rounded border border-rose-200">
-                  Bạn chưa có form nào. Hãy vào plugin <b>izForm</b> để tạo form trước nhé!
+                <div className="text-sm text-rose-600 bg-rose-50 p-4 rounded-xl border border-rose-200 flex items-center justify-between">
+                  <span>Bạn chưa có form nào. Hãy tạo một form mới để nhúng vào trang này nhé!</span>
+                  <IzButton variant="default" size="sm" onClick={() => router.push('/plugins/izform')}>
+                    Tạo Form Ngay →
+                  </IzButton>
                 </div>
               ) : (
                 <select

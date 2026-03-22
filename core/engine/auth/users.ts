@@ -68,3 +68,12 @@ export async function createUser(input: CreateUserInput): Promise<PublicUser> {
   );
   return PublicUserSchema.parse(result.rows[0]);
 }
+
+export async function listUsers(tenantId?: string): Promise<PublicUser[]> {
+  const query = tenantId 
+    ? `SELECT id, name, email, role, active FROM users WHERE active = true AND tenant_id = $1 ORDER BY name ASC`
+    : `SELECT id, name, email, role, active FROM users WHERE active = true ORDER BY name ASC`;
+  
+  const result = await db.query(query, tenantId ? [tenantId] : []);
+  return result.rows.map(r => PublicUserSchema.parse({...r, tenant_id: tenantId}));
+}
