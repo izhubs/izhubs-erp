@@ -3,7 +3,7 @@
 ## Current Status
 
 **Phase**: v0.1 Foundation MVP — **Audit log live + Demo ephemeral users**
-**Last updated**: 2026-03-20 (Session 18 — Audit Log + Ephemeral Demo Users + UI Polish)
+**Last updated**: 2026-03-22 (Session 20 — Biz-Ops Plugin: Nested Workspace UI)
 **Health**: ✅ TypeScript clean | ✅ contract tests passing | ✅ DB migrations 001→015 | ✅ Audit triggers live on 7 tables
 **Last work**: Session 18 — Fixed audit log system end-to-end: (1) Ephemeral demo users: mỗi demo-login tạo tenant riêng + user riêng (is_demo=true, expires_at=+24h), cascade DELETE dọn sạch sau 24h hoặc khi Reset. (2) Trigger `trg_audit` active trên deals/contacts/companies/notes/activities/service_packages/custom_field_definitions, ghi user_id đúng nhờ `db.query()` dùng BEGIN/COMMIT+SET LOCAL. (3) Audit log API đổi sang `withPermission` để đọc tenantId từ JWT claims (middleware không chạy trên api routes). (4) GlobalHistorySlideOver: fix entityType plural ('deals' không phải 'deal'), refetchInterval 30s, refetch khi panel mở. (5) ActivityTimeline: diff rendering đẹp, inline styles. (6) DealSlideOver: inline styles (bỏ dangerouslySetInnerHTML), IzSheet background fix (--color-surface). (7) Performance: db.query chỉ wrap BEGIN/COMMIT cho INSERT/UPDATE/DELETE, không wrap SELECT. (8) UI: Toast z-index 9999, padding-top 64px; Modal/Sheet overlay z-index 99999+100000 che toàn bộ màn hình kể cả header; bỏ backdrop-filter blur (gây lag).
 **Remote**: `https://github.com/izhubs/izhubs-erp` (branch: master, head: 2c171f0)
@@ -129,6 +129,12 @@ npm run typecheck; npm run test:contracts
 - Soft-delete: All entities use `deleted_at` flag — nothing is physically removed from DB (migration 004)
 - Core engine layer: `core/engine/contacts.ts`, `core/engine/deals.ts` — only these may query the DB directly
 - `ApiResponse` factory: `core/engine/response.ts` — ALL API routes must use this, never `NextResponse.json()` directly
+
+### Session 20 — 2026-03-22 (Biz-Ops Plugin: Nested Workspace UI)
+- **Nested ERP Architecture**: Refactored Biz-Ops plugin to feature a standalone "app-within-app" layout (like Notion/Slack). Moved `contracts/[id]` and `campaigns/[id]` from `app/(dashboard)` to `app/(workspace)`.
+- **Dynamic Navigation Injection**: Overrode the global `<AppLayout>` to dynamically swap the primary Left Sidebar menu with Project-specific contextual links (Tasks, Files, Finances, Settings) driven by Next.js URL SearchParams (`?tab=tasks`).
+- **izUI Standardization**: Replaced custom flexbox SCSS with native `izUI` layout constraints (`.page-header` + strict inline flex). This retained the exact ERP glassmorphism aesthetic while enabling a fullscreen isolated project experience with explicit back buttons.
+- **Project Metadata Relocation**: Consolidating Kanban Board, Contract Overview progress bars, and Workspace budgets/avatars into the main layout headers, keeping the replaced sidebar cleanly dedicated to navigation.
 
 ### Session 19 — 2026-03-21 (Dynamic Dashboard Engine & BFF Architecture)
 - **Dynamic Dashboard Engine (D.A.R Framework)**: Kiến trúc UI JSON-driven cho phép mỗi Role/Industry có một giao diện Dashboard hoàn toàn khác biệt mà không cần hardcode React components. Lưu cấu hình tại bảng `dashboard_configs`.
