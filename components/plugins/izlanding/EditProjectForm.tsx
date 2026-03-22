@@ -128,9 +128,14 @@ export default function EditProjectForm({ project, tracking }: Props) {
           <h1 className={styles.title}>✏️ Chỉnh sửa Landing Page</h1>
           <p className={styles.subtitle}>Tạo lúc {createdDate}</p>
         </div>
-        <IzButton variant="outline" onClick={() => router.push('/plugins/izlanding')}>
-          ← Quay lại
-        </IzButton>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <IzButton variant="outline" onClick={() => window.open(`/p/${project.activeDomain || project.id}`, '_blank')}>
+            👀 Xem trang
+          </IzButton>
+          <IzButton variant="outline" onClick={() => router.push('/plugins/izlanding')}>
+            ← Quay lại
+          </IzButton>
+        </div>
       </div>
 
       {/* Basic Info */}
