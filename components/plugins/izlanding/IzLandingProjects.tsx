@@ -4,6 +4,7 @@ import { useState } from 'react';
 import styles from './IzLandingProjects.module.scss';
 import { IzButton } from '@/components/ui/IzButton';
 import { ProjectCard } from './ProjectCard';
+import { useRouter } from 'next/navigation';
 
 interface ProjectData {
   id: string;
@@ -20,6 +21,7 @@ interface Props {
 
 export function IzLandingProjectsClient({ initialProjects }: Props) {
   const [projects] = useState<ProjectData[]>(initialProjects);
+  const router = useRouter();
 
   return (
     <div className={styles.container}>
@@ -28,11 +30,11 @@ export function IzLandingProjectsClient({ initialProjects }: Props) {
         <div>
           <h1 className={styles.title}>🚀 Landing Pages</h1>
           <p className={styles.subtitle}>
-            {projects.length} project{projects.length !== 1 ? 's' : ''} — Tạo landing page siêu tốc bằng AI
+            {projects.length} trang — Tạo landing page siêu tốc bằng AI
           </p>
         </div>
-        <IzButton id="izlanding-create-btn" disabled>
-          + New Project
+        <IzButton id="izlanding-create-btn" onClick={() => router.push('/plugins/izlanding/create')}>
+          + Tạo Landing Page
         </IzButton>
       </div>
 
@@ -40,9 +42,9 @@ export function IzLandingProjectsClient({ initialProjects }: Props) {
       {projects.length === 0 ? (
         <div className={styles.empty}>
           <div className={styles.emptyIcon}>🚀</div>
-          <h3>Chưa có project nào</h3>
+          <h3>Chưa có landing page nào</h3>
           <p>Tạo landing page đầu tiên bằng AI — chỉ cần mô tả, hệ thống sẽ tự sinh trang web cho bạn.</p>
-          <IzButton disabled>Tạo Project đầu tiên</IzButton>
+          <IzButton onClick={() => router.push('/plugins/izlanding/create')}>Tạo Landing Page đầu tiên</IzButton>
         </div>
       ) : (
         <div className={styles.grid}>

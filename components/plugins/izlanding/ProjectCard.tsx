@@ -1,6 +1,7 @@
 'use client';
 
 import styles from './IzLandingProjects.module.scss';
+import { useRouter } from 'next/navigation';
 
 interface ProjectData {
   id: string;
@@ -16,6 +17,8 @@ interface Props {
 }
 
 export function ProjectCard({ project }: Props) {
+  const router = useRouter();
+
   const statusLabel = {
     draft: 'Draft',
     published: 'Published',
@@ -35,7 +38,11 @@ export function ProjectCard({ project }: Props) {
   });
 
   return (
-    <div className={styles.projectCard} id={`project-card-${project.id}`}>
+    <div
+      className={styles.projectCard}
+      id={`project-card-${project.id}`}
+      onClick={() => router.push(`/plugins/izlanding/${project.id}/edit`)}
+    >
       <div className={styles.projectCardHeader}>
         <div>
           <h3 className={styles.projectName}>{project.name}</h3>

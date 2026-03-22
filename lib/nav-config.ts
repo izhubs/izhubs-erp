@@ -82,6 +82,9 @@ async function fetchNavConfigFromDB(tenantId: string): Promise<NavConfig | null>
     } else if (m.id === 'izlanding') {
       label = 'Landing Pages';
       icon = 'Rocket';
+    } else if (m.id === 'biz-ops') {
+      label = 'Projects';
+      icon = 'Briefcase';
     }
 
     return {
