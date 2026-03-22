@@ -84,45 +84,44 @@ export function BizOpsCampaign({ campaign }: Props) {
   };
 
   return (
-    <div className={styles.workspaceContainer} style={{ flexDirection: 'column', height: '100%' }}>
-      <div className={styles.workspaceMain} style={{ flex: 1 }}>
-        <div className={styles.workspaceHeader} style={{ padding: '24px 32px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 600, margin: 0 }}>{campaign.name}</h2>
-                <IzBadge variant="info">{campaign.stage}</IzBadge>
-              </div>
-              <div style={{ color: 'var(--on-surface-variant)', fontSize: '0.875rem', marginTop: '8px' }}>
-                Spent: {(campaign.actual_cogs / 1_000_000).toFixed(1)}M / {(campaign.allocated_budget / 1_000_000).toFixed(1)}M
-              </div>
-            </div>
-            
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <div className={styles.avatarGroup} style={{ display: 'flex', marginRight: '8px' }}>
-                {members.slice(0, 3).map(m => (
-                  <IzAvatar key={m.user_id}>
-                    {m.user_avatar_url && <IzAvatarImage src={m.user_avatar_url} />}
-                    <IzAvatarFallback>{m.user_name.charAt(0).toUpperCase()}</IzAvatarFallback>
-                  </IzAvatar>
-                ))}
-                {members.length > 3 && (
-                  <IzAvatar>
-                    <IzAvatarFallback>+{members.length - 3}</IzAvatarFallback>
-                  </IzAvatar>
-                )}
-              </div>
-              <button className={`${styles.assignButton} iz-button iz-button-sm`} style={{ borderRadius: '24px', background: 'var(--surface-container-highest)', color: 'var(--on-surface)' }}>
-                + Assign
-              </button>
-              {tab === 'tasks' && <IzButton>+ New Task</IzButton>}
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      <div className="page-header" style={{ flexShrink: 0, paddingBottom: '16px', borderBottom: '1px solid var(--color-border)', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          <IzButton variant="ghost" size="sm" onClick={() => window.location.href = `/plugins/biz-ops/contracts/${campaign.contract_id || ''}`} style={{ padding: '0 8px', height: '24px' }}>← Back to Contract</IzButton>
+          <IzBadge variant="info">{campaign.stage}</IzBadge>
+        </div>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 600, margin: 0 }}>{campaign.name}</h1>
+            <div style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem', marginTop: '8px' }}>
+              Spent: {(campaign.actual_cogs / 1_000_000).toFixed(1)}M / {(campaign.allocated_budget / 1_000_000).toFixed(1)}M
             </div>
           </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ display: 'flex', marginRight: '8px' }}>
+              {members.slice(0, 3).map(m => (
+                <IzAvatar key={m.user_id} size="sm" style={{ marginLeft: '-8px', border: '2px solid var(--color-bg-surface)' }}>
+                  {m.user_avatar_url && <IzAvatarImage src={m.user_avatar_url} />}
+                  <IzAvatarFallback>{m.user_name.charAt(0).toUpperCase()}</IzAvatarFallback>
+                </IzAvatar>
+              ))}
+              {members.length > 3 && (
+                <IzAvatar size="sm" style={{ marginLeft: '-8px', border: '2px solid var(--color-bg-surface)' }}>
+                  <IzAvatarFallback>+{members.length - 3}</IzAvatarFallback>
+                </IzAvatar>
+              )}
+            </div>
+            <IzButton variant="outline" size="sm">+ Assign</IzButton>
+            {tab === 'tasks' && <IzButton size="sm">+ New Task</IzButton>}
+          </div>
         </div>
+      </div>
 
-        <div className={styles.workspaceContent}>
+      <div style={{ flex: 1, overflow: 'auto', padding: '0 32px' }}>
           {tab === 'tasks' && (
-            <div className={styles.kanbanWrapper}>
+            <div style={{ height: '100%' }}>
               <IzKanbanBoard className={styles.taskBoard}>
                 <IzKanbanColumn title="To-Do" count={tasksByStatus.todo.length} headerAction={<IzButton variant="ghost" size="sm" style={{color:'#adaaaa'}}>+</IzButton>}>
                   {tasksByStatus.todo.map(t => (
@@ -191,7 +190,6 @@ export function BizOpsCampaign({ campaign }: Props) {
             <div style={{ color: '#adaaaa', padding: '0 32px' }}>Finances component coming soon... (Please check Project Expenses)</div>
           )}
         </div>
-      </div>
     </div>
   );
 }

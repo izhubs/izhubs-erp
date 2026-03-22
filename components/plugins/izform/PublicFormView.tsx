@@ -20,12 +20,14 @@ interface FormData {
 
 interface Props {
   formId: string;
+  initialForm?: FormData | null;
+  error?: string | null;
 }
 
-export function PublicFormView({ formId }: Props) {
-  const [form, setForm] = useState<FormData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export function PublicFormView({ formId, initialForm = null, error: initialError = null }: Props) {
+  const [form, setForm] = useState<FormData | null>(initialForm);
+  const [loading, setLoading] = useState(!initialForm && !initialError);
+  const [error, setError] = useState<string | null>(initialError);
   const [values, setValues] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -58,19 +60,21 @@ export function PublicFormView({ formId }: Props) {
       }
     }
     
-    (async () => {
-      try {
-        const res = await fetch(`/api/v1/public/forms/${formId}`);
-        if (!res.ok) throw new Error('Form not found or inactive');
-        const json = await res.json();
-        setForm(json.data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error loading form');
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [formId]);
+    if (!initialForm && !initialError) {
+      (async () => {
+        try {
+          const res = await fetch(`/api/v1/public/forms/${formId}`);
+          if (!res.ok) throw new Error('Form not found or inactive');
+          const json = await res.json();
+          setForm(json.data);
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Error loading form');
+        } finally {
+          setLoading(false);
+        }
+      })();
+    }
+  }, [formId, initialForm, initialError]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
