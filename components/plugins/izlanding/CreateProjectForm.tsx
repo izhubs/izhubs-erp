@@ -7,11 +7,13 @@ import { IzInput } from '@/components/ui/IzInput';
 import { IzTextarea } from '@/components/ui/IzTextarea';
 import { IzCard, IzCardContent } from '@/components/ui/IzCard';
 import styles from './CreateProject.module.scss';
+import { TEMPLATES } from '@/core/engine/izlanding/templates';
 
 export default function CreateProjectForm() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [templateId, setTemplateId] = useState('blank');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,7 +25,11 @@ export default function CreateProjectForm() {
       const res = await fetch('/api/v1/plugins/izlanding/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), description: description.trim() || undefined }),
+        body: JSON.stringify({
+          name: name.trim(),
+          description: description.trim() || undefined,
+          templateId,
+        }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error?.message || 'Failed to create project');
@@ -39,7 +45,7 @@ export default function CreateProjectForm() {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>🚀 Tạo Landing Page mới</h1>
-      <p className={styles.subtitle}>Đặt tên và mô tả — sau đó bạn sẽ dùng AI để sinh nội dung trang web.</p>
+      <p className={styles.subtitle}>Chọn giao diện mẫu và thiết lập thông tin cơ bản.</p>
 
       <IzCard className={styles.card}>
         <IzCardContent>
@@ -63,6 +69,25 @@ export default function CreateProjectForm() {
               rows={3}
               id="izlanding-project-desc"
             />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Chọn Giao Diện (Template)</label>
+            <div className={styles.templateGrid}>
+              {TEMPLATES.map(t => (
+                <div
+                  key={t.id}
+                  className={`${styles.templateCard} ${templateId === t.id ? styles.selected : ''}`}
+                  onClick={() => setTemplateId(t.id)}
+                >
+                  <div className={styles.templateIcon}>{t.thumbnail}</div>
+                  <div className={styles.templateInfo}>
+                    <div className={styles.templateName}>{t.name}</div>
+                    <div className={styles.templateDesc}>{t.description}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           {error && <p className={styles.error}>{error}</p>}

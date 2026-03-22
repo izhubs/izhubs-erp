@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { db } from './db';
+import { TEMPLATES } from './izlanding/templates';
 
 const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000001';
 
@@ -18,6 +19,7 @@ export const ProjectSchema = z.object({
 export const CreateProjectSchema = z.object({
   name: z.string().min(1, 'Project name is required'),
   description: z.string().optional(),
+  templateId: z.string().optional(),
 });
 
 export const UpdateProjectSchema = z.object({
@@ -95,7 +97,22 @@ export async function createProject(
       updated_at AS "updatedAt"`,
     [tenantId, data.name, data.description || null]
   );
-  return result.rows[0];
+  
+  const project = result.rows[0];
+  
+  // Pre-fill page content from template
+  let contentJson = '{}';
+  if (data.templateId) {
+    const template = TEMPLATES.find(t => t.id === data.templateId);
+    if (template) contentJson = JSON.stringify(template.blocks);
+  }
+  
+  await db.query(
+    `INSERT INTO iz_landing_pages (project_id, content_json) VALUES ($1, $2::jsonb)`,
+    [project.id, contentJson]
+  );
+
+  return project;
 }
 
 /**

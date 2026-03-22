@@ -88,10 +88,10 @@ export async function createContract(
     [
       tenantId, data.title,
       data.company_id ?? null, data.contact_id ?? null, data.deal_id ?? null,
-      data.code ?? null, data.total_value, data.currency, data.status,
-      data.start_date ?? null, data.end_date ?? null,
-      data.payment_terms ?? null, data.notes ?? null, data.owner_id ?? null,
-      JSON.stringify(data.custom_fields ?? {}),
+      data.code || null, data.total_value, data.currency, data.status,
+      data.start_date || null, data.end_date || null,
+      data.payment_terms || null, data.notes || null, data.owner_id || null,
+      JSON.stringify(data.custom_fields || {}),
     ]
   );
   const contract = ContractSchema.parse(res.rows[0]);
@@ -116,12 +116,12 @@ export async function updateContract(
   if (data.total_value   !== undefined) { fields.push(`total_value = $${idx++}`);   values.push(data.total_value); }
   if (data.currency      !== undefined) { fields.push(`currency = $${idx++}`);      values.push(data.currency); }
   if (data.status        !== undefined) { fields.push(`status = $${idx++}`);        values.push(data.status); }
-  if (data.start_date    !== undefined) { fields.push(`start_date = $${idx++}`);    values.push(data.start_date); }
-  if (data.end_date      !== undefined) { fields.push(`end_date = $${idx++}`);      values.push(data.end_date); }
-  if (data.payment_terms !== undefined) { fields.push(`payment_terms = $${idx++}`); values.push(data.payment_terms); }
-  if (data.notes         !== undefined) { fields.push(`notes = $${idx++}`);         values.push(data.notes); }
-  if (data.owner_id      !== undefined) { fields.push(`owner_id = $${idx++}`);      values.push(data.owner_id); }
-  if (data.custom_fields !== undefined) { fields.push(`custom_fields = $${idx++}`); values.push(JSON.stringify(data.custom_fields)); }
+  if (data.start_date    !== undefined) { fields.push(`start_date = $${idx++}`);    values.push(data.start_date || null); }
+  if (data.end_date      !== undefined) { fields.push(`end_date = $${idx++}`);      values.push(data.end_date || null); }
+  if (data.payment_terms !== undefined) { fields.push(`payment_terms = $${idx++}`); values.push(data.payment_terms || null); }
+  if (data.notes         !== undefined) { fields.push(`notes = $${idx++}`);         values.push(data.notes || null); }
+  if (data.owner_id      !== undefined) { fields.push(`owner_id = $${idx++}`);      values.push(data.owner_id || null); }
+  if (data.custom_fields !== undefined) { fields.push(`custom_fields = $${idx++}`); values.push(JSON.stringify(data.custom_fields || {})); }
 
   if (fields.length === 0) return getContract(tenantId, id);
 

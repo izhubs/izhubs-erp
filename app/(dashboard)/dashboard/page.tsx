@@ -225,7 +225,7 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      {industryId === 'virtual-office' && effectiveRole === 'superadmin' ? (
+      {effectiveRole === 'superadmin' ? (
         <VirtualOfficeCeoDashboard deals={deals} contacts={contacts} />
       ) : (
       <>

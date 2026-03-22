@@ -90,8 +90,8 @@ export async function createCampaign(
     [
       tenantId, data.contract_id, data.name, data.type, data.allocated_budget,
       data.stage, data.health,
-      data.start_date ?? null, data.end_date ?? null, data.owner_id ?? null,
-      JSON.stringify(data.custom_fields ?? {}),
+      data.start_date || null, data.end_date || null, data.owner_id || null,
+      JSON.stringify(data.custom_fields || {}),
     ]
   );
   const campaign = CampaignSchema.parse(res.rows[0]);
@@ -113,10 +113,10 @@ export async function updateCampaign(
   if (data.allocated_budget !== undefined) { fields.push(`allocated_budget = $${idx++}`); values.push(data.allocated_budget); }
   if (data.stage            !== undefined) { fields.push(`stage = $${idx++}`);            values.push(data.stage); }
   if (data.health           !== undefined) { fields.push(`health = $${idx++}`);           values.push(data.health); }
-  if (data.start_date       !== undefined) { fields.push(`start_date = $${idx++}`);       values.push(data.start_date); }
-  if (data.end_date         !== undefined) { fields.push(`end_date = $${idx++}`);         values.push(data.end_date); }
-  if (data.owner_id         !== undefined) { fields.push(`owner_id = $${idx++}`);         values.push(data.owner_id); }
-  if (data.custom_fields    !== undefined) { fields.push(`custom_fields = $${idx++}`);    values.push(JSON.stringify(data.custom_fields)); }
+  if (data.start_date       !== undefined) { fields.push(`start_date = $${idx++}`);       values.push(data.start_date || null); }
+  if (data.end_date         !== undefined) { fields.push(`end_date = $${idx++}`);         values.push(data.end_date || null); }
+  if (data.owner_id         !== undefined) { fields.push(`owner_id = $${idx++}`);         values.push(data.owner_id || null); }
+  if (data.custom_fields    !== undefined) { fields.push(`custom_fields = $${idx++}`);    values.push(JSON.stringify(data.custom_fields || {})); }
 
   if (fields.length === 0) return getCampaign(tenantId, id);
 
