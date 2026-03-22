@@ -156,10 +156,14 @@ export default async function DashboardPage() {
     }
   } catch { /* fallback to DEFAULT_STAGES */ }
 
-  const [{ data: contacts }, { data: deals }] = await Promise.all([
+  const currentTenantId = await require('@/core/engine/auth/server-context').getTenantId();
+
+  const [{ data: contacts }, { data: deals }, usersRes] = await Promise.all([
     listContacts({ limit: 8 }),
     listDeals({ limit: 500 }),
+    db.query(`SELECT id, name FROM users WHERE tenant_id = $1`, [currentTenantId || '00000000-0000-0000-0000-000000000001'])
   ]);
+  const usersStr = usersRes.rows;
   listServicePackages('00000000-0000-0000-0000-000000000001').catch(() => []);
 
   // KPIs
@@ -226,7 +230,7 @@ export default async function DashboardPage() {
       </div>
 
       {effectiveRole === 'superadmin' ? (
-        <VirtualOfficeCeoDashboard deals={deals} contacts={contacts} />
+        <VirtualOfficeCeoDashboard deals={deals} contacts={contacts} users={usersStr} />
       ) : (
       <>
         {/* Coming Soon Notice for Dynamic Dashboards */}

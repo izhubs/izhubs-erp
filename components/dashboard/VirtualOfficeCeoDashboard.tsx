@@ -16,6 +16,7 @@ interface Deal {
   stage: string;
   customFields?: Record<string, any>;
   createdAt?: Date | string | null;
+  ownerId?: string | null;
   [key: string]: any;
 }
 
@@ -27,33 +28,59 @@ interface Contact {
   [key: string]: any;
 }
 
-export function VirtualOfficeCeoDashboard({ deals, contacts }: { deals: Deal[], contacts: Contact[] }) {
+interface User {
+  id: string;
+  name: string;
+}
+
+export function VirtualOfficeCeoDashboard({ deals, contacts, users }: { deals: Deal[], contacts: Contact[], users: User[] }) {
   const { fmt } = useCurrency();
 
-  // 1. KPI Calculations
-  const activeDeals = deals.filter(d => d.stage === 'active');
+  const now = new Date();
+  const firstDayThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+  const getMonthDeals = (start: Date, end: Date) => deals.filter(d => d.createdAt && new Date(d.createdAt) >= start && new Date(d.createdAt) < end);
+  
+  const thisMonthDeals = getMonthDeals(firstDayThisMonth, new Date(now.getFullYear(), now.getMonth() + 1, 1));
+  const lastMonthDeals = getMonthDeals(firstDayLastMonth, firstDayThisMonth);
+
+  // 1. KPI Calculations (Authentic)
+  const activeDeals = deals.filter(d => d.stage === 'active' || d.stage === 'won');
   const mrr = activeDeals.reduce((sum, d) => sum + d.value, 0);
   
-  const newLeads = deals.filter(d => d.stage === 'lead').length;
-  // Assume a 2.5% churn rate placeholder for demo, or calculate based on lost deals
-  const lostDeals = deals.filter(d => d.stage === 'lost').length;
-  const churnRate = deals.length ? ((lostDeals / deals.length) * 100).toFixed(1) : '0.0';
-  
-  const pipelineValue = deals.filter(d => !['won', 'lost', 'active'].includes(d.stage)).reduce((sum, d) => sum + d.value, 0);
+  // Doanh thu tháng này (Won/Active deals created this month)
+  const revenueThisMonth = thisMonthDeals.filter(d => d.stage === 'active' || d.stage === 'won').reduce((sum, d) => sum + d.value, 0);
+  const revenueLastMonth = lastMonthDeals.filter(d => d.stage === 'active' || d.stage === 'won').reduce((sum, d) => sum + d.value, 0);
+  const revenueTrend = revenueLastMonth === 0 ? (revenueThisMonth > 0 ? 100 : 0) : Number(((revenueThisMonth - revenueLastMonth) / revenueLastMonth * 100).toFixed(1));
+
+  // Lead mới
+  const leadsThisMonth = thisMonthDeals.filter(d => d.stage === 'lead').length;
+  const leadsLastMonth = lastMonthDeals.filter(d => d.stage === 'lead').length;
+  const leadsTrend = leadsLastMonth === 0 ? (leadsThisMonth > 0 ? 100 : 0) : Number(((leadsThisMonth - leadsLastMonth) / leadsLastMonth * 100).toFixed(1));
+
+  // Hợp đồng tháng này (Won/Active deals count)
+  const contractsThisMonth = thisMonthDeals.filter(d => d.stage === 'active' || d.stage === 'won').length;
+  const contractsLastMonth = lastMonthDeals.filter(d => d.stage === 'active' || d.stage === 'won').length;
+  const contractsTrend = contractsLastMonth === 0 ? (contractsThisMonth > 0 ? 100 : 0) : Number(((contractsThisMonth - contractsLastMonth) / contractsLastMonth * 100).toFixed(1));
+
+  // Khách hàng mới (Contacts created this month)
+  const contactsThisMonth = contacts.filter(c => c.createdAt && new Date(c.createdAt) >= firstDayThisMonth).length;
+  const contactsLastMonth = contacts.filter(c => c.createdAt && new Date(c.createdAt) >= firstDayLastMonth && new Date(c.createdAt) < firstDayThisMonth).length;
+  const contactsTrend = contactsLastMonth === 0 ? (contactsThisMonth > 0 ? 100 : 0) : Number(((contactsThisMonth - contactsLastMonth) / contactsLastMonth * 100).toFixed(1));
 
   // 2. Chart Data: Revenue by Package (Donut)
   const revenueByPkg: Record<string, number> = {};
   for (const d of activeDeals) {
-    const pkg = d.customFields?.goi_dich_vu as string ?? 'Other';
+    const pkg = d.customFields?.goi_dich_vu as string ?? 'Khác';
     revenueByPkg[pkg] = (revenueByPkg[pkg] ?? 0) + d.value;
   }
-  const PACKAGE_COLORS = ['#f59e0b', '#a8a29e', '#3b82f6', '#6366f1']; // Gold, Silver, Diamond, Others
+  const PACKAGE_COLORS = ['#3b82f6', '#f59e0b', '#a8a29e', '#6366f1']; // Diamond, Gold, Silver, Others
   const revenueData = Object.entries(revenueByPkg).map(([name, value], i) => ({
     name, value, color: PACKAGE_COLORS[i % PACKAGE_COLORS.length],
   }));
 
   // 3. Chart Data: Revenue line chart (Last 6 Months)
-  const now = new Date();
   const arrData = Array.from({ length: 6 }, (_, i) => {
     const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
     return { month: d.toLocaleDateString('vi-VN', { month: 'short' }), revenue: 0 };
@@ -67,47 +94,60 @@ export function VirtualOfficeCeoDashboard({ deals, contacts }: { deals: Deal[], 
     if (monthIdx >= 0 && monthIdx < arrData.length) arrData[monthIdx].revenue += deal.value;
   }
 
-  // 4. Staff Leaderboard (Mocked assignment logic using deal ID to simulate staff)
-  const staffNames = ['Thủy Hằng', 'Hảo Trần', 'Khánh Nhi', 'Quốc Bảo'];
-  const staffSales = staffNames.map((name, idx) => {
-    const val = activeDeals.filter((_, i) => i % staffNames.length === idx).reduce((s, d) => s + d.value, 0);
-    return { name, value: val };
-  }).sort((a, b) => b.value - a.value);
+  // 4. Staff Leaderboard (Authentic using users prop and ownerId)
+  const staffSalesMap: Record<string, { name: string, value: number }> = {};
+  for (const deal of activeDeals) {
+    const ownerName = deal.ownerId ? (users.find(u => u.id === deal.ownerId)?.name || 'Nhân viên ẩn') : 'Chưa phân công';
+    if (!staffSalesMap[ownerName]) staffSalesMap[ownerName] = { name: ownerName, value: 0 };
+    staffSalesMap[ownerName].value += deal.value;
+  }
+  const staffSales = Object.values(staffSalesMap).sort((a, b) => b.value - a.value).slice(0, 5);
   const maxSales = Math.max(...staffSales.map(s => s.value), 1);
 
   // 5. Expiring Contracts (Deals in 'renewal' stage)
   const expiringDeals = deals.filter(d => d.stage === 'renewal').slice(0, 5);
 
   // 6. Churn List (Deals in 'lost' stage)
-  const churnedDeals = deals.filter(d => d.stage === 'lost').slice(0, 5);
+  const allLostDeals = deals.filter(d => d.stage === 'lost');
+  const churnedDeals = allLostDeals.slice(0, 5);
+  const lostDealsCount = allLostDeals.length;
+  const churnRate = deals.length ? ((lostDealsCount / deals.length) * 100).toFixed(1) : '0.0';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
       {/* KPI ROW */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-4)' }}>
         <IzMetricCard
-          label="DOANH THU THÁNG (MRR)"
-          value={fmt(mrr)}
+          label="DOANH THU THÁNG NÀY"
+          value={fmt(revenueThisMonth)}
+          trend={revenueTrend}
+          description={`Tháng trước: ${fmt(revenueLastMonth)}`}
           icon={<span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '8px', background: '#ecfdf5', color: '#10b981', fontSize: 18 }}>💰</span>}
           style={{ borderTop: '4px solid #10b981', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}
         />
         <IzMetricCard
           label="LEAD MỚI THÁNG NÀY"
-          value={newLeads}
+          value={leadsThisMonth}
+          trend={leadsTrend}
+          description={`Tháng trước: ${leadsLastMonth}`}
           icon={<span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '8px', background: '#eff6ff', color: '#3b82f6', fontSize: 18 }}>👥</span>}
           style={{ borderTop: '4px solid #3b82f6', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}
         />
         <IzMetricCard
-          label="TỔNG PIPELINE ĐANG MỞ"
-          value={fmt(pipelineValue)}
-          icon={<span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '8px', background: '#fffbeb', color: '#f59e0b', fontSize: 18 }}>📊</span>}
+          label="HỢP ĐỒNG THÁNG NÀY"
+          value={contractsThisMonth}
+          trend={contractsTrend}
+          description={`Tháng trước: ${contractsLastMonth}`}
+          icon={<span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '8px', background: '#fffbeb', color: '#f59e0b', fontSize: 18 }}>📄</span>}
           style={{ borderTop: '4px solid #f59e0b', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}
         />
         <IzMetricCard
-          label="CHURN RATE (RỜI BỎ)"
-          value={`${churnRate}%`}
-          icon={<span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '8px', background: '#fef2f2', color: '#ef4444', fontSize: 18 }}>📉</span>}
-          style={{ borderTop: '4px solid #ef4444', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}
+          label="KHÁCH HÀNG MỚI"
+          value={contactsThisMonth}
+          trend={contactsTrend}
+          description={`Tháng trước: ${contactsLastMonth}`}
+          icon={<span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '8px', background: '#f5f3ff', color: '#8b5cf6', fontSize: 18 }}>🏢</span>}
+          style={{ borderTop: '4px solid #8b5cf6', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}
         />
       </div>
 
@@ -230,7 +270,7 @@ export function VirtualOfficeCeoDashboard({ deals, contacts }: { deals: Deal[], 
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span>⚠️</span>
                 <IzCardTitle style={{ fontSize: 15, fontWeight: 700 }}>Khách hàng rời bỏ (Churn)</IzCardTitle>
-                <span style={{ background: '#fef2f2', color: '#ef4444', padding: '2px 8px', borderRadius: 10, fontSize: 12, fontWeight: 600 }}>{lostDeals}</span>
+                <span style={{ background: '#fef2f2', color: '#ef4444', padding: '2px 8px', borderRadius: 10, fontSize: 12, fontWeight: 600 }}>{lostDealsCount}</span>
               </div>
               <span style={{ fontSize: 12, color: '#64748b' }}>Mới nhất</span>
             </div>
