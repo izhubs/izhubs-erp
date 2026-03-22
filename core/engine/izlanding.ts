@@ -244,3 +244,35 @@ export async function updatePageTracking(
   );
   return result.rows[0] || null;
 }
+
+/**
+ * Get project content_json (Blocks)
+ */
+export async function getProjectContent(projectId: string): Promise<any[]> {
+  const result = await db.query(
+    `SELECT content_json FROM iz_landing_pages WHERE project_id = $1`,
+    [projectId]
+  );
+  if (!result.rows[0]) return [];
+  const content = result.rows[0].content_json;
+  if (typeof content === 'string') {
+    try { return JSON.parse(content); } catch { return []; }
+  }
+  return content || [];
+}
+
+/**
+ * Update project content_json (Blocks)
+ */
+export async function updateProjectContent(projectId: string, blocks: any[]): Promise<boolean> {
+  try {
+    await db.query(
+      `UPDATE iz_landing_pages SET content_json = $2::jsonb, updated_at = NOW() WHERE project_id = $1`,
+      [projectId, JSON.stringify(blocks)]
+    );
+    return true;
+  } catch (err) {
+    console.error('Error in updateProjectContent:', err);
+    return false;
+  }
+}

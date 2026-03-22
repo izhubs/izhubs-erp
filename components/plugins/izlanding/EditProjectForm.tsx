@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { IzButton } from '@/components/ui/IzButton';
 import { IzInput } from '@/components/ui/IzInput';
@@ -51,11 +51,36 @@ export default function EditProjectForm({ project, tracking }: Props) {
   const [gaId, setGaId] = useState(tracking?.googleAnalyticsId || '');
   const [customScripts, setCustomScripts] = useState(tracking?.customHeadScripts || '');
 
+  // Content & Forms
+  const [blocks, setBlocks] = useState<any[]>([]);
+  const [forms, setForms] = useState<any[]>([]);
+  const [selectedFormId, setSelectedFormId] = useState<string>('');
+  
   // State
   const [loading, setLoading] = useState(false);
+  const [fetchingContent, setFetchingContent] = useState(true);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    // Fetch project content and available forms
+    Promise.all([
+      fetch(`/api/v1/plugins/izlanding/projects/${project.id}/content`).then(res => res.json()),
+      fetch('/api/v1/plugins/izform/forms').then(res => res.json())
+    ]).then(([contentRes, formsRes]) => {
+      if (contentRes.success) {
+        setBlocks(contentRes.data.blocks || []);
+        const formBlock = contentRes.data.blocks?.find((b: any) => b.type === 'iframe-form');
+        if (formBlock?.content?.url) {
+          const match = formBlock.content.url.match(/\/forms\/(.+)/);
+          if (match) setSelectedFormId(match[1]);
+        }
+      }
+      if (formsRes.success) setForms(formsRes.data || []);
+      setFetchingContent(false);
+    }).catch(console.error);
+  }, [project.id]);
 
   const handleSave = async () => {
     if (!name.trim()) return;
@@ -90,6 +115,20 @@ export default function EditProjectForm({ project, tracking }: Props) {
       if (!res2.ok) {
         const json2 = await res2.json();
         throw new Error(json2?.error?.message || 'Failed to save tracking');
+      }
+
+      // Save content if blocks changed
+      if (blocks.length > 0) {
+        const newBlocks = [...blocks];
+        const formBlockIdx = newBlocks.findIndex(b => b.type === 'iframe-form');
+        if (formBlockIdx >= 0 && selectedFormId) {
+          newBlocks[formBlockIdx].content.url = `/forms/${selectedFormId}`;
+        }
+        await fetch(`/api/v1/plugins/izlanding/projects/${project.id}/content`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ blocks: newBlocks }),
+        });
       }
 
       setSaved(true);
@@ -249,6 +288,36 @@ export default function EditProjectForm({ project, tracking }: Props) {
           </div>
         </IzCardContent>
       </IzCard>
+
+      {/* Form Integration */}
+      {blocks.some(b => b.type === 'iframe-form') && (
+        <IzCard className={styles.card}>
+          <IzCardContent>
+            <div className={styles.sectionTitle}>📝 Form Nhúng (izForm)</div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Chọn Form để nhúng vào trang</label>
+              {fetchingContent ? (
+                <div className="text-sm text-slate-500">Đang tải data...</div>
+              ) : forms.length === 0 ? (
+                <div className="text-sm text-rose-500 bg-rose-50 p-3 rounded border border-rose-200">
+                  Bạn chưa có form nào. Hãy vào plugin <b>izForm</b> để tạo form trước nhé!
+                </div>
+              ) : (
+                <select
+                  className="w-full px-4 py-2 border border-solid border-slate-300 rounded-lg text-slate-700 bg-white"
+                  value={selectedFormId}
+                  onChange={e => setSelectedFormId(e.target.value)}
+                >
+                  <option value="">-- Chọn Form --</option>
+                  {forms.map(f => (
+                    <option key={f.id} value={f.id}>{f.name}</option>
+                  ))}
+                </select>
+              )}
+            </div>
+          </IzCardContent>
+        </IzCard>
+      )}
 
       {error && <p className={styles.error}>{error}</p>}
       {saved && <p className={styles.success}>✅ Đã lưu thành công!</p>}
