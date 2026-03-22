@@ -12,6 +12,7 @@ import styles from './BizOpsCampaign.module.scss';
 
 interface CampaignData {
   id: string;
+  contract_id?: string;
   name: string;
   type: string;
   allocated_budget: number;
@@ -82,18 +83,22 @@ export function BizOpsCampaign({ campaign }: Props) {
 
   return (
     <div className={styles.workspaceContainer}>
-      {/* Glassmorphic Header */}
-      <div className={styles.workspaceHeader}>
-        <div className={styles.headerTopRow}>
+      <div className={styles.workspaceSidebar}>
+        {/* Project Context */}
+        <div style={{ padding: '0 12px', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <IzButton variant="ghost" size="sm" onClick={() => window.location.href = `/plugins/biz-ops/contracts/${campaign.contract_id || ''}`} style={{ padding: '4px', height: 'auto', minWidth: 'auto', marginLeft: '-4px' }}>←</IzButton>
+            <IzBadge variant="info">{campaign.stage}</IzBadge>
+          </div>
           <div className={styles.titleArea}>
             <h1>{campaign.name}</h1>
-            <IzBadge variant="info">{campaign.stage}</IzBadge>
-            <div className={styles.budgetInfo}>
-              <span>Budget: {(campaign.actual_cogs / 1_000_000).toFixed(1)}M / {(campaign.allocated_budget / 1_000_000).toFixed(1)}M</span>
-            </div>
+          </div>
+          <div className={styles.budgetInfo}>
+            <span>Spent: {(campaign.actual_cogs / 1_000_000).toFixed(1)}M / {(campaign.allocated_budget / 1_000_000).toFixed(1)}M</span>
           </div>
           
-          <div className={styles.teamArea}>
+          <div className={styles.teamArea} style={{ marginTop: '16px', flexDirection: 'column', alignItems: 'flex-start', gap: '12px' }}>
+            <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--on-surface-variant)', fontWeight: 600 }}>Team</span>
             <div className={styles.avatarGroup}>
               {members.slice(0, 3).map(m => (
                 <IzAvatar key={m.user_id}>
@@ -107,91 +112,115 @@ export function BizOpsCampaign({ campaign }: Props) {
                 </IzAvatar>
               )}
             </div>
-            <button className={`${styles.assignButton} iz-button iz-button-sm`} style={{ borderRadius: '24px' }}>
-              + Assign
+            <button className={`${styles.assignButton} iz-button iz-button-sm`} style={{ borderRadius: '24px', width: '100%', marginTop: '4px', background: 'var(--surface-container-highest)', color: 'var(--on-surface)' }}>
+              + Assign Member
             </button>
           </div>
         </div>
-        
-        {/* Navigation Tabs (borrowed style from BizOpsProjects but customized) */}
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <button onClick={() => setTab('tasks')} style={{ background: 'none', border: 'none', color: tab === 'tasks' ? '#89acff' : '#adaaaa', fontWeight: tab==='tasks'?600:400, borderBottom: tab==='tasks'?'2px solid #89acff':'2px solid transparent', paddingBottom: '4px', cursor: 'pointer' }}>Tasks</button>
-          <button onClick={() => setTab('files')} style={{ background: 'none', border: 'none', color: tab === 'files' ? '#89acff' : '#adaaaa', fontWeight: tab==='files'?600:400, borderBottom: tab==='files'?'2px solid #89acff':'2px solid transparent', paddingBottom: '4px', cursor: 'pointer' }}>Files</button>
-          <button onClick={() => setTab('finances')} style={{ background: 'none', border: 'none', color: tab === 'finances' ? '#89acff' : '#adaaaa', fontWeight: tab==='finances'?600:400, borderBottom: tab==='finances'?'2px solid #89acff':'2px solid transparent', paddingBottom: '4px', cursor: 'pointer' }}>Finances</button>
-          <button onClick={() => setTab('settings')} style={{ background: 'none', border: 'none', color: tab === 'settings' ? '#89acff' : '#adaaaa', fontWeight: tab==='settings'?600:400, borderBottom: tab==='settings'?'2px solid #89acff':'2px solid transparent', paddingBottom: '4px', cursor: 'pointer' }}>Settings</button>
+
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(72, 72, 71, 0.15)', margin: '0 0 16px 0' }} />
+
+        {/* Local Navigation */}
+        <div className={styles.navMenu}>
+          <button onClick={() => setTab('tasks')} className={`${styles.navItem} ${tab === 'tasks' ? styles.navItemActive : ''}`}>
+            ☑️ Tasks
+          </button>
+          <button onClick={() => setTab('files')} className={`${styles.navItem} ${tab === 'files' ? styles.navItemActive : ''}`}>
+            📁 Files & Assets
+          </button>
+          <button onClick={() => setTab('finances')} className={`${styles.navItem} ${tab === 'finances' ? styles.navItemActive : ''}`}>
+            💸 Finances
+          </button>
+          <button onClick={() => setTab('settings')} className={`${styles.navItem} ${tab === 'settings' ? styles.navItemActive : ''}`}>
+            ⚙️ Settings
+          </button>
         </div>
       </div>
 
-      <div className={styles.workspaceContent}>
-        {tab === 'tasks' && (
-          <div className={styles.kanbanWrapper}>
-            <IzKanbanBoard className={styles.taskBoard}>
-              <IzKanbanColumn title="To-Do" count={tasksByStatus.todo.length} headerAction={<IzButton variant="ghost" size="sm" style={{color:'#adaaaa'}}>+</IzButton>}>
-                {tasksByStatus.todo.map(t => (
-                  <IzKanbanCard 
-                    key={t.id} title={t.title} description={t.description} 
-                    footerLeft={getPriorityBadge(t.priority)} 
-                    footerRight={t.assignee_id ? (
-                      <IzAvatar size="sm">
-                        <IzAvatarFallback>{(members.find(m => m.user_id === t.assignee_id)?.user_name || 'U').charAt(0).toUpperCase()}</IzAvatarFallback>
-                      </IzAvatar>
-                    ) : null} 
-                  />
-                ))}
-              </IzKanbanColumn>
-              
-              <IzKanbanColumn title="In Progress" count={tasksByStatus.in_progress.length}>
-                {tasksByStatus.in_progress.map(t => (
-                  <IzKanbanCard 
-                    key={t.id} title={t.title} description={t.description} 
-                    footerLeft={getPriorityBadge(t.priority)} 
-                    footerRight={t.assignee_id ? (
-                      <IzAvatar size="sm">
-                        <IzAvatarFallback>{(members.find(m => m.user_id === t.assignee_id)?.user_name || 'U').charAt(0).toUpperCase()}</IzAvatarFallback>
-                      </IzAvatar>
-                    ) : null} 
-                  />
-                ))}
-              </IzKanbanColumn>
-              
-              <IzKanbanColumn title="In Review" count={tasksByStatus.review.length}>
-                {tasksByStatus.review.map(t => (
-                  <IzKanbanCard 
-                    key={t.id} title={t.title} description={t.description} 
-                    footerLeft={getPriorityBadge(t.priority)} 
-                    footerRight={t.assignee_id ? (
-                      <IzAvatar size="sm">
-                        <IzAvatarFallback>{(members.find(m => m.user_id === t.assignee_id)?.user_name || 'U').charAt(0).toUpperCase()}</IzAvatarFallback>
-                      </IzAvatar>
-                    ) : null} 
-                  />
-                ))}
-              </IzKanbanColumn>
-              
-              <IzKanbanColumn title="Done" count={tasksByStatus.done.length}>
-                {tasksByStatus.done.map(t => (
-                  <IzKanbanCard 
-                    key={t.id} title={t.title} description={t.description} 
-                    footerLeft={getPriorityBadge(t.priority)} 
-                    footerRight={t.assignee_id ? (
-                      <IzAvatar size="sm">
-                        <IzAvatarFallback>{(members.find(m => m.user_id === t.assignee_id)?.user_name || 'U').charAt(0).toUpperCase()}</IzAvatarFallback>
-                      </IzAvatar>
-                    ) : null} 
-                  />
-                ))}
-              </IzKanbanColumn>
-            </IzKanbanBoard>
+      <div className={styles.workspaceMain}>
+        <div className={styles.workspaceHeader}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, margin: 0 }}>
+            {tab === 'tasks' && 'Kanban Board'}
+            {tab === 'files' && 'Files & Assets'}
+            {tab === 'finances' && 'Finances & Expenses'}
+            {tab === 'settings' && 'Project Settings'}
+          </h2>
+          <div>
+            {tab === 'tasks' && <IzButton>+ New Task</IzButton>}
           </div>
-        )}
-        
-        {tab === 'files' && (
-          <div style={{ color: '#adaaaa' }}>Files component coming soon...</div>
-        )}
-        
-        {tab === 'finances' && (
-          <div style={{ color: '#adaaaa' }}>Finances component coming soon... (Please check Project Expenses)</div>
-        )}
+        </div>
+
+        <div className={styles.workspaceContent}>
+          {tab === 'tasks' && (
+            <div className={styles.kanbanWrapper}>
+              <IzKanbanBoard className={styles.taskBoard}>
+                <IzKanbanColumn title="To-Do" count={tasksByStatus.todo.length} headerAction={<IzButton variant="ghost" size="sm" style={{color:'#adaaaa'}}>+</IzButton>}>
+                  {tasksByStatus.todo.map(t => (
+                    <IzKanbanCard 
+                      key={t.id} title={t.title} description={t.description} 
+                      footerLeft={getPriorityBadge(t.priority)} 
+                      footerRight={t.assignee_id ? (
+                        <IzAvatar size="sm">
+                          <IzAvatarFallback>{(members.find(m => m.user_id === t.assignee_id)?.user_name || 'U').charAt(0).toUpperCase()}</IzAvatarFallback>
+                        </IzAvatar>
+                      ) : null} 
+                    />
+                  ))}
+                </IzKanbanColumn>
+                
+                <IzKanbanColumn title="In Progress" count={tasksByStatus.in_progress.length}>
+                  {tasksByStatus.in_progress.map(t => (
+                    <IzKanbanCard 
+                      key={t.id} title={t.title} description={t.description} 
+                      footerLeft={getPriorityBadge(t.priority)} 
+                      footerRight={t.assignee_id ? (
+                        <IzAvatar size="sm">
+                          <IzAvatarFallback>{(members.find(m => m.user_id === t.assignee_id)?.user_name || 'U').charAt(0).toUpperCase()}</IzAvatarFallback>
+                        </IzAvatar>
+                      ) : null} 
+                    />
+                  ))}
+                </IzKanbanColumn>
+                
+                <IzKanbanColumn title="In Review" count={tasksByStatus.review.length}>
+                  {tasksByStatus.review.map(t => (
+                    <IzKanbanCard 
+                      key={t.id} title={t.title} description={t.description} 
+                      footerLeft={getPriorityBadge(t.priority)} 
+                      footerRight={t.assignee_id ? (
+                        <IzAvatar size="sm">
+                          <IzAvatarFallback>{(members.find(m => m.user_id === t.assignee_id)?.user_name || 'U').charAt(0).toUpperCase()}</IzAvatarFallback>
+                        </IzAvatar>
+                      ) : null} 
+                    />
+                  ))}
+                </IzKanbanColumn>
+                
+                <IzKanbanColumn title="Done" count={tasksByStatus.done.length}>
+                  {tasksByStatus.done.map(t => (
+                    <IzKanbanCard 
+                      key={t.id} title={t.title} description={t.description} 
+                      footerLeft={getPriorityBadge(t.priority)} 
+                      footerRight={t.assignee_id ? (
+                        <IzAvatar size="sm">
+                          <IzAvatarFallback>{(members.find(m => m.user_id === t.assignee_id)?.user_name || 'U').charAt(0).toUpperCase()}</IzAvatarFallback>
+                        </IzAvatar>
+                      ) : null} 
+                    />
+                  ))}
+                </IzKanbanColumn>
+              </IzKanbanBoard>
+            </div>
+          )}
+          
+          {tab === 'files' && (
+            <div style={{ color: '#adaaaa' }}>Files component coming soon...</div>
+          )}
+          
+          {tab === 'finances' && (
+            <div style={{ color: '#adaaaa', padding: '0 32px' }}>Finances component coming soon... (Please check Project Expenses)</div>
+          )}
+        </div>
       </div>
     </div>
   );
