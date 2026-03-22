@@ -44,7 +44,8 @@ export function PublicFormView({ formId, initialForm = null, error: initialError
         // Observe body mutations for resizing
         const sendHeight = () => {
           requestAnimationFrame(() => {
-            const h = document.documentElement.scrollHeight || document.body.scrollHeight;
+            const card = document.getElementById('izform-card-root');
+            const h = card ? card.offsetHeight + 40 : (document.documentElement.scrollHeight || document.body.scrollHeight);
             window.parent.postMessage({ type: 'IZFORM_RESIZE', height: h }, '*');
           });
         };
@@ -139,7 +140,7 @@ export function PublicFormView({ formId, initialForm = null, error: initialError
 
   return (
     <Wrapper>
-      <div className={`${styles.card} ${isEmbed ? styles.embedded : ''}`}>
+      <div id="izform-card-root" className={`${styles.card} ${isEmbed ? styles.embedded : ''}`}>
         <div className={styles.header}>
         <h1 className={styles.title}>{form.name}</h1>
         {form.description && <p className={styles.description}>{form.description}</p>}
