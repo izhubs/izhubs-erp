@@ -190,14 +190,14 @@ function renderBlock(block: LandingBlock) {
           <div className="max-w-xl mx-auto border-2 border-rose-100 p-10 rounded-3xl bg-rose-50/50 shadow-xl">
             <h2 className="text-3xl font-bold mb-6 text-slate-900">{content.title}</h2>
             <p className="text-slate-600 mb-8">Điền thông tin ngay bây giờ để nhận bộ quà tặng trị giá 5.000.000đ.</p>
-            <form className="space-y-4 text-left" onSubmit={e => e.preventDefault()}>
+            <form className="space-y-4 text-left">
               <div>
                 <input type="text" placeholder="Họ và tên của bạn" className="w-full px-4 py-3 rounded-xl border-gray-300 shadow-sm focus:ring-rose-500 focus:border-rose-500" />
               </div>
               <div>
                 <input type="tel" placeholder="Số điện thoại" className="w-full px-4 py-3 rounded-xl border-gray-300 shadow-sm focus:ring-rose-500 focus:border-rose-500" />
               </div>
-              <button className="w-full bg-rose-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg hover:bg-rose-700 transition-colors">Đăng Ký Nhận Quà</button>
+              <button type="button" className="w-full bg-rose-600 text-white font-bold text-lg py-4 rounded-xl shadow-lg hover:bg-rose-700 transition-colors">Đăng Ký Nhận Quà</button>
             </form>
           </div>
         </section>
