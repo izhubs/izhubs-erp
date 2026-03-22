@@ -250,14 +250,25 @@ export async function convertToContact(
   const sub = res.rows[0];
   const data = sub.data as Record<string, string>;
 
-  // Create contact from form data
+  // Smart field lookup — try multiple key patterns for name/email/phone
+  const find = (keys: string[]) => {
+    for (const k of keys) {
+      const found = Object.entries(data).find(([key]) => key.toLowerCase() === k.toLowerCase());
+      if (found?.[1]) return found[1];
+    }
+    return null;
+  };
+
+  const contactName = find(['name', 'full name', 'fullName', 'full_name', 'họ tên', 'tên']) ?? 'Unknown';
+  const contactEmail = find(['email', 'e-mail', 'emailAddress', 'email_address']);
+  const contactPhone = find(['phone', 'phone number', 'phoneNumber', 'phone_number', 'điện thoại', 'số điện thoại']);
+
+  // Create contact from form data (status = 'lead')
   const contactRes = await db.query(
-    `INSERT INTO contacts (tenant_id, name, email, phone, source)
-     VALUES ($1, $2, $3, $4, 'izform')
-     ON CONFLICT (tenant_id, email) WHERE email IS NOT NULL
-     DO UPDATE SET name = EXCLUDED.name
+    `INSERT INTO contacts (tenant_id, name, email, phone, status)
+     VALUES ($1, $2, $3, $4, 'lead')
      RETURNING id`,
-    [tenantId, data.name ?? data.fullName ?? 'Unknown', data.email ?? null, data.phone ?? null]
+    [tenantId, contactName, contactEmail, contactPhone]
   );
   const contactId = contactRes.rows[0].id;
 

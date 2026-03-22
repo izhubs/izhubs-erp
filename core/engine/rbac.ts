@@ -18,6 +18,12 @@ export type Permission =
   | 'deals:read'
   | 'deals:write'
   | 'deals:delete'
+  | 'contracts:read'
+  | 'contracts:write'
+  | 'contracts:delete'
+  | 'campaigns:read'
+  | 'campaigns:write'
+  | 'campaigns:delete'
   | 'activities:read'
   | 'activities:write'
   | 'users:read'
@@ -34,6 +40,8 @@ export const ROLE_PERMISSIONS: Record<Role, Set<Permission>> = {
   superadmin: new Set([
     'contacts:read', 'contacts:write', 'contacts:delete',
     'deals:read', 'deals:write', 'deals:delete',
+    'contracts:read', 'contracts:write', 'contracts:delete',
+    'campaigns:read', 'campaigns:write', 'campaigns:delete',
     'activities:read', 'activities:write',
     'users:read', 'users:write', 'users:delete',
     'settings:manage',
@@ -41,6 +49,8 @@ export const ROLE_PERMISSIONS: Record<Role, Set<Permission>> = {
   admin: new Set([
     'contacts:read', 'contacts:write', 'contacts:delete',
     'deals:read', 'deals:write', 'deals:delete',
+    'contracts:read', 'contracts:write', 'contracts:delete',
+    'campaigns:read', 'campaigns:write', 'campaigns:delete',
     'activities:read', 'activities:write',
     'users:read', 'users:write',
     'settings:manage',
@@ -48,11 +58,15 @@ export const ROLE_PERMISSIONS: Record<Role, Set<Permission>> = {
   member: new Set([
     'contacts:read', 'contacts:write',
     'deals:read', 'deals:write',
+    'contracts:read',
+    'campaigns:read', 'campaigns:write',
     'activities:read', 'activities:write',
   ]),
   viewer: new Set([
     'contacts:read',
     'deals:read',
+    'contracts:read',
+    'campaigns:read',
     'activities:read',
   ]),
 };

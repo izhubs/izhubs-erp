@@ -79,6 +79,9 @@ async function fetchNavConfigFromDB(tenantId: string): Promise<NavConfig | null>
     if (m.id === 'izform') {
       label = 'Forms';
       icon = 'ClipboardList'; // Must be a valid Lucide React icon name
+    } else if (m.id === 'izlanding') {
+      label = 'Landing Pages';
+      icon = 'Rocket';
     }
 
     return {

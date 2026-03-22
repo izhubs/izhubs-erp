@@ -251,7 +251,7 @@ export default function IzFormBuilder({ formId }: IzFormBuilderProps) {
                     placeholder="https://hooks.zapier.com/hooks/catch/..."
                   />
                 </div>
-                {webhookUrl && (
+              {webhookUrl && (
                   <IzButton
                     type="button"
                     variant="outline"
@@ -267,12 +267,12 @@ export default function IzFormBuilder({ formId }: IzFormBuilderProps) {
                           body: JSON.stringify({ url: webhookUrl }),
                         });
                         const json = await res.json();
-                        setWebhookStatus(res.ok ? `✅ Sent (${json.data?.status})` : `❌ Failed`);
+                        setWebhookStatus(res.ok ? `✅ Sent — HTTP ${json.data?.status}` : `❌ Failed`);
                       } catch {
-                        setWebhookStatus('❌ Error');
+                        setWebhookStatus('❌ Connection error');
                       } finally {
                         setTestingWebhook(false);
-                        setTimeout(() => setWebhookStatus(null), 4000);
+                        setTimeout(() => setWebhookStatus(null), 8000);
                       }
                     }}
                   >
@@ -281,9 +281,33 @@ export default function IzFormBuilder({ formId }: IzFormBuilderProps) {
                 )}
               </div>
               {webhookStatus && <span style={{ fontSize: '0.75rem', marginTop: '0.25rem' }}>{webhookStatus}</span>}
-              <span style={{ fontSize: '0.6875rem', color: 'var(--color-text-subtle)', marginTop: '0.25rem' }}>
-                Receives a POST with submission data on every new response.
-              </span>
+              <details style={{ marginTop: '0.5rem' }}>
+                <summary style={{ fontSize: '0.6875rem', color: 'var(--color-text-subtle)', cursor: 'pointer' }}>
+                  Sample POST payload sent on each submission
+                </summary>
+                <pre style={{
+                  fontSize: '0.625rem',
+                  background: 'rgba(0,0,0,0.03)',
+                  padding: '0.75rem',
+                  borderRadius: '6px',
+                  marginTop: '0.375rem',
+                  overflow: 'auto',
+                  lineHeight: 1.5,
+                  color: 'var(--color-text-secondary)',
+                }}>
+{JSON.stringify({
+  event: 'form.submission',
+  formId: formId || '<form-uuid>',
+  formName: formName || 'Your Form',
+  submission: {
+    id: '<submission-uuid>',
+    data: Object.fromEntries(fields.map(f => [f.label, `<${f.type} value>`])),
+    submittedAt: '2026-01-01T00:00:00.000Z',
+  },
+  timestamp: '2026-01-01T00:00:00.000Z',
+}, null, 2)}
+                </pre>
+              </details>
             </div>
 
             <div className={styles.formGroup}>

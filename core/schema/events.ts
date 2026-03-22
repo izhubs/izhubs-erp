@@ -34,6 +34,21 @@ export type SystemEvents = {
   'activity.created': { activity: Activity };
   'activity.completed': { activity: Activity };
   'activity.deleted': { activityId: string };
+
+  // Contract events (biz-ops)
+  'contract.created': { contract: Record<string, unknown> };
+  'contract.updated': { contract: Record<string, unknown> };
+  'contract.deleted': { id: string };
+
+  // Milestone events (biz-ops)
+  'milestone.created': { milestone: Record<string, unknown> };
+  'milestone.updated': { milestone: Record<string, unknown> };
+  'milestone.deleted': { id: string };
+
+  // Campaign events (biz-ops)
+  'campaign.created': { campaign: Record<string, unknown> };
+  'campaign.updated': { campaign: Record<string, unknown> };
+  'campaign.deleted': { id: string };
 };
 
 export type EventName = keyof SystemEvents;
