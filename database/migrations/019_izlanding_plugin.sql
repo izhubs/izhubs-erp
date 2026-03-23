@@ -3,7 +3,7 @@
 -- Tables: iz_landing_projects, iz_landing_pages, iz_landing_domains, iz_landing_generation_logs
 -- =============================================================
 
-CREATE TABLE iz_landing_projects (
+CREATE TABLE IF NOT EXISTS iz_landing_projects (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id   UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   name        VARCHAR(255) NOT NULL,
@@ -15,9 +15,9 @@ CREATE TABLE iz_landing_projects (
   deleted_at  TIMESTAMPTZ
 );
 
-CREATE INDEX idx_iz_landing_projects_tenant ON iz_landing_projects(tenant_id) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_iz_landing_projects_tenant ON iz_landing_projects(tenant_id) WHERE deleted_at IS NULL;
 
-CREATE TABLE iz_landing_pages (
+CREATE TABLE IF NOT EXISTS iz_landing_pages (
   id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id       UUID NOT NULL REFERENCES iz_landing_projects(id) ON DELETE CASCADE,
   content_json     JSONB NOT NULL DEFAULT '{}',
@@ -28,9 +28,9 @@ CREATE TABLE iz_landing_pages (
   updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_iz_landing_pages_project ON iz_landing_pages(project_id);
+CREATE INDEX IF NOT EXISTS idx_iz_landing_pages_project ON iz_landing_pages(project_id);
 
-CREATE TABLE iz_landing_domains (
+CREATE TABLE IF NOT EXISTS iz_landing_domains (
   id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id    UUID NOT NULL REFERENCES iz_landing_projects(id) ON DELETE CASCADE,
   domain        VARCHAR(255) NOT NULL UNIQUE,
@@ -39,9 +39,9 @@ CREATE TABLE iz_landing_domains (
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_iz_landing_domains_project ON iz_landing_domains(project_id);
+CREATE INDEX IF NOT EXISTS idx_iz_landing_domains_project ON iz_landing_domains(project_id);
 
-CREATE TABLE iz_landing_generation_logs (
+CREATE TABLE IF NOT EXISTS iz_landing_generation_logs (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id   UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   user_id     UUID REFERENCES users(id) ON DELETE SET NULL,
@@ -50,10 +50,13 @@ CREATE TABLE iz_landing_generation_logs (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_iz_landing_gen_logs_tenant ON iz_landing_generation_logs(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_iz_landing_gen_logs_tenant ON iz_landing_generation_logs(tenant_id);
 
 -- Triggers for updated_at
+DROP TRIGGER IF EXISTS iz_landing_projects_updated_at ON iz_landing_projects;
 CREATE TRIGGER iz_landing_projects_updated_at BEFORE UPDATE ON iz_landing_projects FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+DROP TRIGGER IF EXISTS iz_landing_pages_updated_at ON iz_landing_pages;
 CREATE TRIGGER iz_landing_pages_updated_at BEFORE UPDATE ON iz_landing_pages FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- Seed izlanding plugin into modules catalog

@@ -7,6 +7,7 @@ import { z } from 'zod';
 
 const UpdateConfigSchema = z.object({
   allowedRoles: z.array(z.string()).min(1, 'Lựa chọn ít nhất 1 quyền truy cập').optional(),
+  gemini_api_key: z.string().trim().regex(/^[\x20-\x7E]*$/, 'API Key không hợp lệ (không được chứa Tiếng Việt hoặc ký tự đặc biệt)').optional(),
 });
 
 /**

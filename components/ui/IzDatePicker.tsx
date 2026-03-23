@@ -1,9 +1,7 @@
 import React, { forwardRef } from 'react';
 import { IzInput, IzInputProps } from './IzInput';
 
-export interface IzDatePickerProps extends Omit<IzInputProps, 'type'> {
-  // Can add custom date-specific props here later
-}
+export type IzDatePickerProps = Omit<IzInputProps, 'type'>;
 
 const IzDatePicker = forwardRef<HTMLInputElement, IzDatePickerProps>(
   (props, ref) => {

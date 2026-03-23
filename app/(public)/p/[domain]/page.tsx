@@ -1,8 +1,9 @@
 import { db } from '@/core/engine/db';
 import { notFound } from 'next/navigation';
-import { LandingRenderer, LandingBlock } from '@/components/plugins/izlanding/LandingRenderer';
+import { LandingBlock } from '@/components/plugins/izlanding/LandingRenderer';
 import { Metadata } from 'next';
 import Script from 'next/script';
+import LivePreviewWrapper from '@/components/plugins/izlanding/LivePreviewWrapper';
 
 interface Params {
   domain: string;
@@ -22,10 +23,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 async function fetchLandingPage(domainOrId: string) {
   // In a real app with subdomains, we'd use middleware to rewrite the URL.
   // Here we use a path /p/[domainOrId]
-  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(domainOrId);
+  const isId = /^\d+$/.test(domainOrId) || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(domainOrId);
   
   let result;
-  if (isUUID) {
+  if (isId) {
     result = await db.query(`
       SELECT p.id, p.name, p.description, p.status, pg.content_json, pg.tracking_scripts
       FROM iz_landing_projects p
@@ -111,8 +112,8 @@ export default async function PublicLandingPage({ params }: { params: Params }) 
         @keyframes fadeIn { to { opacity: 1; } }
       `}} />
 
-      <div className="iz-landing-preview">
-        <LandingRenderer blocks={blocks} />
+      <div className="iz-landing-preview px-0">
+        <LivePreviewWrapper initialBlocks={blocks} />
       </div>
     </>
   );

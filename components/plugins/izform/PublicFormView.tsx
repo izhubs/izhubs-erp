@@ -40,7 +40,6 @@ export function PublicFormView({ formId, initialForm = null, error: initialError
       setIsEmbed(embedFlag);
       
       if (embedFlag) {
-        let isSetup = false;
         // Observe body mutations for resizing
         const sendHeight = () => {
           requestAnimationFrame(() => {

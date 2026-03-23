@@ -25,7 +25,7 @@ export async function GET(req: Request) {
     const role = await getEffectiveRole();
 
     // 1. Fetch layout from dashboard_configs (DB Layer)
-    let config = await getDashboardConfig(moduleSlug, role);
+    const config = await getDashboardConfig(moduleSlug, role);
 
     if (!config) {
       return NextResponse.json({ 

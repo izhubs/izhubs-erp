@@ -24,17 +24,19 @@ export function LandingRenderer({ blocks }: Props) {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-      {blocks.map((block, idx) => (
-        <React.Fragment key={idx}>
-          {renderBlock(block, idx)}
+      {blocks.filter(Boolean).map((block, index) => (
+        <React.Fragment key={index}>
+          {renderBlock(block, index)}
         </React.Fragment>
       ))}
     </div>
   );
 }
 
-function renderBlock(block: LandingBlock, idx: number) {
-  const { type, content } = block;
+function renderBlock(block: LandingBlock | any, idx: number) {
+  if (!block) return null;
+  const type = block.type;
+  const content = block.content || block || {};
 
   switch (type) {
     // --- TECH STARTUP ---
@@ -262,6 +264,23 @@ function renderBlock(block: LandingBlock, idx: number) {
                 });
               `}} />
             </div>
+          </div>
+        </section>
+      );
+    case 'image-block':
+      return (
+        <section className="py-20 px-6 bg-white flex justify-center">
+          <div className="max-w-5xl w-full text-center">
+            {content.imageUrl ? (
+              <img src={content.imageUrl} alt={content.caption || 'Image'} className="max-w-full h-auto rounded-3xl shadow-xl mx-auto" />
+            ) : (
+              <div className="w-full h-96 bg-slate-50 flex flex-col items-center justify-center text-slate-400 rounded-3xl border-2 border-dashed border-slate-200">
+                 <span className="text-4xl mb-4 text-slate-300">🖼️</span>
+                 <span className="font-semibold">Khu vực hiển thị Hình ảnh</span>
+                 <span className="text-sm mt-2 opacity-70">Hãy tải ảnh lên từ phần Edit</span>
+              </div>
+            )}
+            {content.caption && <p className="text-slate-500 mt-6 text-lg italic">{content.caption}</p>}
           </div>
         </section>
       );

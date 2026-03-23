@@ -43,6 +43,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     setIsTouring(true);
     
     setTimeout(() => {
+      // eslint-disable-next-line prefer-const
       let tourObj: any;
 
       // Xử lý các bước bắt buộc tương tác (requireClick)

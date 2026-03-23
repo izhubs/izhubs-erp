@@ -2,6 +2,7 @@ import { listProjects } from '@/core/engine/izlanding';
 import { IzLandingProjectsClient } from '@/components/plugins/izlanding/IzLandingProjects';
 import RequireModule from '@/components/providers/RequireModule';
 import { cookies } from 'next/headers';
+import { db } from '@/core/engine/db';
 import { verifyJwt } from '@/core/engine/auth/jwt';
 import { redirect } from 'next/navigation';
 
@@ -28,6 +29,12 @@ export default async function IzLandingPage() {
 
   const projects = await listProjects(tenantId);
 
+  const configRes = await db.query(
+    `SELECT config FROM tenant_modules WHERE tenant_id = $1 AND module_id = 'izlanding'`,
+    [tenantId]
+  );
+  const hasApiKey = !!configRes.rows[0]?.config?.gemini_api_key;
+
   const serialized = projects.map(p => ({
     ...p,
     createdAt: p.createdAt.toISOString(),
@@ -36,7 +43,10 @@ export default async function IzLandingPage() {
 
   return (
     <RequireModule moduleId="izlanding">
-      <IzLandingProjectsClient initialProjects={serialized as any} />
+      <IzLandingProjectsClient 
+        initialProjects={serialized as any} 
+        hasApiKey={hasApiKey}
+      />
     </RequireModule>
   );
 }

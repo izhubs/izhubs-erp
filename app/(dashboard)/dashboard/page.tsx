@@ -8,7 +8,7 @@ import { verifyJwt } from '@/core/engine/auth/jwt';
 import { db } from '@/core/engine/db';
 import { IzMetricCard } from '@/components/ui/IzMetricCard';
 import { IzCard, IzCardHeader, IzCardTitle, IzCardContent } from '@/components/ui/IzCard';
-import { getEffectiveRole } from '@/core/engine/auth/server-context';
+import { getEffectiveRole, getTenantId } from '@/core/engine/auth/server-context';
 import { Money } from '@/components/shared/Money';
 import { Download } from 'lucide-react';
 
@@ -157,7 +157,7 @@ export default async function DashboardPage() {
     }
   } catch { /* fallback to DEFAULT_STAGES */ }
 
-  const currentTenantId = await require('@/core/engine/auth/server-context').getTenantId();
+  const currentTenantId = await getTenantId();
 
   const [{ data: contacts }, { data: deals }, usersRes] = await Promise.all([
     listContacts({ limit: 8 }),

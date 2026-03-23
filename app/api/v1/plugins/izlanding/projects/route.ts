@@ -1,6 +1,7 @@
 import { withPermission } from '@/core/engine/rbac';
-import { ApiResponse } from '@/core/engine/response';
-import { listProjects, createProject, CreateProjectSchema } from '@/core/engine/izlanding';
+import { ApiResponse, ErrorCodes } from '@/core/engine/response';
+import { listProjects, createProject, CreateProjectSchema, updateProjectContent, deleteProject } from '@/core/engine/izlanding';
+import { generateLandingPageBlocks } from '@/core/engine/izlanding/ai';
 
 const DEFAULT_TENANT_ID = '00000000-0000-0000-0000-000000000001';
 
@@ -26,6 +27,23 @@ export const POST = withPermission('settings:manage', async (req, claims) => {
   try {
     const tenantId = claims.tenantId || DEFAULT_TENANT_ID;
     const body = await req.json();
+    
+    if (body.prompt) {
+      // Flow 1: One-Click AI Generate
+      const project = await createProject(tenantId, { name: 'AI Generated Landing Page', templateId: 'blank' });
+      
+      try {
+        const blocks = await generateLandingPageBlocks(body.prompt, tenantId);
+        await updateProjectContent(project.id, blocks);
+        return ApiResponse.success(project, 201);
+      } catch (err: any) {
+        // Rollback on fail
+        await deleteProject(tenantId, project.id);
+        return ApiResponse.error(err.message || 'Lỗi sinh AI', 500, {}, ErrorCodes.INTERNAL_ERROR);
+      }
+    }
+
+    // Flow 2: Standard Manual Create
     const parsed = CreateProjectSchema.safeParse(body);
     
     if (!parsed.success) {
