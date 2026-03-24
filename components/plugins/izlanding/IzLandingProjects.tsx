@@ -17,6 +17,7 @@ interface ProjectData {
   activeDomain: string | null;
   status: 'draft' | 'published' | 'archived';
   createdAt: string;
+  views?: number;
 }
 
 interface Props {

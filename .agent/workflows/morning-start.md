@@ -46,7 +46,7 @@ description: daily startup — understand context and what to do next
    Đọc theo thứ tự trước khi code:
    1. .agent/memory.md — 8 Golden Rules (bắt buộc)
    2. .agent/tracks/[track-slug]/SPEC.md — spec đầy đủ
-   3. docs/ui-design-language.md — visual rules + Known Visual Issues
+   3. docs/architecture-and-guides/ui-design-language.md — visual rules + Known Visual Issues
    
    Sau khi xong: npm run typecheck (0 errors) + npm run test:contracts (all pass)
    ```

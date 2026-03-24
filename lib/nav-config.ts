@@ -120,13 +120,16 @@ export async function getNavConfig(
   userRole: string
 ): Promise<(NavConfig & { bottomItems: NavItem[] }) | null> {
   // Cache the raw config (not role-filtered) so all roles share the same cache entry
-  const getCachedConfig = unstable_cache(
-    () => fetchNavConfigFromDB(tenantId),
-    [`nav-config-v2-${tenantId}`],
-    {
-      tags: [`nav-config-${tenantId}`],
-    }
-  );
+  // Important: Bypass unstable_cache in development to avoid persistent "ghost cache" issues with Next.js App Router
+  const getCachedConfig = process.env.NODE_ENV === 'development'
+    ? () => fetchNavConfigFromDB(tenantId)
+    : unstable_cache(
+        () => fetchNavConfigFromDB(tenantId),
+        [`nav-config-v2-${tenantId}`],
+        {
+          tags: [`nav-config-${tenantId}`],
+        }
+      );
 
   const config = await getCachedConfig();
   if (!config) return null;

@@ -25,8 +25,8 @@
 .column {
   display: flex;
   flex-direction: column;
-  min-width: 320px;
-  width: 320px;
+  min-width: 300px;
+  width: 300px;
   background-color: var(--color-muted, #f1f5f9);
   border-radius: var(--radius-lg, 0.75rem);
   height: max-content;

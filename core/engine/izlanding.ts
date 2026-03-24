@@ -14,6 +14,7 @@ export const ProjectSchema = z.object({
   status: z.enum(['draft', 'published', 'archived']),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
+  views: z.number().optional(),
 });
 
 export const CreateProjectSchema = z.object({
@@ -39,17 +40,18 @@ export type Project = z.infer<typeof ProjectSchema>;
 export async function listProjects(tenantId: string = DEFAULT_TENANT_ID): Promise<Project[]> {
   const result = await db.query(
     `SELECT
-      id,
-      tenant_id AS "tenantId",
-      name,
-      description,
-      active_domain AS "activeDomain",
-      status,
-      created_at AS "createdAt",
-      updated_at AS "updatedAt"
-     FROM iz_landing_projects
-     WHERE tenant_id = $1 AND deleted_at IS NULL
-     ORDER BY created_at DESC`,
+      p.id,
+      p.tenant_id AS "tenantId",
+      p.name,
+      p.description,
+      p.active_domain AS "activeDomain",
+      p.status,
+      p.created_at AS "createdAt",
+      p.updated_at AS "updatedAt",
+      (SELECT COUNT(*) FROM iz_landing_analytics a WHERE a.project_id = p.id AND a.event_type = 'view')::int AS views
+     FROM iz_landing_projects p
+     WHERE p.tenant_id = $1 AND p.deleted_at IS NULL
+     ORDER BY p.created_at DESC`,
     [tenantId]
   );
   return result.rows;
@@ -246,29 +248,38 @@ export async function updatePageTracking(
 }
 
 /**
- * Get project content_json (Blocks)
+ * Get project content_json (Blocks and SEO Settings)
  */
-export async function getProjectContent(projectId: string): Promise<any[]> {
+export async function getProjectContent(projectId: string): Promise<any> {
   const result = await db.query(
     `SELECT content_json FROM iz_landing_pages WHERE project_id = $1`,
     [projectId]
   );
-  if (!result.rows[0]) return [];
-  const content = result.rows[0].content_json;
+  if (!result.rows[0]) return { blocks: [], seoSettings: { allowIndexing: true } };
+  
+  let content = result.rows[0].content_json;
   if (typeof content === 'string') {
-    try { return JSON.parse(content); } catch { return []; }
+    try { content = JSON.parse(content); } catch { content = []; }
   }
-  return content || [];
+  
+  if (Array.isArray(content)) {
+    return { blocks: content, seoSettings: { allowIndexing: true } };
+  }
+  
+  return {
+    blocks: content?.blocks || [],
+    seoSettings: content?.seoSettings || { allowIndexing: true }
+  };
 }
 
 /**
- * Update project content_json (Blocks)
+ * Update project content_json (Blocks and SEO Settings)
  */
-export async function updateProjectContent(projectId: string, blocks: any[]): Promise<boolean> {
+export async function updateProjectContent(projectId: string, data: { blocks: any[], seoSettings?: any }): Promise<boolean> {
   try {
     await db.query(
       `UPDATE iz_landing_pages SET content_json = $2::jsonb, updated_at = NOW() WHERE project_id = $1`,
-      [projectId, JSON.stringify(blocks)]
+      [projectId, JSON.stringify(data)]
     );
     return true;
   } catch (err) {

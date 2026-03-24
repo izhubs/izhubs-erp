@@ -19,15 +19,15 @@ export default async function LeadsPage() {
   const [leadsRes, countsRes] = await Promise.all([
     db.query(
       `SELECT
-         c.id, c.name, c.email, c.phone, c.company, c.status,
-         c.source AS channel,
+         c.id, c.name, c.email, c.phone, comp.name AS company, c.status,
+         c.custom_fields->>'source' AS channel,
          c.owner_id,
          u.name AS owner_name,
          c.created_at
        FROM contacts c
        LEFT JOIN users u ON u.id = c.owner_id
+       LEFT JOIN companies comp ON comp.id = c.company_id
        WHERE c.tenant_id = $1
-         AND c.type = 'lead'
          AND c.deleted_at IS NULL
        ORDER BY c.created_at DESC
        LIMIT 100`,
@@ -38,7 +38,7 @@ export default async function LeadsPage() {
          status,
          COUNT(*) AS count
        FROM contacts
-       WHERE tenant_id = $1 AND type = 'lead' AND deleted_at IS NULL
+       WHERE tenant_id = $1 AND deleted_at IS NULL
        GROUP BY status`,
       [tenantId]
     ),

@@ -14,14 +14,14 @@ export const POST = withPermission('settings:manage', async (req, claims, ctx) =
     if (!projectId) return ApiResponse.error('Project ID required', 400, {}, ErrorCodes.VALIDATION_FAILED);
 
     const body = await req.json();
-    const { prompt, customApiKey } = body;
+    const { prompt, customApiKey, existingBlocks } = body;
     
     if (!prompt) {
       return ApiResponse.error('Prompt is required', 400, {}, ErrorCodes.VALIDATION_FAILED);
     }
 
     // Call the Engine to generate
-    const blocks = await generateLandingPageBlocks(prompt, customApiKey || undefined);
+    const blocks = await generateLandingPageBlocks(prompt, claims?.tenantId || DEFAULT_TENANT_ID, customApiKey || undefined, existingBlocks);
 
     // Dữ liệu chỉ được trả về Frontend để Preview thay vì lưu ngay xuống DB
     // Frontend (EditProjectForm) sẽ gọi lệnh PUT /content để cập nhật khi người dùng vừa ý.

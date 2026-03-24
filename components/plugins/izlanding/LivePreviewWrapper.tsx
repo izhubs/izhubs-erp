@@ -3,7 +3,13 @@
 import { useState, useEffect } from 'react';
 import { LandingBlock, LandingRenderer } from './LandingRenderer';
 
-export default function LivePreviewWrapper({ initialBlocks }: { initialBlocks: LandingBlock[] }) {
+interface Props {
+  initialBlocks: LandingBlock[];
+  searchParams?: Record<string, string | string[] | undefined>;
+  projectSettings?: any;
+}
+
+export default function LivePreviewWrapper({ initialBlocks, searchParams, projectSettings }: Props) {
   const [blocks, setBlocks] = useState(initialBlocks);
 
   useEffect(() => {
@@ -17,5 +23,5 @@ export default function LivePreviewWrapper({ initialBlocks }: { initialBlocks: L
     return () => window.removeEventListener('message', handleMessage);
   }, []);
 
-  return <LandingRenderer blocks={blocks} />;
+  return <LandingRenderer blocks={blocks} searchParams={searchParams} projectSettings={projectSettings} />;
 }

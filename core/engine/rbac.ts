@@ -127,6 +127,19 @@ export async function getAuthClaims(req: Request): Promise<Claims | null> {
       const claims = await verifyJwt(decodeURIComponent(match[1]));
       if (claims.type === 'access') return claims;
     } catch {
+      // Fall through to refresh token if access token is expired
+    }
+  }
+
+  // 3. Fallback: try hz_refresh cookie
+  // API routes skip Next.js middleware, so we must manually accept the refresh token
+  // to avoid unpredictable 401s after 15 minutes of user inactivity or long sessions.
+  const refreshMatch = cookieHeader.match(/(?:^|;\s*)hz_refresh=([^;]+)/);
+  if (refreshMatch) {
+    try {
+      const claims = await verifyJwt(decodeURIComponent(refreshMatch[1]));
+      if (claims.type === 'refresh') return claims;
+    } catch {
       return null;
     }
   }

@@ -10,6 +10,7 @@ interface ProjectData {
   activeDomain: string | null;
   status: 'draft' | 'published' | 'archived';
   createdAt: string;
+  views?: number;
 }
 
 interface Props {
@@ -57,6 +58,9 @@ export function ProjectCard({ project }: Props) {
         {project.activeDomain && (
           <span className={styles.domainText}>🌐 {project.activeDomain}</span>
         )}
+        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          👁️ {project.views || 0}
+        </span>
         <span>📅 {dateStr}</span>
       </div>
     </div>

@@ -26,3 +26,24 @@ export const POST = withModule('biz-ops', 'campaigns:write', async (req, claims,
     return ApiResponse.serverError(err);
   }
 });
+
+export const DELETE = withModule('biz-ops', 'campaigns:write', async (req, claims, ctx) => {
+  const params = ctx?.params as { id: string };
+  const url = new URL(req.url);
+  const userId = url.searchParams.get('userId');
+  
+  if (!userId) {
+    return ApiResponse.error('Missing userId query parameter', 400);
+  }
+
+  try {
+    const { removeMember } = await import('@/modules/biz-ops/engine/members');
+    const success = await removeMember(params.id, userId);
+    if (!success) return ApiResponse.error('Member not found', 404);
+    
+    return ApiResponse.success({ deleted: true });
+  } catch (err: any) {
+    return ApiResponse.serverError(err);
+  }
+});
+

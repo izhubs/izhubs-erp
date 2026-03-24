@@ -157,7 +157,7 @@ npm run typecheck; npm run test:contracts
 - **Data Visualization**: `IzLineChart`, `IzBarChart`, `IzPieChart`, `IzMetricCard` built on `recharts`.
 - **ERP Widgets**: `IzAccordion` (FAQ), `IzActivityTimeline` (Audit logs), `IzFileUpload` (DND capacity check).
 - **Kanban Layout**: `IzKanbanBoard` CSS structure provided for future `@dnd-kit` usage.
-- **Documentation**: Established `docs/IzUI_Usage_Guide.md` (Strict encapsulation, no Tailwind permitted inside core components).
+- **Documentation**: Established `docs/architecture-and-guides/izui-usage-guide.md` (Strict encapsulation, no Tailwind permitted inside core components).
 - **Virtual Office Template Checked**: `templates/industry/virtual-office.ts` verified complete (8 stages, fields, automations).
 
 ### Session 14 — 2026-03-19 (Core Foundation Hardening & Universal DB Architecture)
@@ -261,11 +261,11 @@ npm run typecheck; npm run test:contracts
 - **11 awesome-skills** installed from antigravity-awesome-skills catalog into `.agent/skills/`
 - `.agent/skills/clean-code-and-modularity.md` — Uncle Bob + GoF design patterns
 - `.agent/skills/database-safety.md` — Zod enforcement, immutable migrations, API-only access
-- `docs/public-api-and-webhooks.md` — API Key system + outbound webhook plan (v0.2)
-- `docs/data-layer-architecture.md` — 3 data gates: Create, Import (4-stage clean pipeline), Sync
-- `docs/product-vision.md` — core design principle: "Simple UX = More data"; 6 unsolved market gaps
-- `docs/ui-design-language.md` — Linear/Notion/Vercel inspired; 1vh dashboard rule; table + chart anti-patterns
-- `docs/knowledge-and-search.md` — Document Hub, AI chatbot (static + dynamic), global search, performance budget
+- `docs/future-visions/public-api-and-webhooks.md` — API Key system + outbound webhook plan (v0.2)
+- `docs/architecture-and-guides/data-layer-architecture.md` — 3 data gates: Create, Import (4-stage clean pipeline), Sync
+- `docs/archived-legacy-docs/product-vision.md` — core design principle: "Simple UX = More data"; 6 unsolved market gaps
+- `docs/architecture-and-guides/ui-design-language.md` — Linear/Notion/Vercel inspired; 1vh dashboard rule; table + chart anti-patterns
+- `docs/future-visions/knowledge-and-search.md` — Document Hub, AI chatbot (static + dynamic), global search, performance budget
 - Automation decision: **No n8n embed** (too heavy). v0.3 = lightweight built-in automation engine.
 - Community PR target: `master` branch (never `production`)
 
@@ -295,7 +295,7 @@ npm run typecheck; npm run test:contracts
 - **JSON-first architecture decision**: Templates AND automation rules stored as JSON (like n8n). Portable, shareable, AI-generatable. NOT TypeScript files.
 - **Bootstrapping strategy**: Gumroad before marketplace. First maker earns $100 → social proof → community self-grows.
 - **Risk register**: 20 stuck points + solutions documented in brain/risk-register.md
-- **UX specs written**: `docs/ux-contacts-page.md`, `docs/ux-deals-kanban.md`, `docs/ux-dashboard.md`, `docs/ux-page-template.md`
+- **UX specs written**: `docs/ux-specs-archive/ux-contacts-page.md`, `docs/ux-specs-archive/ux-deals-kanban.md`, `docs/ux-specs-archive/ux-dashboard.md`, `docs/ux-specs-archive/ux-page-template.md`
 - **2 structural SPECs created** (foundation before community launch):
   - `json-template-format` → `.agent/tracks/2026-03-16-json-template-format/SPEC.md`
   - `automation-schema` → `.agent/tracks/2026-03-16-automation-schema/SPEC.md`
@@ -315,7 +315,7 @@ npm run typecheck; npm run test:contracts
 - ✅ Docker dev simplify: Redis commented out, uncomment at v0.2 when BullMQ needed
 - ✅ 5 industry seed scripts (agency, freelancer, coworking, restaurant, cafe) — 100% English
 - ✅ seed.js runner: `npm run seed:agency/freelancer/coworking/restaurant/cafe/all`
-- ✅ docs/multi-role-perspective.md: CEO/Manager/Rep/Ops views
+- ✅ `docs/archived-legacy-docs/multi-role-perspective.md`: CEO/Manager/Rep/Ops views
 - ✅ izhubs-erp-docs: build-philosophy.md + why-izhubs.md
 
 ## Planned v0.2 — Import, Demo + Sync (1 month)

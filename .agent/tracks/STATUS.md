@@ -54,6 +54,8 @@ _Last updated: 2026-03-20 (Session 18 — Audit Log + Ephemeral Demo Users + UI 
 | 2026-03-21 | dynamic-dashboard-ui | planning | React implementation of D.A.R Dashboard UI from the JSON blueprints (Radar chart, priority matrix, firefighting tables, etc.). Refer to `dashboard_layouts_plan.md` |
 | 2026-03-22 | plugin-infrastructure | planning | Hoàn thiện kiến trúc UI và bảo mật cho màn hình Frontend của các Web Plugins bằng RequireModule guard. |
 | 2026-03-22 | ai-landing-builder | in-progress | AI Landing Page Builder Plugin — Phase 1 done (DB migration, module manifest, engine, API, mockups). Phase 2+ deferred. |
+| 2026-03-24 | biz-ops-projects | ✅ done | Biz-Ops Campaigns (Projects): Kanban UI, Project Members rà soát API & UI kết nối. |
+
 
 ---
 

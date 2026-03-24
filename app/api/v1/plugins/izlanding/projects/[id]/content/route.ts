@@ -13,8 +13,8 @@ export const GET = withPermission('settings:manage', async (req, claims, ctx) =>
     const projectId = ctx?.params?.id;
     if (!projectId) return ApiResponse.error('Project ID required', 400, {}, ErrorCodes.VALIDATION_FAILED);
 
-    const blocks = await getProjectContent(projectId);
-    return ApiResponse.success({ blocks });
+    const content = await getProjectContent(projectId);
+    return ApiResponse.success(content);
   } catch (err) {
     return ApiResponse.serverError(err, 'GET /api/v1/plugins/izlanding/projects/[id]/content');
   }
@@ -33,7 +33,10 @@ export const PUT = withPermission('settings:manage', async (req, claims, ctx) =>
       return ApiResponse.error('Blocks must be an array', 400, {}, ErrorCodes.VALIDATION_FAILED);
     }
 
-    const ok = await updateProjectContent(projectId, body.blocks);
+    const ok = await updateProjectContent(projectId, { 
+      blocks: body.blocks, 
+      seoSettings: body.seoSettings 
+    });
     if (!ok) return ApiResponse.error('Failed to update content', 500);
 
     return ApiResponse.success({ success: true });
