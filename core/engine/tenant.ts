@@ -1,5 +1,5 @@
 import { db } from './db';
-import { getTemplate } from '../../templates';
+import { getTemplate } from '@izerp-theme/templates';
 import { ApiResponse, ErrorCodes } from './response';
 
 export interface ProvisionConfig {

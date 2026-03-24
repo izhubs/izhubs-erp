@@ -1,6 +1,6 @@
 import { provisionTenant, resetDemoData } from '../../../../core/engine/tenant';
 import { db } from '../../../../core/engine/db';
-import { getTemplate } from '../../../../templates';
+import { getTemplate } from '@izerp-theme/templates';
 
 jest.mock('../../../../core/engine/db', () => ({
   db: {

@@ -13,8 +13,8 @@
 
 import fs from 'fs';
 import path from 'path';
-import { TEMPLATES } from '../templates';
-import type { IndustryTemplate } from '../templates/engine/template.schema';
+import { TEMPLATES } from '@izerp-theme/templates';
+import type { IndustryTemplate } from '@izerp-theme/templates/engine/template.schema';
 
 const args = process.argv.slice(2);
 const templateArg = args.find(a => a.startsWith('--template='))?.split('=')[1];
@@ -27,10 +27,10 @@ if (!templateArg && !exportAll) {
 
 const toExport: IndustryTemplate[] = exportAll
   ? TEMPLATES
-  : TEMPLATES.filter(t => t.id === templateArg);
+  : TEMPLATES.filter((t: any) => t.id === templateArg);
 
 if (toExport.length === 0) {
-  console.error(`Template "${templateArg}" not found. Available: ${TEMPLATES.map(t => t.id).join(', ')}`);
+  console.error(`Template "${templateArg}" not found. Available: ${TEMPLATES.map((t: any) => t.id).join(', ')}`);
   process.exit(1);
 }
 
@@ -145,7 +145,7 @@ To populate your CRM with sample contacts and deals:
 4. Upload \`sample-deals.csv\` next
 
 ## What gets configured
-- **${t.pipelineStages.length} pipeline stages**: ${t.pipelineStages.map(s => s.label).join(' → ')}
+- **${t.pipelineStages.length} pipeline stages**: ${t.pipelineStages.map((s: any) => s.label).join(' → ')}
 - **${t.customFields.length} custom fields** tailored for ${t.name}
 - **${t.automations.length} automations** pre-configured
 - Dashboard layout with relevant widgets
@@ -159,9 +159,9 @@ To populate your CRM with sample contacts and deals:
 }
 
 function generateWhatsIncluded(t: IndustryTemplate): string {
-  const stages = t.pipelineStages.map(s => `  - ${s.label}`).join('\n');
-  const fields = t.customFields.map(f => `  - **${f.label}** (${f.entity}, ${f.type})`).join('\n');
-  const autos = t.automations.map(a => `  - ${a.name}`).join('\n');
+  const stages = t.pipelineStages.map((s: any) => `  - ${s.label}`).join('\n');
+  const fields = t.customFields.map((f: any) => `  - **${f.label}** (${f.entity}, ${f.type})`).join('\n');
+  const autos = t.automations.map((a: any) => `  - ${a.name}`).join('\n');
   return `# What's Included — ${t.icon} ${t.name} Template
 
 > **izhubs ERP Industry Template** | v${t.version}
@@ -196,7 +196,7 @@ ${autos.length ? autos : '  *(None in this tier)*'}
 ---
 
 ## 📦 Suggested Modules
-${t.suggestedModules.map(m => `- ${m}`).join('\n')}
+${t.suggestedModules.map((m: any) => `- ${m}`).join('\n')}
 
 ---
 

@@ -9,7 +9,7 @@
 // After seeding, the DB is the sole runtime source of truth.
 // =============================================================
 
-import { TEMPLATES } from '../templates';
+import { TEMPLATES } from '@izerp-theme/templates';
 import { db } from '../core/engine/db';
 
 const DRY_RUN = process.argv.includes('--dry-run');
@@ -29,7 +29,7 @@ interface SeedRow {
 async function seedIndustryTemplates() {
   console.log(`\n🌱 Seeding industry templates${DRY_RUN ? ' [DRY RUN — no DB writes]' : ''}...\n`);
 
-  const rows: SeedRow[] = TEMPLATES.map((t) => ({
+  const rows: SeedRow[] = TEMPLATES.map((t: any) => ({
     id: t.id,
     name: t.name,
     description: t.description,
@@ -43,7 +43,7 @@ async function seedIndustryTemplates() {
 
   // Validate schemas before writing
   let validCount = 0;
-  const { NavConfigSchema } = await import('../templates/engine/template.schema');
+  const { NavConfigSchema } = await import('@izerp-theme/templates/engine/template.schema');
   for (const row of rows) {
     const result = NavConfigSchema.safeParse(row.nav_config);
     if (!result.success) {
