@@ -37,6 +37,8 @@ Full details: `.agent/skills/clean-code-and-modularity.md` and `.agent/skills/da
 | **Soft-delete only** | Never use `DELETE FROM`. Use `UPDATE SET deleted_at = NOW()`. |
 | **withPermission() guard** | Every API route must be wrapped with `withPermission('resource:action', handler)`. |
 | **No component > 150 lines** | Split if exceeded. |
+| **Widgets Location** | Dashboard and highly reusable UI fragments MUST go to `components/widgets/`. |
+| **External Plugins** | Third-party plugins MUST use API Webhooks/gRPC, NOT the internal Event Bus. |
 | **Sequential migrations** | New migration = new file `00X_description.sql`. Never edit committed migrations. |
 | **Schema vs Seed separation** | `001_initial_schema.sql` = pure DDL only (CREATE TABLE + indexes). `002_seed_data.sql` = system defaults (default tenant, modules catalog). Industry seed data stays in `scripts/seeds/seed-[industry].js` — one file per industry. Never mix DDL and DML in the same migration file. |
 | **Custom field labels/options = English** | All `customFields[].label` and `options[]` in templates and seed files MUST be in English. Keys (DB identifiers) may use Vietnamese `snake_case` (e.g. `goi_dich_vu`) but UI-facing labels and option values must be English by default. |

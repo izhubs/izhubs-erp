@@ -20,6 +20,11 @@ ALL API routes MUST use `ApiResponse.success/error/validationError/serverError` 
 ### VI. Immutability & Soft-Deletions
 Physical deletion (`DELETE FROM`) is strictly prohibited. You must ALWAYS use `UPDATE SET deleted_at = NOW()` to soft-delete records.
 
+### VII. Module, Plugin & Widget Architecture
+- **Modules**: Placed in `modules/[module-name]`. Contain full vertical slices of features (DB engine, API, UI). Internal modules communicate via the in-memory Event Bus.
+- **Plugins**: Third-party plugins and external services MUST integrate via API Webhooks, Serverless Functions, or gRPC. Do not try to dynamically load physical plugin code at runtime, as Next.js requires build-time compilation.
+- **Widgets**: Reusable UI fragments (e.g., dashboard charts, generic stat cards) must be placed in `components/widgets/` to maintain a consistent UI library for dynamic dashboard assembly.
+
 ## Architecture & Database Standards
 
 - **Tech Stack**: Next.js 14 (App Router), React Server Components (RSC), TanStack Query, SCSS, Radix UI.
