@@ -6,8 +6,8 @@
 
 import { useRouter } from 'next/navigation';
 import styles from './contacts.module.scss';
-import { IzInput } from '@/components/ui/IzInput';
-import { IzButton } from '@/components/ui/IzButton';
+import { IzInput } from '@izerp-theme/components/ui/IzInput';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 
 interface Props {
   search: string;

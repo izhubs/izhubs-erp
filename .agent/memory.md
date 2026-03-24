@@ -132,6 +132,14 @@ npm run typecheck; npm run test:contracts
 - Core engine layer: `core/engine/contacts.ts`, `core/engine/deals.ts` — only these may query the DB directly
 - `ApiResponse` factory: `core/engine/response.ts` — ALL API routes must use this, never `NextResponse.json()` directly
 
+### Session 21 — 2026-03-24 (Modular Monorepo & Git Submodules Scale-up)
+- **Kiến trúc 3-Repo**: Chuyển đổi toàn bộ dự án sang mô hình Submodules để cô lập bảo mật IP và phân quyền đội ngũ.
+- **Core (`izhubs-erp`)**: Giữ lại các thành phần cốt lõi: nhân API, Database migrations, Security RBAC, App Router.
+- **Plugin Private (`packages/izerp-plugin`)**: Đã chuyển dời toàn bộ logic các mô-đun nghiệp vụ chuyên sâu (`biz-ops`, `crm`, `izlanding`, `invoices`, `contracts`, `reports`) vào Git Submodule độc lập.
+- **Theme Private (`packages/izerp-theme`)**: Đã chuyển dời các component UI chung (`components/ui`) và các Industry Templates (`templates/`) vào Git Submodule độc lập.
+- **Alias Import Migration**: Rewrite hơn 100+ file sử dụng đường dẫn `@izerp-plugin/*` và `@izerp-theme/*` thay thế cho `@/` gốc.
+- **AI Rule Enforcement**: Cập nhật `README.md` và `AGENTS.md` - NGHIÊM CẤM AI viết mã nguồn UI/logic mới vào repo Core, phải đặt đúng vào submodules tương ứng.
+
 ### Session 20 — 2026-03-22 (Biz-Ops Plugin: Nested Workspace UI)
 - **Nested ERP Architecture**: Refactored Biz-Ops plugin to feature a standalone "app-within-app" layout (like Notion/Slack). Moved `contracts/[id]` and `campaigns/[id]` from `app/(dashboard)` to `app/(workspace)`.
 - **Dynamic Navigation Injection**: Overrode the global `<AppLayout>` to dynamically swap the primary Left Sidebar menu with Project-specific contextual links (Tasks, Files, Finances, Settings) driven by Next.js URL SearchParams (`?tab=tasks`).

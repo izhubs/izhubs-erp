@@ -1,6 +1,6 @@
-import { listContracts } from '@/modules/biz-ops/engine/contracts';
-import { listCampaigns } from '@/modules/biz-ops/engine/campaigns';
-import { BizOpsProjectsClient } from '@/components/plugins/biz-ops/BizOpsProjects';
+import { listContracts } from '@izerp-plugin/modules/biz-ops/engine/contracts';
+import { listCampaigns } from '@izerp-plugin/modules/biz-ops/engine/campaigns';
+import { BizOpsProjectsClient } from '@izerp-plugin/components/plugins/biz-ops/BizOpsProjects';
 import RequireModule from '@/components/providers/RequireModule';
 import { cookies } from 'next/headers';
 import { verifyJwt } from '@/core/engine/auth/jwt';

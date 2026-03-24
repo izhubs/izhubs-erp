@@ -2,7 +2,7 @@ import '@/app/styles/globals.scss';
 import type { Metadata, Viewport } from 'next';
 import ReactQueryProvider from '@/components/providers/ReactQueryProvider';
 import CurrencyProvider from '@/components/providers/CurrencyProvider';
-import { IzToaster } from '@/components/ui/IzToaster';
+import { IzToaster } from '@izerp-theme/components/ui/IzToaster';
 import { cookies } from 'next/headers';
 import type { Currency } from '@/lib/userTime';
 

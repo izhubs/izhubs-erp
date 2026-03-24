@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { verifyJwt } from '@/core/engine/auth/jwt';
 import { redirect } from 'next/navigation';
 import CampaignsClientWrapper from './CampaignsClientWrapper';
-import type { Campaign } from '@/modules/biz-ops/engine/campaigns';
+import type { Campaign } from '@izerp-plugin/modules/biz-ops/engine/campaigns';
 
 export default async function CampaignsPage() {
   const cookieStore = await cookies();

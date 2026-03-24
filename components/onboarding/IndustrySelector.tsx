@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { IzButton } from '@/components/ui/IzButton';
-import { IzCard, IzCardContent } from '@/components/ui/IzCard';
-import { IzSwitch } from '@/components/ui/IzSwitch';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
+import { IzCard, IzCardContent } from '@izerp-theme/components/ui/IzCard';
+import { IzSwitch } from '@izerp-theme/components/ui/IzSwitch';
 
 interface Props {
   onSelect: (templateId: string, includeDemoData: boolean) => void;

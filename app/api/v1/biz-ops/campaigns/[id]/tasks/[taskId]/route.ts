@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { ApiResponse } from '@/core/engine/response';
 import { withModule } from '@/core/engine/rbac';
-import { getTask, updateTask, deleteTask, UpdateTaskSchema } from '@/modules/biz-ops/engine/tasks';
+import { getTask, updateTask, deleteTask, UpdateTaskSchema } from '@izerp-plugin/modules/biz-ops/engine/tasks';
 
 export const GET = withModule('biz-ops', 'campaigns:read', async (req, claims, ctx) => {
   const tenantId = claims.tenantId!;

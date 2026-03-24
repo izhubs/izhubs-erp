@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import type { Contact } from '@/core/schema/entities';
 import { apiFetch } from '@/lib/apiFetch';
 import NotesList from '@/components/shared/NotesList';
-import { IzSheet, IzSheetContent, IzSheetHeader, IzSheetBody, IzSheetFooter, IzSheetTitle } from '@/components/ui/IzSheet';
-import { IzInput } from '@/components/ui/IzInput';
-import { IzButton } from '@/components/ui/IzButton';
+import { IzSheet, IzSheetContent, IzSheetHeader, IzSheetBody, IzSheetFooter, IzSheetTitle } from '@izerp-theme/components/ui/IzSheet';
+import { IzInput } from '@izerp-theme/components/ui/IzInput';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 
 interface Props {
   contact: Contact;

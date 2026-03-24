@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { IzButton } from '@/components/ui/IzButton';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 import {
   COMMON_TIMEZONES, CURRENCIES,
   getUserTimezone, setUserTimezone,

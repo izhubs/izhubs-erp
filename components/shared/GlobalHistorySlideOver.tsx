@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { History, FilterX } from 'lucide-react';
-import { IzSheet, IzSheetContent, IzSheetHeader, IzSheetBody, IzSheetTitle } from '@/components/ui/IzSheet';
-import { IzSelect } from '@/components/ui/IzSelect';
+import { IzSheet, IzSheetContent, IzSheetHeader, IzSheetBody, IzSheetTitle } from '@izerp-theme/components/ui/IzSheet';
+import { IzSelect } from '@izerp-theme/components/ui/IzSelect';
 import { ActivityTimeline } from '@/components/shared/ActivityTimeline';
 
 export function GlobalHistorySlideOver({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {

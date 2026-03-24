@@ -6,7 +6,7 @@ import { CSS } from '@dnd-kit/utilities';
 import type { Deal } from '@/core/schema/entities';
 import { PIPELINE_STAGES } from '@/core/config/pipeline';
 import styles from './kanban.module.scss';
-import { IzKanbanCard } from '@/components/ui/IzKanbanBoard';
+import { IzKanbanCard } from '@izerp-theme/components/ui/IzKanbanBoard';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 
 interface Props {

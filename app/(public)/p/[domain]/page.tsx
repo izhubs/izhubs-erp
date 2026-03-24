@@ -1,9 +1,9 @@
 import { db } from '@/core/engine/db';
 import { notFound } from 'next/navigation';
-import { LandingRenderer, LandingBlock } from '@/components/plugins/izlanding/LandingRenderer';
+import { LandingRenderer, LandingBlock } from '@izerp-plugin/components/plugins/izlanding/LandingRenderer';
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import LivePreviewWrapper from '@/components/plugins/izlanding/LivePreviewWrapper';
+import LivePreviewWrapper from '@izerp-plugin/components/plugins/izlanding/LivePreviewWrapper';
 
 interface Params {
   domain: string;

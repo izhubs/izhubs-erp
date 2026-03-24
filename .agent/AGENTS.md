@@ -43,13 +43,15 @@ Stack: Next.js 14 + PostgreSQL + Redis + Docker
 **Extensions** listen to EventBus events and call the Core API — they are fully isolated from the DB.
 
 ```
-core/schema/    ← Source of truth (read-only for everyone else)
-core/engine/    ← Entity CRUD, EventBus, permissions, custom fields
-core/api/v1/    ← Versioned REST API (never breaking)
-modules/        ← Business logic (CRM, contracts, invoices, reports, automation)
-extensions/     ← User plugins (guardrailed by SDK + manifest)
-ai/             ← MCP server + built-in agent
-app/            ← Next.js frontend
+core/schema/                   ← Source of truth (read-only for everyone else)
+core/engine/                   ← Entity CRUD, EventBus, permissions, custom fields
+core/api/v1/                   ← Versioned REST API (never breaking)
+packages/izerp-plugin/modules/ ← Business logic (CRM, contracts, invoices) [Git Submodule]
+packages/izerp-theme/components/ui/ ← IzUI Core UI components [Git Submodule]
+packages/izerp-theme/templates/ ← Industry templates and dashboards [Git Submodule]
+extensions/                    ← User plugins (guardrailed by SDK + manifest)
+ai/                            ← MCP server + built-in agent
+app/                           ← Next.js frontend (Core Shell)
 ```
 
 ---

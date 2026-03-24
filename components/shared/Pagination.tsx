@@ -7,7 +7,7 @@
 // which has an incompatible TanStack Table API.
 // =============================================================
 
-import { IzButton } from '@/components/ui/IzButton';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 import styles from './shared.module.scss';
 
 interface Props {

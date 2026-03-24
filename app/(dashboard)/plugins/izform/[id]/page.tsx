@@ -1,4 +1,4 @@
-import { IzFormDetail } from '@/components/plugins/izform/IzFormDetail';
+import { IzFormDetail } from '@izerp-plugin/components/plugins/izform/IzFormDetail';
 import RequireModule from '@/components/providers/RequireModule';
 
 interface Props {

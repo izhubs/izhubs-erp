@@ -1,5 +1,5 @@
-import AppLayout from '@/components/ui/AppLayout';
-import type { NavItem } from '@/templates/engine/template.schema';
+import AppLayout from '@izerp-theme/components/ui/AppLayout';
+import type { NavItem } from '@izerp-theme/templates/engine/template.schema';
 import { db } from '@/core/engine/db';
 import { cookies } from 'next/headers';
 import { verifyJwt } from '@/core/engine/auth/jwt';

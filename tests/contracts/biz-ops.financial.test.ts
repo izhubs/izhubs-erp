@@ -1,8 +1,8 @@
 import { db } from '@/core/engine/db';
-import { createContract } from '@/modules/biz-ops/engine/contracts';
-import { createCampaign } from '@/modules/biz-ops/engine/campaigns';
-import { createExpense } from '@/modules/biz-ops/engine/expenses';
-import { createPayment } from '@/modules/biz-ops/engine/payments';
+import { createContract } from '@izerp-plugin/modules/biz-ops/engine/contracts';
+import { createCampaign } from '@izerp-plugin/modules/biz-ops/engine/campaigns';
+import { createExpense } from '@izerp-plugin/modules/biz-ops/engine/expenses';
+import { createPayment } from '@izerp-plugin/modules/biz-ops/engine/payments';
 
 describe('Biz-Ops Financial Tracking & COGS (Phase 1.2)', () => {
   let tenantId: string;

@@ -3,9 +3,9 @@
 import { useState, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload, ArrowRight, Check, AlertCircle } from 'lucide-react';
-import { SmartGrid, EditableCell } from '@/components/ui/SmartGrid';
+import { SmartGrid, EditableCell } from '@izerp-theme/components/ui/SmartGrid';
 import { ColumnDef } from '@tanstack/react-table';
-import { IzButton } from '@/components/ui/IzButton';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 
 type EntityType = 'contacts' | 'deals';
 type Step = 'upload' | 'mapping' | 'preview' | 'result';

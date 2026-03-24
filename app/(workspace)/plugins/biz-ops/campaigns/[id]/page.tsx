@@ -1,9 +1,9 @@
 import { cookies } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
 import RequireModule from '@/components/providers/RequireModule';
-import { getCampaign } from '@/modules/biz-ops/engine/campaigns';
+import { getCampaign } from '@izerp-plugin/modules/biz-ops/engine/campaigns';
 import { verifyJwt } from '@/core/engine/auth/jwt';
-import { BizOpsCampaign } from '@/components/plugins/biz-ops/BizOpsCampaign';
+import { BizOpsCampaign } from '@izerp-plugin/components/plugins/biz-ops/BizOpsCampaign';
 
 export default async function CampaignDetailPage({ params }: { params: { id: string } }) {
   const cookieStore = cookies();

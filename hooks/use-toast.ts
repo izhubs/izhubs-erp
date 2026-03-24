@@ -1,5 +1,5 @@
 import * as React from "react"
-import type { ToastActionElement, ToastProps } from "@/components/ui/IzToast"
+import type { ToastActionElement, ToastProps } from "@izerp-theme/components/ui/IzToast"
 
 const TOAST_LIMIT = 3
 const TOAST_REMOVE_DELAY = 1000000

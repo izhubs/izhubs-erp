@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { SheetView, EditableCell } from '@/components/ui/SmartGrid';
+import { SheetView, EditableCell } from '@izerp-theme/components/ui/SmartGrid';
 import { useContacts, useUpdateContact, useBulkDeleteContacts, useCreateContact } from '@/hooks/useContacts';
 import { useSheetPermissions } from '@/hooks/useSheetPermissions';
 import { ColumnDef } from '@tanstack/react-table';

@@ -15,53 +15,53 @@ import {
   SortingState
 } from '@tanstack/react-table';
 
-import { IzButton } from '@/components/ui/IzButton';
-import { IzAsyncButton } from '@/components/ui/IzAsyncButton';
-import { IzIconButton } from '@/components/ui/IzIconButton';
-import { IzPermissionButton } from '@/components/ui/IzPermissionButton';
-import { IzForm } from '@/components/ui/IzForm';
-import { IzFormInput } from '@/components/ui/IzFormInput';
-import { IzInput } from '@/components/ui/IzInput';
-import { IzTextarea } from '@/components/ui/IzTextarea';
-import { IzFormTextarea } from '@/components/ui/IzFormTextarea';
-import { IzFormCheckbox } from '@/components/ui/IzFormCheckbox';
-import { IzSwitch } from '@/components/ui/IzSwitch';
-import { IzFormSwitch } from '@/components/ui/IzFormSwitch';
-import { IzFormRadioGroup } from '@/components/ui/IzFormRadioGroup';
-import { IzFormSelect } from '@/components/ui/IzFormSelect';
-import { IzFormDatePicker } from '@/components/ui/IzFormDatePicker';
-import { IzSubmitButton } from '@/components/ui/IzSubmitButton';
-import { IzTable } from '@/components/ui/IzTable';
-import { IzBadge } from '@/components/ui/IzBadge';
-import { IzPagination } from '@/components/ui/IzPagination';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
+import { IzAsyncButton } from '@izerp-theme/components/ui/IzAsyncButton';
+import { IzIconButton } from '@izerp-theme/components/ui/IzIconButton';
+import { IzPermissionButton } from '@izerp-theme/components/ui/IzPermissionButton';
+import { IzForm } from '@izerp-theme/components/ui/IzForm';
+import { IzFormInput } from '@izerp-theme/components/ui/IzFormInput';
+import { IzInput } from '@izerp-theme/components/ui/IzInput';
+import { IzTextarea } from '@izerp-theme/components/ui/IzTextarea';
+import { IzFormTextarea } from '@izerp-theme/components/ui/IzFormTextarea';
+import { IzFormCheckbox } from '@izerp-theme/components/ui/IzFormCheckbox';
+import { IzSwitch } from '@izerp-theme/components/ui/IzSwitch';
+import { IzFormSwitch } from '@izerp-theme/components/ui/IzFormSwitch';
+import { IzFormRadioGroup } from '@izerp-theme/components/ui/IzFormRadioGroup';
+import { IzFormSelect } from '@izerp-theme/components/ui/IzFormSelect';
+import { IzFormDatePicker } from '@izerp-theme/components/ui/IzFormDatePicker';
+import { IzSubmitButton } from '@izerp-theme/components/ui/IzSubmitButton';
+import { IzTable } from '@izerp-theme/components/ui/IzTable';
+import { IzBadge } from '@izerp-theme/components/ui/IzBadge';
+import { IzPagination } from '@izerp-theme/components/ui/IzPagination';
 import { 
   IzModal, IzModalTrigger, IzModalContent, IzModalHeader, IzModalFooter, IzModalTitle, IzModalDescription, IzModalClose, IzModalBody
-} from '@/components/ui/IzModal';
+} from '@izerp-theme/components/ui/IzModal';
 import { 
   IzAlertDialog, IzAlertDialogTrigger, IzAlertDialogContent, IzAlertDialogHeader, IzAlertDialogFooter, IzAlertDialogTitle, IzAlertDialogDescription, IzAlertDialogAction, IzAlertDialogCancel 
-} from '@/components/ui/IzAlertDialog';
-import { IzCard, IzCardHeader, IzCardTitle, IzCardDescription, IzCardContent, IzCardFooter } from '@/components/ui/IzCard';
-import { IzAvatar, IzAvatarImage, IzAvatarFallback } from '@/components/ui/IzAvatar';
-import { IzTabs, IzTabsList, IzTabsTrigger, IzTabsContent } from '@/components/ui/IzTabs';
-import { IzDropdownMenu, IzDropdownMenuTrigger, IzDropdownMenuContent, IzDropdownMenuItem, IzDropdownMenuLabel, IzDropdownMenuSeparator, IzDropdownMenuGroup, IzDropdownMenuShortcut } from '@/components/ui/IzDropdownMenu';
-import { IzTooltip, IzTooltipTrigger, IzTooltipContent, IzTooltipProvider } from '@/components/ui/IzTooltip';
-import { IzPopover, IzPopoverTrigger, IzPopoverContent } from '@/components/ui/IzPopover';
-import { IzDrawer, IzDrawerTrigger, IzDrawerContent, IzDrawerHeader, IzDrawerTitle, IzDrawerDescription, IzDrawerFooter, IzDrawerClose, IzDrawerBody } from '@/components/ui/IzDrawer';
-import { IzBreadcrumb, IzBreadcrumbList, IzBreadcrumbItem, IzBreadcrumbLink, IzBreadcrumbPage, IzBreadcrumbSeparator } from '@/components/ui/IzBreadcrumb';
-import { IzAccordion, IzAccordionItem, IzAccordionTrigger, IzAccordionContent } from '@/components/ui/IzAccordion';
-import { IzMetricCard } from '@/components/ui/IzMetricCard';
-import { IzLineChart } from '@/components/ui/IzLineChart';
-import { IzBarChart } from '@/components/ui/IzBarChart';
-import { IzPieChart } from '@/components/ui/IzPieChart';
-import { IzActivityTimeline } from '@/components/ui/IzActivityTimeline';
-import { IzFileUpload } from '@/components/ui/IzFileUpload';
-import { IzKanbanBoard, IzKanbanColumn, IzKanbanCard } from '@/components/ui/IzKanbanBoard';
-import type { TimelineEvent } from '@/components/ui/IzActivityTimeline';
+} from '@izerp-theme/components/ui/IzAlertDialog';
+import { IzCard, IzCardHeader, IzCardTitle, IzCardDescription, IzCardContent, IzCardFooter } from '@izerp-theme/components/ui/IzCard';
+import { IzAvatar, IzAvatarImage, IzAvatarFallback } from '@izerp-theme/components/ui/IzAvatar';
+import { IzTabs, IzTabsList, IzTabsTrigger, IzTabsContent } from '@izerp-theme/components/ui/IzTabs';
+import { IzDropdownMenu, IzDropdownMenuTrigger, IzDropdownMenuContent, IzDropdownMenuItem, IzDropdownMenuLabel, IzDropdownMenuSeparator, IzDropdownMenuGroup, IzDropdownMenuShortcut } from '@izerp-theme/components/ui/IzDropdownMenu';
+import { IzTooltip, IzTooltipTrigger, IzTooltipContent, IzTooltipProvider } from '@izerp-theme/components/ui/IzTooltip';
+import { IzPopover, IzPopoverTrigger, IzPopoverContent } from '@izerp-theme/components/ui/IzPopover';
+import { IzDrawer, IzDrawerTrigger, IzDrawerContent, IzDrawerHeader, IzDrawerTitle, IzDrawerDescription, IzDrawerFooter, IzDrawerClose, IzDrawerBody } from '@izerp-theme/components/ui/IzDrawer';
+import { IzBreadcrumb, IzBreadcrumbList, IzBreadcrumbItem, IzBreadcrumbLink, IzBreadcrumbPage, IzBreadcrumbSeparator } from '@izerp-theme/components/ui/IzBreadcrumb';
+import { IzAccordion, IzAccordionItem, IzAccordionTrigger, IzAccordionContent } from '@izerp-theme/components/ui/IzAccordion';
+import { IzMetricCard } from '@izerp-theme/components/ui/IzMetricCard';
+import { IzLineChart } from '@izerp-theme/components/ui/IzLineChart';
+import { IzBarChart } from '@izerp-theme/components/ui/IzBarChart';
+import { IzPieChart } from '@izerp-theme/components/ui/IzPieChart';
+import { IzActivityTimeline } from '@izerp-theme/components/ui/IzActivityTimeline';
+import { IzFileUpload } from '@izerp-theme/components/ui/IzFileUpload';
+import { IzKanbanBoard, IzKanbanColumn, IzKanbanCard } from '@izerp-theme/components/ui/IzKanbanBoard';
+import type { TimelineEvent } from '@izerp-theme/components/ui/IzActivityTimeline';
 import { useToast } from '@/hooks/use-toast';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer
 } from 'recharts';
-import { IzChartTooltip, IzChartGradient } from '@/components/ui/IzChart';
+import { IzChartTooltip, IzChartGradient } from '@izerp-theme/components/ui/IzChart';
 import styles from './Demo.module.scss'; 
 
 const CodeSnippet = ({ code }: { code: string }) => {

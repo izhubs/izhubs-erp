@@ -62,7 +62,7 @@ The `.agent/` directory gives any AI IDE (Cursor, Antigravity, Claude) instant c
 
 ```bash
 # 1. Clone
-git clone https://github.com/izhubs/izhubs-erp.git
+git clone --recursive https://github.com/izhubs/izhubs-erp.git
 cd izhubs-erp
 
 # 2. Configure environment
@@ -106,12 +106,16 @@ Drop into Cursor or Antigravity and start building. The `.agent/` layer prevents
 ## Architecture
 
 ```
-EXTENSIONS  ← Community plugins (SDK guardrailed, V8 isolate sandbox)
-MODULES     ← CRM, contracts, invoices, automation (fat module pattern)
-CORE ENGINE ← Immutable entities, events, versioned API
+izhubs-erp (Core)  ← Immutable entities, events, versioned API, Next.js Routes
+izerp-plugin       ← Private Git Submodule: Business logic (CRM, invoices, biz-ops)
+izerp-theme        ← Private Git Submodule: IzUI components + Industry Templates
+EXTENSIONS         ← Community plugins (SDK guardrailed, V8 isolate sandbox)
 ```
 
-**Hard rules:**
+**Hard rules (Submodule Constraints):**
+- **Core files** (`app/`, `core/`, `database/`) stay in `izhubs-erp`.
+- **Business Modules** (`biz-ops`, `crm`, `izlanding`) MUST be developed inside `packages/izerp-plugin/`.
+- **UI Components** (`IzButton`, etc.) MUST be developed inside `packages/izerp-theme/`.
 - Only `core/engine/*.ts` may call `db.query()` — routes import from engine
 - All routes use `ApiResponse` factory — never `NextResponse.json()` directly
 - All DB changes → sequential numbered migration files (`database/migrations/`)

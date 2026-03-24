@@ -9,7 +9,7 @@ import React, { useState } from 'react';
 import Badge from '@/components/shared/Badge';
 import EmptyState from '@/components/shared/EmptyState';
 import SidePanel from '@/components/shared/SidePanel';
-import { IzButton } from '@/components/ui/IzButton';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 import { formatDate } from '@/lib/userTime';
 
 interface Lead extends Record<string, unknown> {

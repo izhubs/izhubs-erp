@@ -1,6 +1,6 @@
 import { withModule } from '@/core/engine/rbac';
 import { ApiResponse } from '@/core/engine/response';
-import * as MembersEngine from '@/modules/biz-ops/engine/members';
+import * as MembersEngine from '@izerp-plugin/modules/biz-ops/engine/members';
 
 export const GET = withModule('biz-ops', 'campaigns:read', async (req, claims, context: any) => {
   try {

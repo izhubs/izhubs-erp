@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { ApiResponse } from '@/core/engine/response';
 import { withModule } from '@/core/engine/rbac';
-import { listExpensesByCampaign, createExpense, CreateExpenseSchema } from '@/modules/biz-ops/engine/expenses';
+import { listExpensesByCampaign, createExpense, CreateExpenseSchema } from '@izerp-plugin/modules/biz-ops/engine/expenses';
 
 export const GET = withModule('biz-ops', 'expenses:read', async (req, claims, ctx) => {
   const tenantId = claims.tenantId!;

@@ -1,10 +1,10 @@
 import { cookies } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
 import RequireModule from '@/components/providers/RequireModule';
-import { getContract } from '@/modules/biz-ops/engine/contracts';
-import { listCampaigns } from '@/modules/biz-ops/engine/campaigns';
+import { getContract } from '@izerp-plugin/modules/biz-ops/engine/contracts';
+import { listCampaigns } from '@izerp-plugin/modules/biz-ops/engine/campaigns';
 import { verifyJwt } from '@/core/engine/auth/jwt';
-import { BizOpsContract } from '@/components/plugins/biz-ops/BizOpsContract';
+import { BizOpsContract } from '@izerp-plugin/components/plugins/biz-ops/BizOpsContract';
 
 export default async function ContractDetailPage({ params }: { params: { id: string } }) {
   const cookieStore = await cookies();

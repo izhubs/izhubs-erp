@@ -25,9 +25,9 @@ import { useCurrency } from '@/lib/hooks/useCurrency';
 import styles from './kanban.module.scss';
 import { apiFetch } from '@/lib/apiFetch';
 import { PIPELINE_STAGES, type PipelineStageConfig } from '@/core/config/pipeline';
-import { IzKanbanBoard } from '@/components/ui/IzKanbanBoard';
-import { IzButton } from '@/components/ui/IzButton';
-import { IzCheckbox } from '@/components/ui/IzCheckbox';
+import { IzKanbanBoard } from '@izerp-theme/components/ui/IzKanbanBoard';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
+import { IzCheckbox } from '@izerp-theme/components/ui/IzCheckbox';
 
 interface Props {
   initialDeals: Deal[];

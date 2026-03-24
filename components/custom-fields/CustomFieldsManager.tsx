@@ -4,11 +4,11 @@ import { useState, useCallback } from 'react';
 import type { CustomFieldDefinition } from '@/core/schema/entities';
 import styles from './custom-fields.module.scss';
 import { apiFetch } from '@/lib/apiFetch';
-import { IzButton } from '@/components/ui/IzButton';
-import { IzInput } from '@/components/ui/IzInput';
-import { IzTextarea } from '@/components/ui/IzTextarea';
-import { IzSelect } from '@/components/ui/IzSelect';
-import { IzCheckbox } from '@/components/ui/IzCheckbox';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
+import { IzInput } from '@izerp-theme/components/ui/IzInput';
+import { IzTextarea } from '@izerp-theme/components/ui/IzTextarea';
+import { IzSelect } from '@izerp-theme/components/ui/IzSelect';
+import { IzCheckbox } from '@izerp-theme/components/ui/IzCheckbox';
 
 type EntityType = 'contact' | 'company' | 'deal' | 'activity';
 type FieldType = 'text' | 'number' | 'date' | 'boolean' | 'select' | 'multiselect' | 'url' | 'email' | 'phone';

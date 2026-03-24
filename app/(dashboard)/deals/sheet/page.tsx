@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { SheetView, EditableCell } from '@/components/ui/SmartGrid';
+import { SheetView, EditableCell } from '@izerp-theme/components/ui/SmartGrid';
 import { useDeals, useUpdateDeal, useBulkDeleteDeals, useCreateDeal } from '@/hooks/useDeals';
 import { useSheetPermissions } from '@/hooks/useSheetPermissions';
 import { useCurrency } from '@/lib/hooks/useCurrency';

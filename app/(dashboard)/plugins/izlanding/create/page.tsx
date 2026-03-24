@@ -1,4 +1,4 @@
-import CreateProjectForm from '@/components/plugins/izlanding/CreateProjectForm';
+import CreateProjectForm from '@izerp-plugin/components/plugins/izlanding/CreateProjectForm';
 import RequireModule from '@/components/providers/RequireModule';
 
 export const metadata = {

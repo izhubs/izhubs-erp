@@ -10,8 +10,8 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
 } from 'recharts';
-import { IzCard, IzCardHeader, IzCardTitle, IzCardContent } from '@/components/ui/IzCard';
-import { IzChartTooltip, IzChartGradient, izChartLegendFormatter } from '@/components/ui/IzChart';
+import { IzCard, IzCardHeader, IzCardTitle, IzCardContent } from '@izerp-theme/components/ui/IzCard';
+import { IzChartTooltip, IzChartGradient, izChartLegendFormatter } from '@izerp-theme/components/ui/IzChart';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 
 interface ArrDataPoint { month: string; arr: number }

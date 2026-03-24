@@ -1,7 +1,7 @@
 // Setup wizard — first-run onboarding
 // Steps: 1. Create admin → 2. Choose template → 3. Import data (optional) → 4. Done
-import { IzInput } from '@/components/ui/IzInput';
-import { IzButton } from '@/components/ui/IzButton';
+import { IzInput } from '@izerp-theme/components/ui/IzInput';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 
 export default function SetupPage() {
   return (

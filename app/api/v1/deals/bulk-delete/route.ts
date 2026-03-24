@@ -1,6 +1,6 @@
 import { withPermission } from '@/core/engine/rbac';
 import { ApiResponse } from '@/core/engine/response';
-import * as DealsEngine from '@/modules/crm/engine/deals';
+import * as DealsEngine from '@izerp-plugin/modules/crm/engine/deals';
 import { z } from 'zod';
 
 const bulkDeleteSchema = z.object({

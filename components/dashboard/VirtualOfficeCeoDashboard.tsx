@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { IzMetricCard } from '@/components/ui/IzMetricCard';
-import { IzCard, IzCardHeader, IzCardTitle, IzCardContent, IzCardFooter } from '@/components/ui/IzCard';
+import { IzMetricCard } from '@izerp-theme/components/ui/IzMetricCard';
+import { IzCard, IzCardHeader, IzCardTitle, IzCardContent, IzCardFooter } from '@izerp-theme/components/ui/IzCard';
 import { Money } from '@/components/shared/Money';
 import {
   ResponsiveContainer, PieChart, Pie, Cell, Tooltip as RechartsTooltip, CartesianGrid, XAxis, YAxis, LineChart, Line, BarChart, Bar

@@ -14,7 +14,7 @@
 
 import { unstable_cache } from 'next/cache';
 import { db } from '@/core/engine/db';
-import type { NavConfig, NavItem } from '@/templates/engine/template.schema';
+import type { NavConfig, NavItem } from '@izerp-theme/templates/engine/template.schema';
 
 /**
  * All roles in ascending privilege order.

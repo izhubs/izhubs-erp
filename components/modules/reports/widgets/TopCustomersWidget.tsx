@@ -7,7 +7,7 @@
 import Link from 'next/link';
 import { db } from '@/core/engine/db';
 import { getTenantId } from '@/core/engine/auth';
-import { IzBadge } from '@/components/ui/IzBadge';
+import { IzBadge } from '@izerp-theme/components/ui/IzBadge';
 import { Money } from '@/components/shared/Money';
 
 export async function TopCustomersWidget() {

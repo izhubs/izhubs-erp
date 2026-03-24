@@ -1,5 +1,5 @@
 import { listProjects } from '@/core/engine/izlanding';
-import { IzLandingProjectsClient } from '@/components/plugins/izlanding/IzLandingProjects';
+import { IzLandingProjectsClient } from '@izerp-plugin/components/plugins/izlanding/IzLandingProjects';
 import RequireModule from '@/components/providers/RequireModule';
 import { cookies } from 'next/headers';
 import { db } from '@/core/engine/db';

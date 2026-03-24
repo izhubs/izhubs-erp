@@ -9,7 +9,7 @@ import { getTenantId } from '@/core/engine/auth';
 import PageHeader from '@/components/shared/PageHeader';
 import Badge from '@/components/shared/Badge';
 import LeadsClient from '@/components/shared/LeadsClient';
-import { IzButton } from '@/components/ui/IzButton';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 
 export const metadata = { title: 'Leads — izhubs ERP' };
 

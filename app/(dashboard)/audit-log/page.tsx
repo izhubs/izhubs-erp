@@ -1,4 +1,4 @@
-import ComingSoon from '@/components/ui/ComingSoon';
+import ComingSoon from '@izerp-theme/components/ui/ComingSoon';
 
 export const metadata = { title: 'Audit Log — izhubs ERP' };
 

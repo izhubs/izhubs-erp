@@ -3,7 +3,7 @@
 // Server Component: fetch deals + pipeline stages from template → pass to PipelineViews.
 // =============================================================
 
-import { listDeals } from '@/modules/crm/engine/deals';
+import { listDeals } from '@izerp-plugin/modules/crm/engine/deals';
 import PipelineViews from '@/components/deals/PipelineViews';
 import { cookies } from 'next/headers';
 import { verifyJwt } from '@/core/engine/auth/jwt';

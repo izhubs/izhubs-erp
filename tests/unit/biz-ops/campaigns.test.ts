@@ -1,4 +1,4 @@
-import { CreateCampaignSchema, UpdateCampaignSchema } from '@/modules/biz-ops/engine/campaigns';
+import { CreateCampaignSchema, UpdateCampaignSchema } from '@izerp-plugin/modules/biz-ops/engine/campaigns';
 
 describe('Biz-Ops Campaigns Engine', () => {
 

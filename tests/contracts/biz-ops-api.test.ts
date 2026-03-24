@@ -8,19 +8,19 @@ import {
   ContractSchema,
   CreateContractSchema,
   UpdateContractSchema,
-} from '@/modules/biz-ops/engine/contracts';
+} from '@izerp-plugin/modules/biz-ops/engine/contracts';
 
 import {
   MilestoneSchema,
   CreateMilestoneSchema,
   UpdateMilestoneSchema,
-} from '@/modules/biz-ops/engine/milestones';
+} from '@izerp-plugin/modules/biz-ops/engine/milestones';
 
 import {
   CampaignSchema,
   CreateCampaignSchema,
   UpdateCampaignSchema,
-} from '@/modules/biz-ops/engine/campaigns';
+} from '@izerp-plugin/modules/biz-ops/engine/campaigns';
 
 const VALID_UUID = '00000000-0000-0000-0000-000000000001';
 

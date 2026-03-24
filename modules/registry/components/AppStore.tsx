@@ -4,8 +4,8 @@ import { useState, useMemo } from 'react';
 import { PluginCard } from './PluginCard';
 import { usePlugins } from '../hooks/usePlugins';
 import styles from './AppStore.module.scss';
-import { IzInput } from '@/components/ui/IzInput';
-import { IzTabs, IzTabsList, IzTabsTrigger } from '@/components/ui/IzTabs';
+import { IzInput } from '@izerp-theme/components/ui/IzInput';
+import { IzTabs, IzTabsList, IzTabsTrigger } from '@izerp-theme/components/ui/IzTabs';
 import { PageHeader } from '@/components/shared';
 
 interface Plugin {

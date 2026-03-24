@@ -1,4 +1,4 @@
-import { PublicFormView } from '@/components/plugins/izform/PublicFormView';
+import { PublicFormView } from '@izerp-plugin/components/plugins/izform/PublicFormView';
 import { db } from '@/core/engine/db';
 
 interface Props {

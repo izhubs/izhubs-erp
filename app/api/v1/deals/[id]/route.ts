@@ -1,7 +1,7 @@
 import { DealSchema } from '@/core/schema/entities';
 import { withPermission } from '@/core/engine/rbac';
 import { ApiResponse } from '@/core/engine/response';
-import * as DealsEngine from '@/modules/crm/engine/deals';
+import * as DealsEngine from '@izerp-plugin/modules/crm/engine/deals';
 
 const isValidUUID = (id: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);

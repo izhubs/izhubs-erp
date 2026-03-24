@@ -4,7 +4,7 @@
 // =============================================================
 
 import React from 'react';
-import { IzEmptyState } from '@/components/ui/IzEmptyState';
+import { IzEmptyState } from '@izerp-theme/components/ui/IzEmptyState';
 
 interface EmptyStateProps {
   icon?: React.ReactNode;

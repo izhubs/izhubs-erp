@@ -5,7 +5,7 @@
 
 import { withModule } from '@/core/engine/rbac';
 import { ApiResponse } from '@/core/engine/response';
-import * as ContractsEngine from '@/modules/biz-ops/engine/contracts';
+import * as ContractsEngine from '@izerp-plugin/modules/biz-ops/engine/contracts';
 
 const DEFAULT_TENANT = '00000000-0000-0000-0000-000000000001';
 

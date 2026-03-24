@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { ApiResponse } from '@/core/engine/response';
 import { withModule } from '@/core/engine/rbac';
-import { listPaymentsByContract, createPayment, CreatePaymentSchema } from '@/modules/biz-ops/engine/payments';
+import { listPaymentsByContract, createPayment, CreatePaymentSchema } from '@izerp-plugin/modules/biz-ops/engine/payments';
 
 export const GET = withModule('biz-ops', 'payments:read', async (req, claims, ctx) => {
   const tenantId = claims.tenantId!;

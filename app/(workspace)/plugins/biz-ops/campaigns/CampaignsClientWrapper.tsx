@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import CampaignsKanbanBoard from '@/components/plugins/biz-ops/CampaignsKanbanBoard';
-import { CampaignFormModal } from '@/components/plugins/biz-ops/CampaignFormModal';
-import { IzButton } from '@/components/ui/IzButton';
+import CampaignsKanbanBoard from '@izerp-plugin/components/plugins/biz-ops/CampaignsKanbanBoard';
+import { CampaignFormModal } from '@izerp-plugin/components/plugins/biz-ops/CampaignFormModal';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 import { Settings, FileDown } from 'lucide-react';
-import type { Campaign } from '@/modules/biz-ops/engine/campaigns';
+import type { Campaign } from '@izerp-plugin/modules/biz-ops/engine/campaigns';
 import { apiFetch } from '@/lib/apiFetch';
 
 export default function CampaignsClientWrapper({ initialCampaigns, contracts }: { initialCampaigns: Campaign[], contracts: any[] }) {

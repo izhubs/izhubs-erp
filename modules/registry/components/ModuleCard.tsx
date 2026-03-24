@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import styles from './ModuleCard.module.scss';
-import { IzButton } from '@/components/ui/IzButton';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 
 interface ModuleCardProps {
   id: string;

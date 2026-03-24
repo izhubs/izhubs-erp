@@ -7,7 +7,7 @@
 import { db } from '@/core/engine/db';
 import { getTenantId } from '@/core/engine/auth';
 import { PageHeader, KpiCard, Badge } from '@/components/shared';
-import { IzButton } from '@/components/ui/IzButton';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 import { Money } from '@/components/shared/Money';
 
 export const metadata = { title: 'Reports & Analytics — izhubs ERP' };

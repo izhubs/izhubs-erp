@@ -7,9 +7,9 @@ import type { PipelineStageConfig } from '@/core/config/pipeline';
 import DealCard from './DealCard';
 import styles from './kanban.module.scss';
 import { useMemo } from 'react';
-import { IzKanbanColumn } from '@/components/ui/IzKanbanBoard';
+import { IzKanbanColumn } from '@izerp-theme/components/ui/IzKanbanBoard';
 import { useCurrency } from '@/lib/hooks/useCurrency';
-import { IzButton } from '@/components/ui/IzButton';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 
 interface Props {
   stage: PipelineStageConfig;

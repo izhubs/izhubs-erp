@@ -1,5 +1,5 @@
 import { getProject, getPageTracking } from '@/core/engine/izlanding';
-import EditProjectForm from '@/components/plugins/izlanding/EditProjectForm';
+import EditProjectForm from '@izerp-plugin/components/plugins/izlanding/EditProjectForm';
 import RequireModule from '@/components/providers/RequireModule';
 import { cookies } from 'next/headers';
 import { verifyJwt } from '@/core/engine/auth/jwt';

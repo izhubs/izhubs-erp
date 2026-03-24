@@ -14,7 +14,7 @@ import {
   IzSheetTitle,
   IzSheetBody,
   IzSheetFooter,
-} from '@/components/ui/IzSheet';
+} from '@izerp-theme/components/ui/IzSheet';
 
 interface SidePanelProps {
   open: boolean;

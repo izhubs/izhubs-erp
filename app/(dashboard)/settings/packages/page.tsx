@@ -10,7 +10,7 @@ import { getTenantId } from '@/core/engine/auth';
 import PageHeader from '@/components/shared/PageHeader';
 import Badge from '@/components/shared/Badge';
 import EmptyState from '@/components/shared/EmptyState';
-import { IzButton } from '@/components/ui/IzButton';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 import { Money } from '@/components/shared/Money';
 
 export const metadata = { title: 'Gói Dịch vụ — izhubs ERP' };

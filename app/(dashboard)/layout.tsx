@@ -1,9 +1,9 @@
-import AppLayout from '@/components/ui/AppLayout';
+import AppLayout from '@izerp-theme/components/ui/AppLayout';
 import { getNavConfig, DEFAULT_BOTTOM_ITEMS } from '@/lib/nav-config';
 import { cookies } from 'next/headers';
 import { verifyJwt } from '@/core/engine/auth/jwt';
 import { db } from '@/core/engine/db';
-import type { NavItem } from '@/templates/engine/template.schema';
+import type { NavItem } from '@izerp-theme/templates/engine/template.schema';
 import { TourProvider } from '@/components/onboarding/TourContext';
 import pkg from '@/package.json';
 

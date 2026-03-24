@@ -1,13 +1,13 @@
-import { listContacts } from '@/modules/crm/engine/contacts';
-import { listDeals } from '@/modules/crm/engine/deals';
+import { listContacts } from '@izerp-plugin/modules/crm/engine/contacts';
+import { listDeals } from '@izerp-plugin/modules/crm/engine/deals';
 import { listServicePackages } from '@/core/engine/service-packages';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { DashboardCharts } from '@/components/dashboard/DashboardCharts';
 import { verifyJwt } from '@/core/engine/auth/jwt';
 import { db } from '@/core/engine/db';
-import { IzMetricCard } from '@/components/ui/IzMetricCard';
-import { IzCard, IzCardHeader, IzCardTitle, IzCardContent } from '@/components/ui/IzCard';
+import { IzMetricCard } from '@izerp-theme/components/ui/IzMetricCard';
+import { IzCard, IzCardHeader, IzCardTitle, IzCardContent } from '@izerp-theme/components/ui/IzCard';
 import { getEffectiveRole, getTenantId } from '@/core/engine/auth/server-context';
 import { Money } from '@/components/shared/Money';
 import { Download } from 'lucide-react';

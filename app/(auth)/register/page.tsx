@@ -7,10 +7,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 
-import { IzForm } from '@/components/ui/IzForm';
-import { IzFormInput } from '@/components/ui/IzFormInput';
-import { IzAsyncButton } from '@/components/ui/IzAsyncButton';
-import { IzCard, IzCardHeader, IzCardTitle, IzCardDescription, IzCardContent, IzCardFooter } from '@/components/ui/IzCard';
+import { IzForm } from '@izerp-theme/components/ui/IzForm';
+import { IzFormInput } from '@izerp-theme/components/ui/IzFormInput';
+import { IzAsyncButton } from '@izerp-theme/components/ui/IzAsyncButton';
+import { IzCard, IzCardHeader, IzCardTitle, IzCardDescription, IzCardContent, IzCardFooter } from '@izerp-theme/components/ui/IzCard';
 
 const registerSchema = z.object({
   name: z.string().min(1, 'Name is required'),

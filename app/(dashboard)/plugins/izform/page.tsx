@@ -1,5 +1,5 @@
 import { listForms } from '@/core/engine/izform';
-import { IzFormListClient } from '@/components/plugins/izform/IzFormList';
+import { IzFormListClient } from '@izerp-plugin/components/plugins/izform/IzFormList';
 import RequireModule from '@/components/providers/RequireModule';
 import { cookies } from 'next/headers';
 import { verifyJwt } from '@/core/engine/auth/jwt';

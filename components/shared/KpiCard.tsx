@@ -4,7 +4,7 @@
 // =============================================================
 
 import React from 'react';
-import { IzMetricCard } from '@/components/ui/IzMetricCard';
+import { IzMetricCard } from '@izerp-theme/components/ui/IzMetricCard';
 
 export type TrendDirection = 'up' | 'down' | 'neutral';
 

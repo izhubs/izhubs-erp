@@ -5,7 +5,7 @@
 // =============================================================
 
 import React from 'react';
-import { IzBadge, type IzBadgeVariant } from '@/components/ui/IzBadge';
+import { IzBadge, type IzBadgeVariant } from '@izerp-theme/components/ui/IzBadge';
 
 export type BadgeVariant =
   | 'success'

@@ -3,10 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Zap } from 'lucide-react';
 import { useLanguage } from '@/components/providers/LanguageProvider';
-import { IzButton } from '@/components/ui/IzButton';
-import { IzInput } from '@/components/ui/IzInput';
-import { IzSelect } from '@/components/ui/IzSelect';
-import { IzCheckbox } from '@/components/ui/IzCheckbox';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
+import { IzInput } from '@izerp-theme/components/ui/IzInput';
+import { IzSelect } from '@izerp-theme/components/ui/IzSelect';
+import { IzCheckbox } from '@izerp-theme/components/ui/IzCheckbox';
 
 interface ActionConfig {
   type: string;

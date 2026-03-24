@@ -14,7 +14,7 @@ import {
   IzModalTitle,
   IzModalBody,
   IzModalFooter,
-} from '@/components/ui/IzModal';
+} from '@izerp-theme/components/ui/IzModal';
 
 interface ModalProps {
   open: boolean;

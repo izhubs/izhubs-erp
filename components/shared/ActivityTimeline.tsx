@@ -5,7 +5,7 @@ import styles from './ActivityTimeline.module.scss';
 import { useQuery } from '@tanstack/react-query';
 import { Clock, Trash2, CheckCircle2, AlertCircle, RefreshCw, MessageSquare, Play, UserPlus, PhoneCall, Mail, Building, FileText, Calendar, LinkIcon, Edit, ArrowRight } from 'lucide-react';
 import { formatDateTime } from '@/lib/userTime';
-import { IzAvatar, IzAvatarImage, IzAvatarFallback } from '@/components/ui/IzAvatar';
+import { IzAvatar, IzAvatarImage, IzAvatarFallback } from '@izerp-theme/components/ui/IzAvatar';
 
 export interface AuditLog {
   id: string;

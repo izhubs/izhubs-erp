@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import styles from './ModuleCard.module.scss';
-import { IzButton } from '@/components/ui/IzButton';
-import { IzBadge } from '@/components/ui/IzBadge';
-import { Icon } from '@/components/ui/Icon';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
+import { IzBadge } from '@izerp-theme/components/ui/IzBadge';
+import { Icon } from '@izerp-theme/components/ui/Icon';
 
 interface PluginCardProps {
   id: string;

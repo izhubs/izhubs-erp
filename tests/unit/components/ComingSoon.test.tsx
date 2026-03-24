@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import ComingSoon from '@/components/ui/ComingSoon';
+import ComingSoon from '@izerp-theme/components/ui/ComingSoon';
 
 describe('ComingSoon', () => {
   it('renders the title as an h1', () => {

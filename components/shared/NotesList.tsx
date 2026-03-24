@@ -4,8 +4,8 @@ import { useState, useCallback, useEffect } from 'react';
 import type { Note } from '@/core/engine/notes';
 import { apiFetch } from '@/lib/apiFetch';
 import styles from './shared.module.scss';
-import { IzButton } from '@/components/ui/IzButton';
-import { IzTextarea } from '@/components/ui/IzTextarea';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
+import { IzTextarea } from '@izerp-theme/components/ui/IzTextarea';
 
 interface Props {
   entityType: 'contact' | 'deal' | 'company';

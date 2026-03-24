@@ -9,7 +9,7 @@ import { getTenantId } from '@/core/engine/auth';
 import { notFound } from 'next/navigation';
 import PageHeader from '@/components/shared/PageHeader';
 import Badge from '@/components/shared/Badge';
-import { IzButton } from '@/components/ui/IzButton';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 import { Money } from '@/components/shared/Money';
 import type { Metadata } from 'next';
 

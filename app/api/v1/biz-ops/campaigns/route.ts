@@ -5,7 +5,7 @@
 
 import { withModule } from '@/core/engine/rbac';
 import { ApiResponse } from '@/core/engine/response';
-import * as CampaignsEngine from '@/modules/biz-ops/engine/campaigns';
+import * as CampaignsEngine from '@izerp-plugin/modules/biz-ops/engine/campaigns';
 
 const DEFAULT_TENANT = '00000000-0000-0000-0000-000000000001';
 

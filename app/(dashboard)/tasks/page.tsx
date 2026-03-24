@@ -7,7 +7,7 @@
 import { listActivities } from '@/core/engine/activities';
 import { PageHeader } from '@/components/shared';
 import TasksClient from '@/components/shared/TasksClient';
-import { IzButton } from '@/components/ui/IzButton';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 
 export const metadata = { title: 'Công việc — izhubs ERP' };
 

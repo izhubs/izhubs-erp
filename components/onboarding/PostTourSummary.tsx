@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { IzModal, IzModalContent, IzModalHeader, IzModalTitle, IzModalBody, IzModalFooter } from '@/components/ui/IzModal';
-import { IzButton } from '@/components/ui/IzButton';
+import { IzModal, IzModalContent, IzModalHeader, IzModalTitle, IzModalBody, IzModalFooter } from '@izerp-theme/components/ui/IzModal';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 import { usePathname } from 'next/navigation';
 
 export default function PostTourSummary({ onClose }: { onClose: () => void }) {

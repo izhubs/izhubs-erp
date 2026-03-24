@@ -9,12 +9,12 @@
 import React, { useState, useTransition } from 'react';
 import { apiFetch } from '@/lib/apiFetch';
 import type { Activity } from '@/core/engine/activities';
-import { IzBadge, type IzBadgeVariant } from '@/components/ui/IzBadge';
+import { IzBadge, type IzBadgeVariant } from '@izerp-theme/components/ui/IzBadge';
 import { formatDateTime } from '@/lib/userTime';
 import EmptyState from '@/components/shared/EmptyState';
 import SidePanel from '@/components/shared/SidePanel';
-import { IzButton } from '@/components/ui/IzButton';
-import { IzCheckbox } from '@/components/ui/IzCheckbox';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
+import { IzCheckbox } from '@izerp-theme/components/ui/IzCheckbox';
 
 interface TasksClientProps {
   initialToday: Activity[];

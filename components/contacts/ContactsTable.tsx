@@ -13,17 +13,17 @@ import Pagination from '@/components/shared/Pagination';
 import { apiFetch } from '@/lib/apiFetch';
 import { useToast } from '@/hooks/use-toast';
 
-import { IzTable } from '@/components/ui/IzTable';
-import { IzAvatar, IzAvatarFallback } from '@/components/ui/IzAvatar';
-import { IzBadge, IzBadgeVariant } from '@/components/ui/IzBadge';
-import { IzButton } from '@/components/ui/IzButton';
+import { IzTable } from '@izerp-theme/components/ui/IzTable';
+import { IzAvatar, IzAvatarFallback } from '@izerp-theme/components/ui/IzAvatar';
+import { IzBadge, IzBadgeVariant } from '@izerp-theme/components/ui/IzBadge';
+import { IzButton } from '@izerp-theme/components/ui/IzButton';
 import {
   IzDropdownMenu,
   IzDropdownMenuTrigger,
   IzDropdownMenuContent,
   IzDropdownMenuItem,
   IzDropdownMenuSeparator,
-} from '@/components/ui/IzDropdownMenu';
+} from '@izerp-theme/components/ui/IzDropdownMenu';
 
 import styles from './contacts.module.scss';
 
