@@ -40,17 +40,23 @@ description: daily startup — understand context and what to do next
    [top 3 from memory.md backlog]
    ```
 
-## Step 5: Agent Briefing (nếu có agent khác đang làm)
-7. Nếu có track `in-progress` đang được agent khác thực hiện, generate briefing ngắn cho agent đó:
-   ```
-   Đọc theo thứ tự trước khi code:
-   1. .agent/memory.md — 8 Golden Rules (bắt buộc)
-   2. .agent/tracks/[track-slug]/SPEC.md — spec đầy đủ
-   3. docs/architecture-and-guides/ui-design-language.md — visual rules + Known Visual Issues
+## Step 5: Agent Briefing & AI Vibe Code Rules
+7. Khi kích hoạt tác vụ mới hoặc track `in-progress` (hoặc chuẩn bị bàn giao cho Agent khác), generate luôn prompt **định hướng kiến trúc** (Briefing) để "chốt hạ" Scope cho AI:
+   ```text
+   Hãy đọc theo thứ tự trước khi viết bất kỳ dòng code nào:
+   1. .agent/AGENTS.md — 3-Repo Architecture Rules (QUAN TRỌNG NHẤT: Ranh giới Core, Plugin, Theme)
+   2. .agent/memory.md — 8 Golden Rules (bắt buộc)
+   3. .agent/tracks/[track-slug]/SPEC.md — spec đầy đủ
+   4. docs/architecture-and-guides/ui-design-language.md — visual rules + Known Visual Issues
    
-   Sau khi xong: npm run typecheck (0 errors) + npm run test:contracts (all pass)
+   ⚠️ Hard Constraints thiết yếu:
+   - Chức năng nghiệp vụ (Business flow) -> Bỏ vào `packages/izerp-plugin/`
+   - Giao diện (UI Components) -> Bỏ vào `packages/izerp-theme/`
+   - BẮT BUỘC dùng Path Alias (`@izerp-plugin/*`, `@izerp-theme/*`), CẤM dùng Relative paths (../../) cắt ngang kho chứa.
+   
+   Sau khi code xong: npm run typecheck (0 errors) + npm run test:contracts (all pass)
    ```
-   Thêm các constraint cụ thể từ SPEC.md của track đó.
+   Đảm bảo khuyên User hãy dùng khối prompt này để mồi (Context Injection) cho các Agent khác tạo đà Vibe Code chuẩn xác nhất.
 
 ## Step 6: Ask What to Do
 8. Ask the user:
