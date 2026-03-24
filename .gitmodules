@@ -1,0 +1,6 @@
+[submodule "packages/izerp-plugin"]
+	path = packages/izerp-plugin
+	url = https://github.com/izhubs/izerp-plugin.git
+[submodule "packages/izerp-theme"]
+	path = packages/izerp-theme
+	url = https://github.com/izhubs/izerp-theme.git
