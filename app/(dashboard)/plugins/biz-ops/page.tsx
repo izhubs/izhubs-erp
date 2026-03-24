@@ -1,5 +1,6 @@
 import { listContracts } from '@izerp-plugin/modules/biz-ops/engine/contracts';
 import { listCampaigns } from '@izerp-plugin/modules/biz-ops/engine/campaigns';
+import { listPortfolios } from '@izerp-plugin/modules/biz-ops/engine/portfolios';
 import { BizOpsProjectsClient } from '@izerp-plugin/components/plugins/biz-ops/BizOpsProjects';
 import RequireModule from '@/components/providers/RequireModule';
 import { cookies } from 'next/headers';
@@ -25,9 +26,10 @@ export default async function BizOpsPage() {
     return redirect('/login');
   }
 
-  const [contracts, campaigns] = await Promise.all([
+  const [contracts, campaigns, portfolios] = await Promise.all([
     listContracts(tenantId),
     listCampaigns(tenantId),
+    listPortfolios(tenantId),
   ]);
 
   const serializedContracts = contracts.map(c => ({
@@ -53,6 +55,7 @@ export default async function BizOpsPage() {
       <BizOpsProjectsClient
         initialContracts={serializedContracts as any}
         initialCampaigns={serializedCampaigns as any}
+        initialPortfolios={portfolios}
       />
     </RequireModule>
   );

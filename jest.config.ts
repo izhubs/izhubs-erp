@@ -4,6 +4,8 @@ const config: Config = {
   preset: 'ts-jest',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    '^@izerp-plugin/(.*)$': '<rootDir>/packages/izerp-plugin/$1',
+    '^@izerp-theme/(.*)$': '<rootDir>/packages/izerp-theme/$1',
     '^jose$': require.resolve('jose'),
     // Stub CSS/SCSS imports in unit tests
     '\\.(css|scss|sass)$': '<rootDir>/tests/__mocks__/styleMock.js',
@@ -28,6 +30,8 @@ const config: Config = {
       ],
       moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/$1',
+        '^@izerp-plugin/(.*)$': '<rootDir>/packages/izerp-plugin/$1',
+        '^@izerp-theme/(.*)$': '<rootDir>/packages/izerp-theme/$1',
         '^jose$': require.resolve('jose'),
         '\\.(css|scss|sass)$': '<rootDir>/tests/__mocks__/styleMock.js',
         '^next/server$': '<rootDir>/tests/__mocks__/next-server.ts',
@@ -45,6 +49,8 @@ const config: Config = {
       preset: 'ts-jest',
       moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/$1',
+        '^@izerp-plugin/(.*)$': '<rootDir>/packages/izerp-plugin/$1',
+        '^@izerp-theme/(.*)$': '<rootDir>/packages/izerp-theme/$1',
         '^jose$': require.resolve('jose'),
       },
       testMatch: [

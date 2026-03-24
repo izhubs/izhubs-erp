@@ -49,6 +49,16 @@ export type SystemEvents = {
   'campaign.created': { campaign: Record<string, unknown> };
   'campaign.updated': { campaign: Record<string, unknown> };
   'campaign.deleted': { id: string };
+
+  // Portfolio events (biz-ops)
+  'portfolio.created': { portfolio: Record<string, unknown> };
+  'portfolio.updated': { portfolio: Record<string, unknown> };
+  'portfolio.deleted': { id: string };
+
+  // Campaign Phase events (biz-ops)
+  'campaign_phase.created': { phase: Record<string, unknown> };
+  'campaign_phase.updated': { phase: Record<string, unknown> };
+  'campaign_phase.deleted': { id: string };
 };
 
 export type EventName = keyof SystemEvents;

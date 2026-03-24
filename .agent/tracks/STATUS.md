@@ -55,7 +55,8 @@ _Last updated: 2026-03-20 (Session 18 — Audit Log + Ephemeral Demo Users + UI 
 | 2026-03-22 | plugin-infrastructure | planning | Hoàn thiện kiến trúc UI và bảo mật cho màn hình Frontend của các Web Plugins bằng RequireModule guard. |
 | 2026-03-22 | ai-landing-builder | in-progress | AI Landing Page Builder Plugin — Phase 1 done (DB migration, module manifest, engine, API, mockups). Phase 2+ deferred. |
 | 2026-03-24 | biz-ops-projects | ✅ done | Biz-Ops Campaigns (Projects): Kanban UI, Project Members rà soát API & UI kết nối. |
-
+| 2026-03-24 | biz-ops-vision | ✅ done | Architected 100-feature Horizontal Plugin Vision for biz-ops (izTask, izComment, izFileHub using Polymorphic entity_type/entity_id). |
+| 2026-03-24 | biz-ops-core-projects | planning | Phase 1 of Biz-Ops Vision: Portfolio Grouping, Project Phases, Nullable Contracts, Private Workspaces. |
 
 ---
 

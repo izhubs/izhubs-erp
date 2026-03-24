@@ -293,6 +293,7 @@ npm run typecheck; npm run test:contracts
 | ApiResponse factory | Consistent response shape across all routes |
 | Zod on DB output | Runtime contract enforcement — DB drift caught immediately |
 | MIT license | Community first, no feature gating |
+| Polymorphic Plugin Architecture | Universal plugins (izTask, izComment, izFileHub) use `entity_type` & `entity_id` to decouple from specific projects for global reuse |
 
 ### Session 5 — 2026-03-16 (Strategic Brief + Pipeline Kanban Track)
 - **Strategic brief**: confirmed target persona as vibe business owners/solopreneurs, community-led GTM
@@ -317,6 +318,7 @@ npm run typecheck; npm run test:contracts
 1. **Gumroad templates** — ⬇️ **DEFERRED post-MVP** (2026-03-20): 5 ZIPs ready in `dist/gumroad/`. Resume when screenshots + listing upload are prioritized.
 2. **README GIF demo** — screen recording showing import + pipeline in action
 3. **Community launch** — Show HN post + GitHub release
+4. **biz-ops-core-projects** (Pillar 1 Biz-ops) — Nâng cấp hệ thống campaigns thành hệ Project Management chuyên nghiệp: Portfolios, Phases, Private Workspaces (No-contract mode).
 
 > ⬇️ **DEFERRED post-MVP (2026-03-20)**: `onboarding-ui` (3-step wizard) and `gumroad-templates` (revenue upload) both moved to after core MVP is stable. See STATUS.md for details.
 
