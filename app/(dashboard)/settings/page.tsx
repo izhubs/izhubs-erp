@@ -5,6 +5,13 @@ import { Palette, Sliders, Puzzle, Link2, Shield, Zap, ChevronRight } from 'luci
 
 const SETTINGS_SECTIONS = [
   {
+    href: '/settings/users',
+    icon: Shield,
+    title: 'User Management',
+    desc: 'Manage workspace members and roles',
+    badge: null,
+  },
+  {
     href: '/settings/appearance',
     icon: Palette,
     title: 'Appearance',

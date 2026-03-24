@@ -71,9 +71,42 @@ export async function createUser(input: CreateUserInput): Promise<PublicUser> {
 
 export async function listUsers(tenantId?: string): Promise<PublicUser[]> {
   const query = tenantId 
-    ? `SELECT id, name, email, role, active FROM users WHERE active = true AND tenant_id = $1 ORDER BY name ASC`
-    : `SELECT id, name, email, role, active FROM users WHERE active = true ORDER BY name ASC`;
+    ? `SELECT id, name, email, role, active FROM users WHERE tenant_id = $1 ORDER BY active DESC, name ASC`
+    : `SELECT id, name, email, role, active FROM users ORDER BY active DESC, name ASC`;
   
   const result = await db.query(query, tenantId ? [tenantId] : []);
   return result.rows.map(r => PublicUserSchema.parse({...r, tenant_id: tenantId}));
 }
+
+export async function updateUser(
+  id: string,
+  tenantId: string,
+  updates: { role?: 'superadmin' | 'admin' | 'member' | 'viewer'; active?: boolean }
+): Promise<PublicUser | null> {
+  const fields: string[] = [];
+  const values: any[] = [];
+  let idx = 1;
+
+  if (updates.role !== undefined) {
+    fields.push(`role = $${idx++}`);
+    values.push(updates.role);
+  }
+  if (updates.active !== undefined) {
+    fields.push(`active = $${idx++}`);
+    values.push(updates.active);
+  }
+
+  if (fields.length === 0) return getUserById(id);
+
+  values.push(id, tenantId);
+  const result = await db.query(
+    `UPDATE users SET ${fields.join(', ')}
+     WHERE id = $${idx++} AND tenant_id = $${idx++}
+     RETURNING id, name, email, role, active`,
+    values
+  );
+
+  if (!result.rowCount || result.rowCount === 0) return null;
+  return PublicUserSchema.parse(result.rows[0]);
+}
+
