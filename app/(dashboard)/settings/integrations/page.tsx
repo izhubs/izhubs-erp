@@ -57,6 +57,7 @@ export default function IntegrationsPage() {
   }
 
   const [connectingFb, setConnectingFb] = useState(false);
+  const [connectingGoogle, setConnectingGoogle] = useState(false);
 
   async function toggleAdAccount(connectionId: string, accountId: string, currentEnabled: boolean) {
     try {
@@ -120,6 +121,24 @@ export default function IntegrationsPage() {
     }
   };
 
+  const handleConnectGoogle = async () => {
+    setConnectingGoogle(true);
+    try {
+      const res = await fetch('/api/v1/integrations/google/auth', { method: 'POST' });
+      const json = await res.json();
+      if (json.success && json.data.redirectUrl) {
+        window.location.href = json.data.redirectUrl;
+      } else {
+        const msg = typeof json.error === 'string' ? json.error : json.error?.message || 'Unknown error';
+        alert('Could not start OAuth flow: ' + msg);
+      }
+    } catch (e) {
+      alert('Network error while connecting to Google Ads');
+    } finally {
+      setConnectingGoogle(false);
+    }
+  };
+
   return (
     <div>
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
@@ -162,21 +181,20 @@ export default function IntegrationsPage() {
           </IzButton>
         </div>
 
-        {/* Google Ads Placeholder */}
+        {/* Google Ads Card */}
         <div style={{ 
-          background: 'var(--color-bg-subtle)', 
-          border: '1px dashed var(--color-border)', 
+          background: 'var(--color-bg-card)', 
+          border: '1px solid var(--color-border)', 
           borderRadius: 'var(--radius-lg)', 
           padding: 20,
           display: 'flex',
           flexDirection: 'column',
-          gap: 16,
-          opacity: 0.7
+          gap: 16
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ 
               width: 48, height: 48, borderRadius: 8, 
-              background: 'var(--color-bg-elevated)', color: 'var(--color-text-muted)',
+              background: '#FCE8E8', color: '#EA4335',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 20, fontWeight: 700
             }}>
@@ -184,11 +202,11 @@ export default function IntegrationsPage() {
             </div>
             <div>
               <h3 style={{ fontSize: 15, fontWeight: 600, margin: 0 }}>Google Ads</h3>
-              <p style={{ fontSize: 13, color: 'var(--color-text-muted)', margin: 0 }}>MCC Accounts Sync (Phase 5)</p>
+              <p style={{ fontSize: 13, color: 'var(--color-text-muted)', margin: 0 }}>MCC Accounts Sync</p>
             </div>
           </div>
-          <IzButton variant="secondary" disabled style={{ width: '100%' }}>
-            Coming Soon
+          <IzButton variant="outline" disabled={connectingGoogle} style={{ width: '100%', display: 'flex', gap: 8 }} onClick={handleConnectGoogle}>
+            <Link2 size={16} /> {connectingGoogle ? 'Starting Auth...' : 'Connect Account'}
           </IzButton>
         </div>
       </div>
@@ -230,8 +248,14 @@ export default function IntegrationsPage() {
                 background: conn.status === 'error' ? 'var(--color-destructive-muted)' : 'transparent'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <Facebook size={20} color="#1877F2" />
-                  <span style={{ fontWeight: 600, textTransform: 'capitalize' }}>{conn.provider} Connection</span>
+                  {conn.provider === 'facebook' ? (
+                    <Facebook size={20} color="#1877F2" />
+                  ) : (
+                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#FCE8E8', color: '#EA4335', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700 }}>G</div>
+                  )}
+                  <span style={{ fontWeight: 600, textTransform: 'capitalize' }}>
+                    {conn.provider === 'google_ads' || conn.provider === 'google' ? 'Google Ads' : conn.provider} Connection
+                  </span>
                   
                   {conn.status === 'active' && <IzBadge variant="success" style={{ display: 'flex', gap: 4 }}><CheckCircle2 size={12} /> Active</IzBadge>}
                   {conn.status === 'error' && <IzBadge variant="destructive" style={{ display: 'flex', gap: 4 }}><AlertCircle size={12} /> Disconnected (Action Required)</IzBadge>}
@@ -281,13 +305,15 @@ export default function IntegrationsPage() {
 
                 {/* Social Pages Section */}
                 <div style={{ padding: 20, background: 'var(--color-bg-card)' }}>
-                  <h4 style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Social Pages ({conn.socialPages?.length || 0})
-                  </h4>
-                  
-                  {!conn.socialPages || conn.socialPages.length === 0 ? (
-                    <div style={{ fontSize: 13, color: 'var(--color-text-subtle)' }}>No Facebook pages found.</div>
-                  ) : (
+                  {conn.provider === 'facebook' && (
+                    <>
+                      <h4 style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Social Pages ({conn.socialPages?.length || 0})
+                      </h4>
+                      
+                      {!conn.socialPages || conn.socialPages.length === 0 ? (
+                        <div style={{ fontSize: 13, color: 'var(--color-text-subtle)' }}>No Facebook pages found.</div>
+                      ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       {conn.socialPages.map(page => (
                         <div key={page.id} style={{ 
@@ -311,6 +337,13 @@ export default function IntegrationsPage() {
                           </IzButton>
                         </div>
                       ))}
+                    </div>
+                  )}
+                    </>
+                  )}
+                  {conn.provider !== 'facebook' && (
+                    <div style={{ fontSize: 13, color: 'var(--color-text-subtle)', fontStyle: 'italic', display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+                      Organic social sync is not supported for this provider.
                     </div>
                   )}
                 </div>

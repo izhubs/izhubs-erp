@@ -1,6 +1,7 @@
 import { Worker, Job } from 'bullmq';
 import { redisConnection } from '../queue';
-import { syncFacebookAds } from './facebook';
+import { FacebookAdsAdapter } from './adapters/FacebookAdsAdapter';
+import { GoogleAdsAdapter } from './adapters/GoogleAdsAdapter';
 import { syncFacebookPages } from './facebook_page';
 import { initCronScheduler, triggerNightlySync } from './scheduler';
 
@@ -17,14 +18,19 @@ export async function initSyncWorker() {
       case 'nightly-sync-trigger':
         await triggerNightlySync();
         break;
-      case 'sync-facebook':
-        await syncFacebookAds(job.data);
+      case 'sync-facebook': {
+        const adapter = new FacebookAdsAdapter();
+        await adapter.syncDailyInsights(job.data);
         break;
+      }
+      case 'sync-google': {
+        const adapter = new GoogleAdsAdapter();
+        await adapter.syncDailyInsights(job.data);
+        break;
+      }
       case 'sync-facebook-page':
+        // Future refactor could also make this an adapter
         await syncFacebookPages(job.data);
-        break;
-      case 'sync-google':
-        console.log('Google Ads Sync not implemented yet.');
         break;
       default:
         throw new Error(`Unknown job type: ${job.name}`);
