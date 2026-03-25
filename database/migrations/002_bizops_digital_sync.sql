@@ -39,7 +39,7 @@ CREATE INDEX idx_ad_accounts_connection ON ad_accounts(connection_id);
 -- 3. Campaign Ad Sources (Mapping izhubs Campaign <-> Facebook/Google Campaigns)
 CREATE TABLE IF NOT EXISTS campaign_ad_sources (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    campaign_id UUID NOT NULL REFERENCES biz_ops_campaigns(id) ON DELETE CASCADE,
+    campaign_id UUID NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
     ad_account_id UUID NOT NULL REFERENCES ad_accounts(id) ON DELETE CASCADE,
     external_campaign_id VARCHAR(100) NOT NULL,
     external_campaign_name VARCHAR(255),
@@ -52,7 +52,7 @@ CREATE INDEX idx_campaign_ad_sources_campaign ON campaign_ad_sources(campaign_id
 -- 4. Campaign Digital Metrics (Daily Snapshots / Data Warehouse)
 CREATE TABLE IF NOT EXISTS campaign_digital_metrics (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    campaign_id UUID NOT NULL REFERENCES biz_ops_campaigns(id) ON DELETE CASCADE,
+    campaign_id UUID NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
     ad_account_id UUID REFERENCES ad_accounts(id) ON DELETE SET NULL,
     date DATE NOT NULL,
     platform VARCHAR(50) NOT NULL,
@@ -68,13 +68,13 @@ CREATE TABLE IF NOT EXISTS campaign_digital_metrics (
 
 CREATE INDEX idx_metrics_campaign_date ON campaign_digital_metrics(campaign_id, date);
 
--- 5. Expand biz_ops_expenses logic to support auto-sync source
+-- 5. Expand expense_records logic to support auto-sync source
 DO $$ 
 BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns 
-        WHERE table_name='biz_ops_expenses' AND column_name='source_type'
+        WHERE table_name='expense_records' AND column_name='source_type'
     ) THEN
-        ALTER TABLE biz_ops_expenses ADD COLUMN source_type VARCHAR(50) DEFAULT 'manual';
+        ALTER TABLE expense_records ADD COLUMN source_type VARCHAR(50) DEFAULT 'manual';
     END IF;
 END $$;

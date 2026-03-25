@@ -44,7 +44,7 @@ const SETTINGS_SECTIONS = [
     icon: Link2,
     title: 'Integrations',
     desc: 'Connect third-party services',
-    badge: 'soon',
+    badge: null,
   },
   {
     href: '/settings/gdpr',

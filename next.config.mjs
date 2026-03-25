@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-
+  experimental: {
+    instrumentationHook: true,
+  },
   sassOptions: {
     includePaths: ['./app/styles'],
   },

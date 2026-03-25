@@ -49,19 +49,19 @@ services:
     networks:
       - izhubs_network
 
-  # redis:  ← Uncomment when BullMQ background jobs are needed (v0.2)
-  #   image: redis:7-alpine
-  #   ports:
-  #     - "6379:6379"
-  #   volumes:
-  #     - redis_data:/data
-  #   healthcheck:
-  #     test: ["CMD", "redis-cli", "ping"]
-  #     interval: 5s
-  #     timeout: 5s
-  #     retries: 5
-  #   networks:
-  #     - izhubs_network
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - izhubs_network
 
 networks:
   izhubs_network:
@@ -69,4 +69,4 @@ networks:
 
 volumes:
   postgres_data:
-  # redis_data:  ← Uncomment with Redis service (v0.2)
+  redis_data:
