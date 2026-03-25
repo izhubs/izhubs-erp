@@ -1,0 +1,159 @@
+/**
+ * izhubs ERP — Official Color Palette (Phong Thủy Kim - Metal Element)
+ * =====================================================================
+ * Stitch Design System: "Golden Synchronization"
+ * Asset ID: assets/1d56727335964e77a5bc5e3520cde0fd
+ * Stitch Project: 2420013479080174207
+ *
+ * Based on Material 3 color generation with custom seeds:
+ *   Primary: #D4A76A (Champagne Gold — Kim/Metal feng shui)
+ *   Neutral: #111125 (Midnight Navy)
+ *
+ * Updated: 2026-03-25
+ */
+
+:root {
+  /* ========================================
+   * BRAND / PRIMARY — Champagne Gold (Kim)
+   * Thổ sinh Kim: Gold/Champagne is most auspicious
+   * ======================================== */
+  --color-primary: #f2c283;
+  --color-primary-container: #d4a76a;
+  --color-primary-fixed: #ffddb3;
+  --color-primary-fixed-dim: #eebe7f;
+  --color-on-primary: #452b00;
+  --color-on-primary-container: #5b3c07;
+  --color-on-primary-fixed: #291800;
+  --color-on-primary-fixed-variant: #60400c;
+  --color-inverse-primary: #7b5822;
+
+  /* ========================================
+   * SECONDARY — Muted Gold / Warm Neutral
+   * ======================================== */
+  --color-secondary: #dcc2a4;
+  --color-secondary-container: #58462f;
+  --color-secondary-fixed: #f9debf;
+  --color-secondary-fixed-dim: #dcc2a4;
+  --color-on-secondary: #3d2e18;
+  --color-on-secondary-container: #cdb497;
+  --color-on-secondary-fixed: #261906;
+  --color-on-secondary-fixed-variant: #55442d;
+
+  /* ========================================
+   * TERTIARY — Steel Blue (Kim tương hợp)
+   * ======================================== */
+  --color-tertiary: #accdf5;
+  --color-tertiary-container: #91b2d8;
+  --color-tertiary-fixed: #d0e4ff;
+  --color-tertiary-fixed-dim: #a8caf1;
+  --color-on-tertiary: #0b3252;
+  --color-on-tertiary-container: #224565;
+  --color-on-tertiary-fixed: #001d34;
+  --color-on-tertiary-fixed-variant: #27496a;
+
+  /* ========================================
+   * SURFACE — Midnight Navy Stack
+   * ======================================== */
+  --color-background: #111125;
+  --color-surface: #111125;
+  --color-surface-dim: #111125;
+  --color-surface-bright: #37374d;
+  --color-surface-container-lowest: #0c0c20;
+  --color-surface-container-low: #1a1a2e;
+  --color-surface-container: #1e1e32;
+  --color-surface-container-high: #28283d;
+  --color-surface-container-highest: #333348;
+  --color-surface-variant: #333348;
+  --color-surface-tint: #eebe7f;
+
+  /* ========================================
+   * TEXT — On Surface
+   * ======================================== */
+  --color-on-background: #e2e0fc;
+  --color-on-surface: #e2e0fc;
+  --color-on-surface-variant: #d3c4b5;
+  --color-inverse-on-surface: #2f2e44;
+  --color-inverse-surface: #e2e0fc;
+
+  /* ========================================
+   * ERROR — Soft Coral
+   * ======================================== */
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-on-error: #690005;
+  --color-on-error-container: #ffdad6;
+
+  /* ========================================
+   * OUTLINE / BORDERS
+   * ======================================== */
+  --color-outline: #9b8f81;
+  --color-outline-variant: #4f453a;
+
+  /* ========================================
+   * TYPOGRAPHY
+   * ======================================== */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  /* ========================================
+   * SPACING — Compact Data-Dense
+   * ======================================== */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;      /* gaps between elements */
+  --spacing-md: 12px;     /* card padding */
+  --spacing-lg: 16px;     /* section spacing */
+  --spacing-xl: 24px;     /* module margins */
+
+  /* ========================================
+   * SHAPE
+   * ======================================== */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* ========================================
+   * COMPONENT SIZES
+   * ======================================== */
+  --input-height: 32px;
+  --table-row-height: 36px;
+  --sidebar-width: 240px;
+  --body-font-size: 13px;
+  --label-font-size: 11px;
+
+  /* ========================================
+   * GLASSMORPHISM
+   * ======================================== */
+  --glass-blur: 20px;
+  --glass-opacity: 0.6;
+  --ghost-border-opacity: 0.15;
+  --ambient-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+/* ========================================
+ * SEMANTIC ALIASES
+ * ======================================== */
+:root {
+  /* Status */
+  --color-success: var(--color-primary);          /* Gold = success in Kim theme */
+  --color-warning: var(--color-tertiary);          /* Steel blue for info/warning */
+  --color-danger: var(--color-error);
+
+  /* Interactive */
+  --color-accent: var(--color-primary-container);   /* #D4A76A */
+  --color-accent-hover: var(--color-primary);       /* #f2c283 */
+  --color-accent-text: var(--color-on-primary);     /* #452b00 */
+
+  /* Layout */
+  --color-sidebar-bg: var(--color-surface-container-lowest);
+  --color-card-bg: var(--color-surface-container-low);
+  --color-card-bg-elevated: var(--color-surface-container-high);
+  --color-page-bg: var(--color-background);
+
+  /* Text */
+  --color-text-primary: var(--color-on-surface);
+  --color-text-secondary: var(--color-on-surface-variant);
+  --color-text-muted: var(--color-outline);
+}
